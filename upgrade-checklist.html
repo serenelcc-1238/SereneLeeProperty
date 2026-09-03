@@ -294,49 +294,50 @@ pathChecks.forEach(c => c.addEventListener('change', updatePathHint));
 function generateChecklistPdf(checked, total, bandLabel, visitorName){
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-  const marginLeft = 16;
+  const marginLeft = 14;
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const contentW = pageWidth - marginLeft * 2;
-  let y = 18;
+  let y = 15;
+  const lineH = 4.1; // compact single-line height, keeps the whole checklist on one page
 
-  doc.setFontSize(16);
+  doc.setFontSize(14.5);
   doc.setFont(undefined, 'bold');
   doc.text('Your HDB Upgrade Readiness Checklist', marginLeft, y);
-  y += 6;
-  doc.setFontSize(9.5);
+  y += 5;
+  doc.setFontSize(8);
   doc.setFont(undefined, 'normal');
   doc.text('Prepared for ' + visitorName + ' via sereneleeproperty.com — Serene Lee, ERA Realty (CEA Reg. R027578Z)', marginLeft, y);
-  y += 4;
+  y += 3.4;
   doc.text('Generated on ' + new Date().toLocaleDateString('en-SG', { day:'numeric', month:'long', year:'numeric' }), marginLeft, y);
-  y += 10;
+  y += 5.5;
 
   // Score summary box
   const bandPlain = bandLabel.replace(/[^\x00-\x7F]/g, '').trim();
   doc.setFillColor(11,42,74);
-  doc.rect(marginLeft, y, contentW, 20, 'F');
+  doc.rect(marginLeft, y, contentW, 14, 'F');
   doc.setTextColor(255,255,255);
-  doc.setFontSize(13);
+  doc.setFontSize(11.5);
   doc.setFont(undefined, 'bold');
-  doc.text(`Upgrade Readiness Score: ${checked} / ${total}`, marginLeft + 4, y + 8);
-  doc.setFontSize(10);
+  doc.text(`Upgrade Readiness Score: ${checked} / ${total}`, marginLeft + 4, y + 5.8);
+  doc.setFontSize(9);
   doc.setFont(undefined, 'normal');
-  doc.text(bandPlain, marginLeft + 4, y + 15);
+  doc.text(bandPlain, marginLeft + 4, y + 11);
   doc.setTextColor(24,36,48);
-  y += 30;
+  y += 14 + 5;
 
   function ensureSpace(needed){
-    if (y + needed > pageHeight - 22){ doc.addPage(); y = 18; }
+    if (y + needed > pageHeight - 14){ doc.addPage(); y = 15; }
   }
 
   document.querySelectorAll('.checklist-group').forEach(group => {
     const heading = group.querySelector('h2').textContent.trim();
-    ensureSpace(14);
-    doc.setFontSize(11.5);
+    ensureSpace(9);
+    doc.setFontSize(10);
     doc.setFont(undefined, 'bold');
     doc.text(heading, marginLeft, y);
-    y += 6.5;
-    doc.setFontSize(9.5);
+    y += 4.6;
+    doc.setFontSize(8.3);
     doc.setFont(undefined, 'normal');
 
     group.querySelectorAll('.checkbox-row').forEach(row => {
@@ -344,32 +345,32 @@ function generateChecklistPdf(checked, total, bandLabel, visitorName){
       const text = row.textContent.trim();
       const mark = input.checked ? '[x]' : '[ ]';
       const lines = doc.splitTextToSize(`${mark} ${text}`, contentW - 4);
-      ensureSpace(5 * lines.length);
+      ensureSpace(lineH * lines.length);
       doc.text(lines, marginLeft + 2, y);
-      y += 5 * lines.length;
+      y += lineH * lines.length;
     });
 
     // Section 4 (sell-first vs buy-first) also gets its live comparison hint
     if (group.querySelector('.path-compare')){
       const hint = document.getElementById('pathHint').textContent.trim();
       const hintLines = doc.splitTextToSize(hint, contentW - 4);
-      ensureSpace(5 * hintLines.length + 3);
-      y += 2;
+      ensureSpace(lineH * hintLines.length + 2);
+      y += 1.2;
       doc.setFont(undefined, 'italic');
       doc.text(hintLines, marginLeft + 2, y);
-      y += 5 * hintLines.length;
+      y += lineH * hintLines.length;
       doc.setFont(undefined, 'normal');
     }
-    y += 4;
+    y += 2;
   });
 
-  ensureSpace(24);
-  y += 2;
+  ensureSpace(14);
+  y += 1.5;
   doc.setDrawColor(225,222,210);
   doc.setLineWidth(0.2);
   doc.line(marginLeft, y, pageWidth - marginLeft, y);
-  y += 6;
-  doc.setFontSize(8);
+  y += 4;
+  doc.setFontSize(7);
   doc.setFont(undefined, 'italic');
   const disclaimer = 'This checklist is for general information only and does not constitute financial, mortgage, or legal advice. Answers are self-reported and not verified. It is a starting point for your own thinking, not a substitute for a proper assessment of your finances with Serene.';
   const dLines = doc.splitTextToSize(disclaimer, contentW);
