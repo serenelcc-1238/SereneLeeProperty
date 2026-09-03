@@ -10,6 +10,25 @@ document.addEventListener('DOMContentLoaded', function () {
   var yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
+  /* Nav "Tools" dropdown (Affordability Calculator + Upgrade Checklist):
+     hover already reveals it on desktop via CSS, but a click/tap toggle is
+     needed for touchscreens and keyboard users, and for mobile where the
+     nav is already a vertical list. */
+  var navDropdowns = document.querySelectorAll('.nav-dropdown');
+  navDropdowns.forEach(function (dropdown) {
+    var toggleBtn = dropdown.querySelector('.nav-dropdown-toggle');
+    if (!toggleBtn) return;
+    toggleBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      dropdown.classList.toggle('open');
+    });
+  });
+  document.addEventListener('click', function (e) {
+    navDropdowns.forEach(function (dropdown) {
+      if (!dropdown.contains(e.target)) dropdown.classList.remove('open');
+    });
+  });
+
   /* Blog page only: auto-sort posts newest-first by each row's data-date
      attribute (YYYY-MM-DD), so Serene can paste a new post anywhere in
      blog.html and it lands in the right place automatically — no manual
