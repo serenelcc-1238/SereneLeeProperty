@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="en-SG">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HDB Affordability Calculator Singapore | Serene Lee, ERA</title>
+<meta name="description" content="See what HDB flat or new Executive Condo price you could afford based on public MAS/HDB/CPF formulas — a private, judgment-free first look at your numbers.">
+<link rel="canonical" href="https://sereneleeproperty.com/calculator.html">
+<meta property="og:title" content="HDB Affordability Calculator Singapore | Serene Lee, ERA">
+<meta property="og:description" content="See what HDB flat or new Executive Condo price you could afford based on public MAS/HDB/CPF formulas — a private, judgment-free first look at your numbers.">
+<meta property="og:image" content="https://sereneleeproperty.com/assets/serene-photo.jpg">
+<meta property="og:url" content="https://sereneleeproperty.com/calculator.html">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="HDB Affordability Calculator Singapore | Serene Lee, ERA">
+<meta name="twitter:description" content="See what HDB flat or new Executive Condo price you could afford based on public MAS/HDB/CPF formulas — a private, judgment-free first look at your numbers.">
+<meta name="twitter:image" content="https://sereneleeproperty.com/assets/serene-photo.jpg">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "RealEstateAgent",
+  "name": "Serene Lee",
+  "url": "https://sereneleeproperty.com/",
+  "image": "https://sereneleeproperty.com/assets/serene-photo.jpg",
+  "telephone": "+65-8086-8568",
+  "email": "serenelcc@gmail.com",
+  "areaServed": { "@type": "Country", "name": "Singapore" },
+  "memberOf": {
+    "@type": "Organization",
+    "name": "ERA Realty Network Pte Ltd",
+    "url": "https://www.era.com.sg",
+    "telephone": "+65-6226-2000"
+  },
+  "identifier": "CEA Registration No. R027578Z"
+}
+</script>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230b2a4a%22/><text x=%2250%22 y=%2266%22 font-size=%2258%22 text-anchor=%22middle%22 fill=%22%23c9a227%22 font-family=%22Georgia,serif%22>S</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+<header>
+  <div class="nav-wrap">
+    <a href="index.html" class="brand">
+      <strong>Serene Lee</strong>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="new-launches.html">New Launches</a>
+      <a href="blog.html">Blog</a>
+      <a href="faq.html">FAQ</a>
+      <a href="calculator.html" class="active">Affordability Calculator</a>
+      <a href="testimonials.html">Testimonials</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="https://wa.me/6580868568?text=Hi%20Serene%2C%20I%20found%20your%20website%20and%20would%20like%20to%20find%20out%20more." target="_blank" rel="noopener" class="btn btn-gold btn-sm">WhatsApp Serene</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">&#9776;</button>
+    </div>
+  </div>
+</header>
+
+<!-- CALCULATOR -->
+<section class="calc-section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Affordability Check</span>
+      <h1 style="font-size:1.9rem;">See what you could afford — in under 2 minutes</h1>
+      <p>This isn't a bank pre-approval. It's a private, judgment-free first look at your numbers for a resale HDB flat or new Executive Condo, using the same public MAS/HDB/CPF formulas banks reference for a home loan.</p>
+      <p>This free HDB affordability calculator uses the same MSR and TDSR formulas MAS and HDB apply, so you get a realistic answer before you start viewing units.</p>
+    </div>
+
+    <div class="calc-card">
+      <form id="calcForm" novalidate>
+        <div class="field">
+          <label>What are you buying?</label>
+          <div class="ptype-row" id="ptypeRow">
+            <label class="ptype-option"><input type="radio" name="ptype" value="hdb" checked> Resale HDB Flat</label>
+            <label class="ptype-option"><input type="radio" name="ptype" value="ec"> New Exec Condo</label>
+          </div>
+        </div>
+
+        <div class="loantype-block" id="loanTypeBlock" style="display:none;">
+          <div class="field">
+            <label>Loan type</label>
+            <div class="ptype-row">
+              <label class="ptype-option"><input type="radio" name="loantype" value="hdbloan" checked> HDB Concessionary Loan</label>
+              <label class="ptype-option"><input type="radio" name="loantype" value="bank"> Bank Loan</label>
+            </div>
+            <div class="hint">HDB loans use a fixed 2.6% p.a. rate and only MSR (30%) applies — no TDSR, and no minimum cash downpayment. Only available for HDB flats, not ECs.</div>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="b-income">Your monthly gross income (SGD)</label>
+            <input type="number" id="b-income" min="0" step="100" placeholder="e.g. 6500" required>
+          </div>
+          <div class="field">
+            <label for="b-age">Your age</label>
+            <input type="number" id="b-age" min="21" max="70" placeholder="e.g. 38" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="b-variable">Your annual bonus / commission / freelance income (SGD)</label>
+          <input type="number" id="b-variable" min="0" step="100" placeholder="e.g. 15000">
+          <div class="hint">Leave blank if none. Only a portion of this counts toward your loan eligibility.</div>
+        </div>
+
+        <div class="field">
+          <label for="b-oa">Your CPF Ordinary Account (OA) balance (SGD)</label>
+          <input type="number" id="b-oa" min="0" step="100" placeholder="e.g. 60000">
+        </div>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="has-cobuyer">
+          <label for="has-cobuyer">I'm buying with a co-buyer (spouse/partner)</label>
+        </div>
+
+        <div class="cobuyer-block" id="cobuyerBlock">
+          <div class="field-row">
+            <div class="field">
+              <label for="cb-income">Co-buyer's monthly gross income (SGD)</label>
+              <input type="number" id="cb-income" min="0" step="100" placeholder="e.g. 5000">
+            </div>
+            <div class="field">
+              <label for="cb-age">Co-buyer's age</label>
+              <input type="number" id="cb-age" min="21" max="70" placeholder="e.g. 36">
+            </div>
+          </div>
+          <div class="field">
+            <label for="cb-variable">Co-buyer's annual bonus / commission / variable income (SGD)</label>
+            <input type="number" id="cb-variable" min="0" step="100" placeholder="e.g. 8000">
+          </div>
+          <div class="field">
+            <label for="cb-oa">Co-buyer's CPF Ordinary Account (OA) balance (SGD)</label>
+            <input type="number" id="cb-oa" min="0" step="100" placeholder="e.g. 40000">
+          </div>
+        </div>
+
+        <div class="live-total" id="incomeTotalDisplay">Total Monthly Assessable Income <strong>S$0</strong></div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="car-loan">Monthly car loan instalment (SGD)</label>
+            <input type="number" id="car-loan" min="0" step="10" placeholder="e.g. 800">
+          </div>
+          <div class="field">
+            <label for="other-debt">Other monthly debt (SGD)</label>
+            <input type="number" id="other-debt" min="0" step="10" placeholder="Personal loan, credit card min.">
+          </div>
+        </div>
+
+        <div class="live-total" id="debtTotalDisplay">Total Monthly Debt Assessment <strong>S$0</strong></div>
+
+        <div class="field">
+          <label for="cash-on-hand">Cash on hand available for the purchase (SGD)</label>
+          <input type="number" id="cash-on-hand" min="0" step="1000" placeholder="e.g. 50000">
+          <div class="hint">Optional — savings, fixed deposits, etc. (Combined with your co-buyer's, if any.) Leave blank to estimate based on income and CPF only.</div>
+        </div>
+
+        <div class="field financing-vars">
+          <label>Financing Variables</label>
+          <div class="slider-row">
+            <span class="slider-label">Loan Tenure</span>
+            <input type="range" id="tenure-slider" min="5" max="30" step="1" value="25">
+            <span class="slider-num-wrap"><input type="number" id="tenure-value" min="5" max="30" step="1" value="25" class="slider-number"><span class="slider-unit">yrs</span></span>
+          </div>
+          <div class="slider-row">
+            <span class="slider-label">Interest Rate</span>
+            <input type="range" id="rate-slider" min="1" max="6" step="0.1" value="4">
+            <span class="slider-num-wrap"><input type="number" id="rate-value" min="1" max="6" step="0.1" value="4" class="slider-number"><span class="slider-unit">%</span></span>
+          </div>
+          <div class="hint" id="rateLockHint" style="display:none;margin-top:-6px;">Fixed by HDB at 2.6% p.a. for a Concessionary Loan — this rate isn't adjustable. Switch to Bank Loan to model a different rate.</div>
+          <div class="slider-row">
+            <span class="slider-label">Loan-to-Value</span>
+            <input type="range" id="ltv-slider" min="35" max="75" step="5" value="75">
+            <span class="slider-num-wrap"><input type="number" id="ltv-value" min="35" max="75" step="5" value="75" class="slider-number"><span class="slider-unit">%</span></span>
+          </div>
+          <div class="hint">Defaults follow current MAS/HDB rules based on your age and loan type above. If this isn't your first property loan, your bank may cap LTV lower (e.g. 55% or 45%) with a higher minimum cash downpayment — adjust here to test that scenario, and confirm the exact figure with your bank.</div>
+        </div>
+
+        <div class="field">
+          <label for="legal-fee">Estimated legal / conveyancing fee (SGD)</label>
+          <input type="number" id="legal-fee" min="0" step="100" value="1000">
+          <div class="hint" id="legalFeeHint">Defaults to ~S$1,000 for HDB's in-house legal service (Concessionary Loan) or ~S$2,500 for a private solicitor (Bank Loan requires one) — adjust here for your own quote.</div>
+        </div>
+
+        <div class="field">
+          <label for="target-price">Target property price (optional — a rough figure is fine)</label>
+          <input type="number" id="target-price" min="0" step="1000" placeholder="e.g. 1600000">
+        </div>
+
+        <button type="submit" class="btn btn-gold btn-block">Calculate My Affordability</button>
+        <div class="error-text" id="formError">Please fill in at least your monthly income and age to continue.</div>
+      </form>
+
+      <!-- RESULTS -->
+      <div id="resultsPanel">
+        <div class="divider"></div>
+
+        <div class="scenario-grid">
+          <div class="scenario-card">
+            <div class="scenario-card-title" id="scn1Title">Scenario 1 — Based on Income (MSR)</div>
+            <div class="scenario-line"><span id="scn1PriceLabel">Max HDB Purchase Price</span><strong id="scn1PriceEl">S$0</strong></div>
+            <div class="scenario-line"><span>Max Loan Amount</span><strong id="scn1LoanEl">S$0</strong></div>
+            <div class="scenario-line"><span>Monthly Instalment</span><strong id="scn1MonthlyEl">S$0</strong></div>
+            <div class="scenario-line"><span id="scn1DownpaymentLabel">Downpayment Required (25%)</span><strong id="scn1DownpaymentEl">S$0</strong></div>
+            <details class="scenario-details">
+              <summary class="scenario-line scenario-summary"><span>Upfront Costs (BSD + Fees)</span><strong id="scn1CostsEl">S$0</strong></summary>
+              <div class="scenario-line"><span>Buyer Stamp Duty (BSD)</span><strong id="scn1BSDEl">S$0</strong></div>
+              <div class="scenario-line"><span>Legal &amp; Resale Fees</span><strong id="scn1FeesEl">S$0</strong></div>
+              <div class="scenario-line"><span>Total Cash/CPF Needed</span><strong id="scn1TotalNeededEl">S$0</strong></div>
+            </details>
+            <div class="scenario-line"><span>Your Cash + CPF Available</span><strong id="scn1FundsEl">S$0</strong></div>
+            <div class="scenario-line scenario-line-highlight"><span id="scn1GapLabelEl">Shortfall</span><strong id="scn1GapEl">S$0</strong></div>
+          </div>
+          <div class="scenario-card" id="scenario2Card">
+            <div class="scenario-card-title" id="scn2Title">Scenario 2 — Based on Cash/CPF on hand</div>
+            <div id="scn2Content">
+              <div class="scenario-line"><span id="scn2PriceLabel">Max HDB Purchase Price</span><strong id="scn2PriceEl">S$0</strong></div>
+              <div class="scenario-line"><span>Resulting Loan Amount</span><strong id="scn2LoanEl">S$0</strong></div>
+              <div class="scenario-line"><span>Monthly Instalment</span><strong id="scn2MonthlyEl">S$0</strong></div>
+              <div class="scenario-line"><span id="scn2DownpaymentLabel">Downpayment Required (25%)</span><strong id="scn2DownpaymentEl">S$0</strong></div>
+              <details class="scenario-details">
+                <summary class="scenario-line scenario-summary"><span>Upfront Costs (BSD + Fees)</span><strong id="scn2CostsEl">S$0</strong></summary>
+                <div class="scenario-line"><span>Buyer Stamp Duty (BSD)</span><strong id="scn2BSDEl">S$0</strong></div>
+                <div class="scenario-line"><span>Legal &amp; Resale Fees</span><strong id="scn2FeesEl">S$0</strong></div>
+                <div class="scenario-line"><span>Total Cash/CPF Needed</span><strong id="scn2TotalNeededEl">S$0</strong></div>
+              </details>
+              <div class="scenario-line"><span>Your Cash + CPF Available</span><strong id="scn2FundsEl">S$0</strong></div>
+              <div class="scenario-line scenario-line-highlight"><span id="scn2GapLabelEl">Shortfall</span><strong id="scn2GapEl">S$0</strong></div>
+              <div class="scenario-note" id="scn2MsrNote" style="display:none;"></div>
+              <div class="scenario-note" id="scn2CashFloorNote" style="display:none;"></div>
+            </div>
+            <div class="scenario-note" id="scn2Placeholder" style="display:none;">Enter Cash on hand above to see this scenario.</div>
+          </div>
+        </div>
+
+        <div class="scenario-card scenario-card-wide" id="targetScenarioCard" style="display:none;">
+          <div class="scenario-card-title">Your Target Purchase Price</div>
+          <div class="scenario-line"><span>Target Purchase Price</span><strong id="targetPriceDisplayEl">S$0</strong></div>
+          <div class="scenario-line"><span>Loan Amount</span><strong id="targetLoanEl">S$0</strong></div>
+          <div class="scenario-line"><span>Monthly Instalment</span><strong id="targetMonthlyEl">S$0</strong></div>
+          <div class="scenario-line"><span id="targetDownpaymentLabel">Downpayment Required (25%)</span><strong id="targetDownpaymentEl">S$0</strong></div>
+          <details class="scenario-details">
+            <summary class="scenario-line scenario-summary"><span>Upfront Costs (BSD + Fees)</span><strong id="targetCostsEl">S$0</strong></summary>
+            <div class="scenario-line"><span>Buyer Stamp Duty (BSD)</span><strong id="targetBSDEl">S$0</strong></div>
+            <div class="scenario-line"><span>Legal &amp; Resale Fees</span><strong id="targetFeesEl">S$0</strong></div>
+            <div class="scenario-line"><span>Total Cash/CPF Needed</span><strong id="targetTotalNeededEl">S$0</strong></div>
+          </details>
+          <div class="scenario-line"><span>Your Cash + CPF Available</span><strong id="targetFundsEl">S$0</strong></div>
+          <div class="scenario-line scenario-line-highlight"><span id="targetGapLabelEl">Shortfall</span><strong id="targetGapEl">S$0</strong></div>
+          <div class="scenario-note" id="targetMsrNote" style="display:none;"></div>
+        </div>
+
+        <div class="result-hero">
+          <div class="sub" id="recommendationLabel">Recommended: Scenario 1</div>
+          <div class="sub" id="resHeroPriceLabel">Estimated maximum HDB purchase price</div>
+          <div class="figure" id="resHeroPrice">S$0</div>
+          <div class="sub" id="resHeroPriceRange">Range: S$0 &ndash; S$0</div>
+        </div>
+
+        <div id="loanEligibilityNote" class="hdb-note" style="display:none;"></div>
+        <div class="assumptions" id="assumptionsNote"></div>
+
+        <div class="disclaimer">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 9V13M12 17H12.01M10.29 3.86L1.82 18A2 2 0 0 0 3.55 21H20.45A2 2 0 0 0 22.18 18L13.71 3.86A2 2 0 0 0 10.29 3.86Z" stroke="#8a6d1c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div>
+            <strong>Please note:</strong> This calculator provides an estimate based on public MAS/CPF formulas for illustration only. It is not a bank loan approval, mortgage advice, or financial advice. Actual eligibility is determined by your bank/HDB and CPF Board based on your full financial profile. Speak with Serene to get a proper affordability assessment.
+          </div>
+        </div>
+
+        <!-- LEAD CAPTURE GATE -->
+        <div class="gate-card" id="gateCard">
+          <h3>Want your full breakdown, saved as a PDF?</h3>
+          <p>Get a detailed line-by-line copy of these numbers sent to you — plus a proper affordability assessment from Serene herself.</p>
+          <button type="button" class="btn btn-gold" id="unlockBtn">Get My Full Breakdown (PDF)</button>
+
+          <form id="leadForm">
+            <div class="field">
+              <label for="lead-name">Name</label>
+              <input type="text" id="lead-name" placeholder="Your full name" required>
+            </div>
+            <div class="field">
+              <label for="lead-phone">Phone / WhatsApp number</label>
+              <input type="tel" id="lead-phone" placeholder="e.g. 9123 4567" required>
+            </div>
+            <div class="field">
+              <label for="lead-email">Email</label>
+              <input type="email" id="lead-email" placeholder="you@example.com" required>
+            </div>
+            <div class="field">
+              <label for="lead-time">Best time to call</label>
+              <select id="lead-time">
+                <option>Weekday mornings</option>
+                <option>Weekday afternoons</option>
+                <option>Weekday evenings</option>
+                <option>Weekends</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-gold btn-block">Send Me My Breakdown</button>
+            <div class="error-text" id="leadError">Please fill in your name, phone and email.</div>
+          </form>
+
+          <div class="thankyou" id="thankYou">
+            <div class="check">&#10003;</div>
+            <h3 style="color:#fff;">Thanks — your breakdown is downloading now</h3>
+            <p>Serene will personally reach out at your preferred time. In the meantime, feel free to <a href="https://wa.me/6580868568" style="color:#c9a227;font-weight:700;" target="_blank" rel="noopener">say hi on WhatsApp</a>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-era">
+      <img src="assets/era-logo.png" alt="ERA Realty Network logo" class="era-logo">
+      <div>
+        <div class="footer-era-name">ERA Realty Network Pte Ltd</div>
+        <div class="footer-era-line">Company Reg No. 198103027M</div>
+        <div class="footer-era-line">Estate Agent Licence No. L3002382K</div>
+        <div class="footer-era-line">Tel: +65 6226 2000 &middot; Fax: +65 6220 0066 &middot; www.era.com.sg</div>
+      </div>
+    </div>
+    <div class="legal-box">
+      <p><strong>Serene Lee</strong> &middot; CEA Registration No. R027578Z</p>
+      <p>This website and its affordability calculator are for general information only and do not constitute financial, mortgage, or legal advice. Figures are illustrative estimates only — always verify with your bank and the CPF Board before making a purchase decision.</p>
+      <p>&copy; <span id="year"></span> Serene Lee. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<a href="https://wa.me/6580868568?text=Hi%20Serene%2C%20I%20found%20your%20website%20and%20would%20like%20to%20find%20out%20more." target="_blank" rel="noopener" class="fab-wa" aria-label="Chat on WhatsApp">
+  <svg width="30" height="30" viewBox="0 0 24 24" fill="white"><path d="M17.6 6.32A7.85 7.85 0 0 0 12.04 4c-4.34 0-7.87 3.53-7.87 7.87 0 1.39.36 2.74 1.05 3.93L4 20l4.32-1.13a7.86 7.86 0 0 0 3.72.95h.01c4.34 0 7.87-3.53 7.87-7.87 0-2.1-.82-4.08-2.32-5.63zm-5.56 12.1h-.01a6.5 6.5 0 0 1-3.32-.91l-.24-.14-2.47.65.66-2.41-.16-.25a6.53 6.53 0 0 1-1-3.49c0-3.61 2.94-6.55 6.56-6.55a6.5 6.5 0 0 1 4.63 1.92 6.5 6.5 0 0 1 1.92 4.63c0 3.62-2.94 6.55-6.57 6.55z"/></svg>
+</a>
+
+<script src="main.js"></script>
+<script>
+/* =========================================================
+   CONFIG — Google Apps Script web app URL (see README.md).
+   Leads still work without it — they just won't reach a
+   Google Sheet until this is filled in.
+========================================================= */
+const GAS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzxomLsd_yvi8pEaXvHK3qddAPdnX7889wnjU4i5AoxXIv7dQv7h973bZ9gwQq_1dk/exec";
+
+/* ---------- Co-buyer toggle ---------- */
+const hasCobuyer = document.getElementById('has-cobuyer');
+const cobuyerBlock = document.getElementById('cobuyerBlock');
+hasCobuyer.addEventListener('change', () => {
+  cobuyerBlock.classList.toggle('show', hasCobuyer.checked);
+});
+
+/* ---------- Helpers (defined early so listeners below can use them) ---------- */
+function num(id){
+  const el = document.getElementById(id);
+  if (!el) return 0;
+  const v = parseFloat(el.value);
+  return isNaN(v) ? 0 : v;
+}
+function hasVal(id){
+  const el = document.getElementById(id);
+  return !!(el && el.value.trim() !== '');
+}
+function fmt(n){
+  return 'S$' + Math.round(n).toLocaleString('en-SG');
+}
+
+/* ---------- Buyer Stamp Duty (BSD) — current Singapore residential tiers ----------
+   1% on the first $180,000, 2% on the next $180,000, 3% on the next $640,000,
+   4% on the next $500,000, 5% on the next $1.5m, 6% on the remainder above $3m.
+   Taxed on the higher of price/valuation — this tool only has price, so it's used
+   as-is. Additional Buyer's Stamp Duty (ABSD) is NOT modeled (assumes a Singapore
+   Citizen buying their first residential property). */
+function bsdAmount(price){
+  if (!price || price <= 0) return 0;
+  const tiers = [180000, 360000, 1000000, 1500000, 3000000, Infinity];
+  const rates = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06];
+  let bsd = 0, lastCap = 0;
+  for (let i = 0; i < tiers.length; i++){
+    if (price <= lastCap) break;
+    const slice = Math.min(price, tiers[i]) - lastCap;
+    bsd += slice * rates[i];
+    lastCap = tiers[i];
+  }
+  return Math.floor(bsd);
+}
+
+/* ---------- MSR caps the loan in EVERY scenario, not just the income one ----------
+   A bank/HDB will never lend more than what MSR (and TDSR, for a bank loan) allows
+   on the buyer's income — regardless of how much cash/CPF they have. So once a
+   price would imply a bigger loan than maxLoanQuantum (the MSR-capped ceiling from
+   Scenario 1), the loan flatlines there and every extra dollar of price has to be
+   financed entirely by cash/CPF instead of by borrowing more. Below that price
+   threshold (== incomeMaxPrice), nothing changes: loan = price * ltv as before. */
+function actualLoanForPrice(price, ltv, maxLoanQuantum){
+  return Math.min(price * ltv, maxLoanQuantum);
+}
+function totalCashCpfNeededForPrice(price, ltv, maxLoanQuantum, fixedFees){
+  const loan = actualLoanForPrice(price, ltv, maxLoanQuantum);
+  return (price - loan) + bsdAmount(price) + fixedFees;
+}
+
+/* ---------- Solve max price from available cash+CPF once the MSR loan cap,
+   BSD, and fixed fees are all accounted for ----------
+   totalCashCpfNeededForPrice(price) = availableFunds
+   This is monotonically increasing in price (steeper once the MSR cap kicks in),
+   so it's solved by bisection rather than a derivative-based iteration — simpler
+   to get right once the function has a kink in it. */
+function solveMaxPriceFromFunds(availableFunds, ltv, maxLoanQuantum, fixedFees){
+  if (availableFunds <= fixedFees) return 0;
+  let hi = Math.max(availableFunds, maxLoanQuantum, 100000);
+  let guard = 0;
+  while (totalCashCpfNeededForPrice(hi, ltv, maxLoanQuantum, fixedFees) < availableFunds && guard < 50){
+    hi *= 2;
+    guard++;
+  }
+  let lo = 0;
+  for (let i = 0; i < 60; i++){
+    const mid = (lo + hi) / 2;
+    if (totalCashCpfNeededForPrice(mid, ltv, maxLoanQuantum, fixedFees) <= availableFunds) lo = mid; else hi = mid;
+  }
+  return lo;
+}
+
+/* ---------- Property type / loan type toggle ---------- */
+const loanTypeBlock = document.getElementById('loanTypeBlock');
+function updatePtypeUI(){
+  const ptype = (document.querySelector('input[name="ptype"]:checked') || {}).value;
+  loanTypeBlock.style.display = (ptype === 'hdb') ? 'block' : 'none';
+}
+document.querySelectorAll('input[name="ptype"]').forEach(r => r.addEventListener('change', updatePtypeUI));
+updatePtypeUI();
+
+/* ---------- Live income / debt subtotals ---------- */
+function updateIncomeTotal(){
+  const bIncome = num('b-income');
+  const cbIncome = hasCobuyer.checked ? num('cb-income') : 0;
+  const bVariable = num('b-variable');
+  const cbVariable = hasCobuyer.checked ? num('cb-variable') : 0;
+  const assessable = (bIncome + cbIncome) + ((bVariable + cbVariable) / 12) * 0.70;
+  document.getElementById('incomeTotalDisplay').innerHTML = `Total Monthly Assessable Income <strong>${fmt(assessable)}</strong>`;
+}
+['b-income','cb-income','b-variable','cb-variable'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updateIncomeTotal);
+});
+hasCobuyer.addEventListener('change', updateIncomeTotal);
+updateIncomeTotal();
+
+function updateDebtTotal(){
+  const total = num('car-loan') + num('other-debt');
+  document.getElementById('debtTotalDisplay').innerHTML = `Total Monthly Debt Assessment <strong>${fmt(total)}</strong>`;
+}
+['car-loan','other-debt'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updateDebtTotal);
+});
+updateDebtTotal();
+
+/* ---------- Financing variable sliders (Loan Tenure / Interest Rate / LTV) ----------
+   These start at the standard MAS/HDB defaults (computed from age + loan type) but can
+   be manually overridden — e.g. to model a lower LTV for a buyer who already has an
+   outstanding home loan. Once a slider is touched by hand, its auto-default stops
+   updating so a manual override isn't silently overwritten. */
+const tenureSlider = document.getElementById('tenure-slider');
+const tenureValueBox = document.getElementById('tenure-value');
+const rateSlider = document.getElementById('rate-slider');
+const rateValueBox = document.getElementById('rate-value');
+const ltvSlider = document.getElementById('ltv-slider');
+const ltvValueBox = document.getElementById('ltv-value');
+
+const sliderTouched = { tenure: false, rate: false, ltv: false };
+
+function clamp(v, min, max){ return Math.min(max, Math.max(min, v)); }
+
+function syncPair(slider, numberBox, key){
+  slider.addEventListener('input', () => {
+    numberBox.value = slider.value;
+    sliderTouched[key] = true;
+  });
+  numberBox.addEventListener('input', () => {
+    sliderTouched[key] = true;
+  });
+  numberBox.addEventListener('change', () => {
+    const min = parseFloat(slider.min), max = parseFloat(slider.max);
+    let v = parseFloat(numberBox.value);
+    if (isNaN(v)) v = min;
+    v = clamp(v, min, max);
+    numberBox.value = v;
+    slider.value = v;
+  });
+}
+syncPair(tenureSlider, tenureValueBox, 'tenure');
+syncPair(rateSlider, rateValueBox, 'rate');
+syncPair(ltvSlider, ltvValueBox, 'ltv');
+
+function setSliderDefault(slider, numberBox, key, val){
+  if (sliderTouched[key]) return;
+  slider.value = val;
+  numberBox.value = val;
+}
+
+function currentPtypeLoantype(){
+  const ptype = (document.querySelector('input[name="ptype"]:checked') || {}).value || 'hdb';
+  const loantype = ptype === 'hdb' ? ((document.querySelector('input[name="loantype"]:checked') || {}).value || 'bank') : 'bank';
+  return { ptype, loantype };
+}
+
+function refreshTenureDefault(){
+  const bAge = num('b-age');
+  if (!bAge) return;
+  const cbAge = hasCobuyer.checked ? num('cb-age') : null;
+  const olderAge = (hasCobuyer.checked && cbAge) ? Math.max(bAge, cbAge) : bAge;
+  const { ptype, loantype } = currentPtypeLoantype();
+  const cap = (ptype === 'hdb' && loantype === 'hdbloan') ? 25 : 30; // HDB loans max out at 25 years, bank loans at 30
+  const t = clamp(Math.min(cap, 65 - olderAge), 5, 30);
+  setSliderDefault(tenureSlider, tenureValueBox, 'tenure', t);
+}
+
+function refreshRateDefault(){
+  const { ptype, loantype } = currentPtypeLoantype();
+  const rate = (ptype === 'hdb' && loantype === 'hdbloan') ? 2.6 : 4.0;
+  setSliderDefault(rateSlider, rateValueBox, 'rate', rate);
+}
+
+/* ---------- Lock Interest Rate at 2.6% for HDB Concessionary Loan ----------
+   The HDB loan rate is fixed by HDB (CPF OA rate + 0.1%), not something a
+   buyer can shop around on like a bank rate — so unlike Tenure and LTV, this
+   one isn't user-adjustable once HDB Concessionary Loan is selected. This
+   also prevents the rate silently sitting at an old Bank Loan value (e.g. 4%)
+   if it was touched before switching loan types. */
+const rateLockHint = document.getElementById('rateLockHint');
+function updateRateLockUI(){
+  const { ptype, loantype } = currentPtypeLoantype();
+  const locked = (ptype === 'hdb' && loantype === 'hdbloan');
+  rateSlider.disabled = locked;
+  rateValueBox.disabled = locked;
+  rateLockHint.style.display = locked ? 'block' : 'none';
+  if (locked){
+    sliderTouched.rate = false; // force it back under auto-default control
+    rateSlider.value = 2.6;
+    rateValueBox.value = 2.6;
+  }
+}
+
+/* ---------- Legal / conveyancing fee — smart default by loan type ----------
+   HDB's in-house legal service (used with a Concessionary Loan) is typically
+   under $1,000; a Bank Loan requires a private solicitor, typically $1,500-3,000.
+   Same "touched" pattern as Tenure/Rate: once the buyer edits it, stop overwriting. */
+const legalFeeInput = document.getElementById('legal-fee');
+let legalFeeTouched = false;
+legalFeeInput.addEventListener('input', () => { legalFeeTouched = true; });
+function refreshLegalFeeDefault(){
+  if (legalFeeTouched) return;
+  const { ptype, loantype } = currentPtypeLoantype();
+  legalFeeInput.value = (ptype === 'hdb' && loantype === 'hdbloan') ? 1000 : 2500;
+}
+
+['b-age','cb-age'].forEach(id => document.getElementById(id).addEventListener('input', refreshTenureDefault));
+hasCobuyer.addEventListener('change', refreshTenureDefault);
+document.querySelectorAll('input[name="ptype"]').forEach(r => r.addEventListener('change', () => { refreshTenureDefault(); refreshRateDefault(); updateRateLockUI(); refreshLegalFeeDefault(); }));
+document.querySelectorAll('input[name="loantype"]').forEach(r => r.addEventListener('change', () => { refreshTenureDefault(); refreshRateDefault(); updateRateLockUI(); refreshLegalFeeDefault(); }));
+refreshTenureDefault();
+refreshRateDefault();
+updateRateLockUI();
+refreshLegalFeeDefault();
+
+let lastResults = null; // stashed for PDF / lead payload
+
+/* ---------- Core calculation ---------- */
+document.getElementById('calcForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const errorEl = document.getElementById('formError');
+
+  const bIncome = num('b-income');
+  const bAge = num('b-age');
+  if (!bIncome || !bAge){
+    errorEl.classList.add('show');
+    return;
+  }
+  errorEl.classList.remove('show');
+
+  const hasCB = hasCobuyer.checked;
+  const cbIncome = hasCB ? num('cb-income') : 0;
+  const cbAge = hasCB ? num('cb-age') : null;
+  const bVariable = num('b-variable');
+  const cbVariable = hasCB ? num('cb-variable') : 0;
+  const existingDebt = num('car-loan') + num('other-debt');
+  const bOA = num('b-oa');
+  const cbOA = hasCB ? num('cb-oa') : 0;
+  const cashProvided = hasVal('cash-on-hand');
+  const cashOnHand = num('cash-on-hand');
+  const targetPrice = num('target-price') || null;
+
+  /* --- Exact calculation rules (do not change without re-checking against
+     current MAS/CPF Board/HDB guidelines — see README.md). Tenure, interest rate
+     and LTV come from the Financing Variables sliders (defaulted to standard
+     MAS/HDB rules, but user-adjustable — e.g. for a lower LTV on a 2nd loan). --- */
+  const VARIABLE_INCOME_WEIGHT = 0.70;   // only 70% of bonus/commission/freelance counts
+  const TDSR_CAP = 0.55;                 // total debt obligations capped at 55% of gross income (bank loans only)
+  const MSR_CAP = 0.30;                  // Mortgage Servicing Ratio — applies to HDB flats & ECs
+  // Raised at National Day Rally 2026, effective 24 Aug 2026: families $14,000 -> $16,000,
+  // singles $7,000 -> $8,000. Applies across the unified HFE (Flat Eligibility) letter —
+  // BTO, resale + CPF grants, and HDB Concessionary Loan all use this same threshold.
+  // Extended/multi-generation family ceiling ($21,000) was not reported as changing in this
+  // round — worth Serene double-checking directly with HDB if it comes up with a client.
+  const HDB_LOAN_INCOME_CEILING = 16000; // monthly household income ceiling for HDB loan, families (2026); $21,000 extended family, $8,000 singles
+  // New EC income ceiling raised $16,000 -> $18,000 at the same announcement, but ONLY for
+  // EC projects whose land-sale tender closes on or after 24 Aug 2026 — a New EC launch on
+  // an earlier land tender still sits at the old $16,000 ceiling. Since this tool can't know
+  // which specific launch a client means, the note below surfaces both figures.
+  const EC_INCOME_CEILING_NEW = 18000;
+  const EC_INCOME_CEILING_OLD = 16000;
+  const MIN_CASH_PCT = 0.05;             // min. 5% of price must be cash — bank loans only; HDB loans have no minimum cash component
+  const MAX_TENURE_YEARS = 30;
+  const MIN_TENURE_YEARS = 5;
+
+  const propertyType = (document.querySelector('input[name="ptype"]:checked') || {}).value || 'hdb';
+  // EC is always bank-financed; only HDB flats can use an HDB Concessionary Loan
+  const loanType = propertyType === 'hdb'
+    ? ((document.querySelector('input[name="loantype"]:checked') || {}).value || 'bank')
+    : 'bank';
+  const usesHdbLoan = (propertyType === 'hdb' && loanType === 'hdbloan');
+
+  const tenureYears = clamp(num('tenure-value') || 25, MIN_TENURE_YEARS, MAX_TENURE_YEARS);
+  const loanRate = (num('rate-value') || 4) / 100;
+  const ltv = clamp((num('ltv-value') || 75) / 100, 0.1, 0.95);
+  const downpaymentPct = 1 - ltv;
+
+  const totalFixedIncome = bIncome + cbIncome;
+  const totalVariableMonthly = ((bVariable + cbVariable) / 12) * VARIABLE_INCOME_WEIGHT;
+  const assessableIncome = totalFixedIncome + totalVariableMonthly;
+  const tdsrCeiling = assessableIncome * TDSR_CAP;
+  const msrCeiling = assessableIncome * MSR_CAP;
+
+  // HDB flats and ECs are always MSR properties; a bank loan also has TDSR apply on
+  // top, so whichever of the two ceilings is tighter wins. An HDB Concessionary Loan
+  // is MSR-only (HDB isn't a financial institution under the MAS TDSR framework).
+  let ceilingForMortgage, cappedByLabel;
+  if (usesHdbLoan) {
+    ceilingForMortgage = msrCeiling;
+    cappedByLabel = 'MSR (30%)';
+  } else {
+    ceilingForMortgage = Math.min(tdsrCeiling, msrCeiling);
+    cappedByLabel = (tdsrCeiling <= msrCeiling) ? 'TDSR (55%)' : 'MSR (30%)';
+  }
+  const availableForMortgage = Math.max(0, ceilingForMortgage - existingDebt);
+
+  const n = tenureYears * 12;
+  const r = loanRate / 12;
+
+  const maxLoanQuantum = availableForMortgage > 0
+    ? availableForMortgage * (1 - Math.pow(1 + r, -n)) / r
+    : 0;
+  const incomeMaxPrice = maxLoanQuantum / ltv;
+
+  const totalOA = bOA + cbOA;
+  const minCashPct = usesHdbLoan ? 0 : MIN_CASH_PCT;
+
+  /* --- Upfront transaction costs: Buyer Stamp Duty, HDB resale application fee,
+     legal/conveyancing fee ---
+     These are deducted from the buyer's cash/CPF pool alongside the downpayment,
+     which lowers the max price/loan the cash/CPF can support. CPF OA is assumed
+     usable toward BSD and legal fees as well as the downpayment (actual CPF
+     withdrawal limits aren't modeled here). BSD is price-dependent, so wherever
+     price itself is being solved FROM available funds (Scenario 2 / cash-binding
+     path), an iterative solver is used instead of simple division. */
+  const HDB_RESALE_FEE = 80; // HDB resale application fee (3-room+ flat, cash-payable); ECs don't have this fee
+  const legalFee = num('legal-fee');
+  const hdbResaleFeeAmt = propertyType === 'hdb' ? HDB_RESALE_FEE : 0;
+  const fixedCashCpfFees = legalFee + hdbResaleFeeAmt; // BSD added separately per-price below, since it varies with price
+
+  /* --- Cash-on-hand constraint ---
+     Even if income can service a bigger loan, the buyer still needs enough
+     cash + CPF OA to actually fund the downpayment plus BSD/fees. Two
+     constraints apply:
+     1) at least minCashPct of the price must be CASH (can't use CPF for this slice)
+     2) cash + CPF together must cover the full downpaymentPct of the price, plus BSD and fees
+     Whichever constraint gives the lower price is the real cash-based ceiling. */
+  // Cash on hand defaults to 0 when left blank (see num()), so this always
+  // reflects the buyer's real cash + CPF position — including the headline
+  // "recommended" price below. If cash on hand isn't entered, that's treated
+  // as S$0, same as every other figure on this page when a field is blank.
+  const byCashFloor = minCashPct > 0 ? (cashOnHand / minCashPct) : Infinity;
+  const byTotalFunds = solveMaxPriceFromFunds(cashOnHand + totalOA, ltv, maxLoanQuantum, fixedCashCpfFees);
+  const cashMaxPrice = Math.max(0, Math.min(byCashFloor, byTotalFunds));
+  let maxPrice = incomeMaxPrice;
+  let cashBinding = false;
+  if (cashMaxPrice < incomeMaxPrice) {
+    maxPrice = cashMaxPrice;
+    cashBinding = true;
+    cappedByLabel = 'Cash on Hand';
+  }
+
+  // Actual instalment for the achievable price above (equals availableForMortgage
+  // when income is the binding constraint; lower than it when cash binds instead).
+  const loanQuantumAtMaxPrice = maxPrice * ltv;
+  const monthlyAtMaxPrice = loanQuantumAtMaxPrice > 0
+    ? loanQuantumAtMaxPrice * r / (1 - Math.pow(1 + r, -n))
+    : 0;
+
+  const maxPriceBSD = bsdAmount(maxPrice);
+  const downpaymentTotal = maxPrice * downpaymentPct;
+  const minCash = maxPrice * minCashPct;
+  const cpfOrCashPortion = (maxPrice * (downpaymentPct - minCashPct)) + maxPriceBSD + fixedCashCpfFees;
+  const cpfApplied = Math.min(totalOA, cpfOrCashPortion);
+  const shortfall = cpfOrCashPortion - cpfApplied;
+  const totalCashNeeded = minCash + shortfall;
+
+  /* --- Two-scenario breakdown (Income/MSR vs Cash/CPF) ---
+     Shown side by side so it's transparent which one is the binding
+     constraint, instead of just silently taking the lower figure. */
+  // Scenario 1: what income alone (MSR, or MSR+TDSR for a bank loan) supports —
+  // ignoring whether the buyer actually has the cash/CPF to fund that downpayment.
+  const scn1Price = incomeMaxPrice;
+  const scn1Loan = maxLoanQuantum;
+  const scn1Monthly = scn1Loan > 0 ? scn1Loan * r / (1 - Math.pow(1 + r, -n)) : 0;
+  const scn1BSD = bsdAmount(scn1Price);
+  const scn1Downpayment = incomeMaxPrice * downpaymentPct;
+  const scn1MinCash = incomeMaxPrice * minCashPct;
+  const scn1CpfOrCash = (incomeMaxPrice * (downpaymentPct - minCashPct)) + scn1BSD + fixedCashCpfFees;
+  const scn1CpfApplied = Math.min(totalOA, scn1CpfOrCash);
+  const scn1CashNeeded = scn1MinCash + (scn1CpfOrCash - scn1CpfApplied);
+  const scn1FundsAvailable = cashOnHand + totalOA;
+  const scn1Gap = scn1CashNeeded - cashOnHand;
+
+  // Scenario 2: what the buyer's actual cash + CPF can fund, regardless of how
+  // much income could otherwise service. MSR still caps the loan here too — a
+  // bank/HDB won't lend more just because the buyer has more cash — so once
+  // this price exceeds incomeMaxPrice, the loan flatlines at maxLoanQuantum and
+  // every extra dollar of price has to come from cash/CPF (the "downpayment"
+  // is then no longer the standard 25%; it's whatever the loan doesn't cover).
+  // Cash on hand defaults to 0 when left blank, so this always computes —
+  // it's simply CPF-only when no cash figure was entered.
+  const scn2Price = cashMaxPrice;
+  const scn2Loan = actualLoanForPrice(scn2Price, ltv, maxLoanQuantum);
+  const scn2Monthly = scn2Loan > 0
+    ? scn2Loan * r / (1 - Math.pow(1 + r, -n))
+    : 0;
+  const scn2MsrCapped = scn2Price > incomeMaxPrice + 0.5;
+  const scn2BSD = bsdAmount(scn2Price);
+  const scn2Downpayment = scn2Price - scn2Loan; // = price*downpaymentPct unless MSR-capped
+  const scn2MinCash = scn2Price * minCashPct;
+  const scn2CpfOrCash = (scn2Downpayment - scn2MinCash) + scn2BSD + fixedCashCpfFees;
+  const scn2CpfApplied = Math.min(totalOA, scn2CpfOrCash);
+  const scn2CashNeeded = scn2MinCash + (scn2CpfOrCash - scn2CpfApplied);
+  const scn2FundsAvailable = cashOnHand + totalOA;
+  const scn2Gap = scn2CashNeeded - cashOnHand;
+
+  /* --- Target Price scenario (only if the buyer stated one) ---
+     Same downpayment/BSD/fees math as Scenario 1 & 2, but at a FIXED price
+     the buyer chose rather than one solved for. Computed here (before the
+     recommendation banner) because the recommendation now checks whether
+     the target price comes out to a cash/CPF surplus. */
+  let targetLoan = null, targetMonthly = null, targetBSD = null, targetDownpayment = null,
+      targetFundsAvailable = null, targetGap = null, targetMsrCapped = false;
+  if (targetPrice) {
+    // MSR caps the loan here too — same logic as Scenario 2: the bank/HDB won't
+    // lend more than maxLoanQuantum regardless of the target price, so once the
+    // target exceeds incomeMaxPrice the loan flatlines and the balance is 100%
+    // cash/CPF, not the standard downpaymentPct.
+    targetLoan = actualLoanForPrice(targetPrice, ltv, maxLoanQuantum);
+    targetMonthly = targetLoan > 0 ? targetLoan * r / (1 - Math.pow(1 + r, -n)) : 0;
+    targetBSD = bsdAmount(targetPrice);
+    targetDownpayment = targetPrice - targetLoan; // = price*downpaymentPct unless MSR-capped
+    targetMsrCapped = targetPrice > incomeMaxPrice + 0.5;
+    const targetMinCash = targetPrice * minCashPct;
+    const targetCpfOrCash = (targetDownpayment - targetMinCash) + targetBSD + fixedCashCpfFees;
+    const targetCpfApplied = Math.min(totalOA, targetCpfOrCash);
+    targetFundsAvailable = (cashProvided ? cashOnHand : 0) + totalOA;
+    targetGap = (targetMinCash + (targetCpfOrCash - targetCpfApplied)) - (cashProvided ? cashOnHand : 0);
+  }
+  // Surplus (or breakeven) on cash/CPF at the target price is what makes it the
+  // recommendation — per Serene: propose the target price itself if it's a
+  // surplus, otherwise fall back to whichever of Scenario 1/2 is lower.
+  const targetIsSurplus = targetPrice !== null && targetGap !== null && targetGap <= 0.5;
+
+  /* --- Render Scenario 1 (Income/MSR) card --- */
+  const propNoun = propertyType === 'hdb' ? 'HDB' : 'EC';
+  document.getElementById('scn1Title').textContent = usesHdbLoan
+    ? 'Scenario 1 — Based on Income (MSR)'
+    : 'Scenario 1 — Based on Income (MSR & TDSR)';
+  document.getElementById('scn1PriceLabel').textContent = `Max ${propNoun} Purchase Price`;
+  document.getElementById('scn1PriceEl').textContent = fmt(scn1Price);
+  document.getElementById('scn1LoanEl').textContent = fmt(scn1Loan);
+  document.getElementById('scn1MonthlyEl').textContent = fmt(scn1Monthly);
+  document.getElementById('scn1DownpaymentLabel').textContent = `Downpayment Required (${(downpaymentPct*100).toFixed(0)}%)`;
+  document.getElementById('scn1DownpaymentEl').textContent = fmt(scn1Downpayment);
+  document.getElementById('scn1CostsEl').textContent = fmt(scn1BSD + fixedCashCpfFees);
+  document.getElementById('scn1BSDEl').textContent = fmt(scn1BSD);
+  document.getElementById('scn1FeesEl').textContent = fmt(fixedCashCpfFees);
+  document.getElementById('scn1TotalNeededEl').textContent = fmt(scn1Downpayment + scn1BSD + fixedCashCpfFees);
+  document.getElementById('scn1FundsEl').textContent = fmt(scn1FundsAvailable) + (cashProvided ? '' : ' (CPF only — cash on hand not entered)');
+  const scn1GapLabelEl = document.getElementById('scn1GapLabelEl');
+  const scn1GapEl = document.getElementById('scn1GapEl');
+  if (scn1Gap > 0) {
+    scn1GapLabelEl.textContent = 'Shortfall';
+    scn1GapEl.textContent = '-' + fmt(scn1Gap);
+    scn1GapEl.classList.add('gap-shortfall');
+  } else {
+    scn1GapLabelEl.textContent = 'Surplus';
+    scn1GapEl.textContent = fmt(Math.abs(scn1Gap));
+    scn1GapEl.classList.remove('gap-shortfall');
+  }
+
+  /* --- Render Scenario 2 (Cash/CPF) card ---
+     Always computed and shown, even if the buyer left Cash on hand blank —
+     in that case it just runs on CPF alone (cash treated as $0), same as
+     Scenario 1 already does for its own Funds Available / Shortfall line. */
+  const scn2Content = document.getElementById('scn2Content');
+  const scn2Placeholder = document.getElementById('scn2Placeholder');
+  scn2Content.style.display = 'block';
+  scn2Placeholder.style.display = 'none';
+  document.getElementById('scn2PriceLabel').textContent = `Max ${propNoun} Purchase Price`;
+  document.getElementById('scn2PriceEl').textContent = fmt(scn2Price);
+  document.getElementById('scn2LoanEl').textContent = fmt(scn2Loan);
+  document.getElementById('scn2MonthlyEl').textContent = fmt(scn2Monthly);
+  document.getElementById('scn2DownpaymentLabel').textContent = scn2MsrCapped
+    ? `Cash/CPF for Financing Gap (${Math.round(scn2Downpayment/scn2Price*100)}%)`
+    : `Downpayment Required (${(downpaymentPct*100).toFixed(0)}%)`;
+  document.getElementById('scn2DownpaymentEl').textContent = fmt(scn2Downpayment);
+  document.getElementById('scn2CostsEl').textContent = fmt(scn2BSD + fixedCashCpfFees);
+  document.getElementById('scn2BSDEl').textContent = fmt(scn2BSD);
+  document.getElementById('scn2FeesEl').textContent = fmt(fixedCashCpfFees);
+  document.getElementById('scn2TotalNeededEl').textContent = fmt(scn2Downpayment + scn2BSD + fixedCashCpfFees);
+  document.getElementById('scn2FundsEl').textContent = fmt(scn2FundsAvailable) + (cashProvided ? '' : ' (CPF only — cash on hand not entered)');
+  const scn2GapLabelEl = document.getElementById('scn2GapLabelEl');
+  const scn2GapEl = document.getElementById('scn2GapEl');
+  if (scn2Gap > 0.5) {
+    scn2GapLabelEl.textContent = 'Shortfall';
+    scn2GapEl.textContent = '-' + fmt(scn2Gap);
+    scn2GapEl.classList.add('gap-shortfall');
+  } else {
+    scn2GapLabelEl.textContent = 'Surplus';
+    scn2GapEl.textContent = fmt(Math.abs(scn2Gap));
+    scn2GapEl.classList.remove('gap-shortfall');
+  }
+  const scn2MsrNote = document.getElementById('scn2MsrNote');
+  if (scn2MsrCapped) {
+    scn2MsrNote.style.display = 'block';
+    scn2MsrNote.textContent = `MSR still limits the loan a bank/HDB will actually give you — capped here at ${fmt(maxLoanQuantum)}, even though your cash/CPF could fund a bigger price. The rest of the price above is financed entirely by cash/CPF, not by borrowing more.`;
+  } else {
+    scn2MsrNote.style.display = 'none';
+  }
+  // Bank loans (private property / EC) require at least 5% of the price in
+  // actual CASH — CPF can't cover that slice. With $0 cash on hand, that
+  // rule alone caps this scenario's price at $0 regardless of CPF, which
+  // otherwise looks like a broken result rather than a real MAS requirement.
+  const scn2CashFloorNote = document.getElementById('scn2CashFloorNote');
+  if (minCashPct > 0 && cashOnHand < 1 && totalOA > 0) {
+    scn2CashFloorNote.style.display = 'block';
+    scn2CashFloorNote.textContent = `A bank loan requires at least ${(minCashPct*100).toFixed(0)}% of the price in cash — CPF alone can't cover that slice. With no cash on hand entered (treated as S$0), this scenario is capped at S$0 even though CPF is available. Enter an actual cash figure to see a realistic Scenario 2.`;
+  } else {
+    scn2CashFloorNote.style.display = 'none';
+  }
+
+  /* --- Render Target Price card (only if the buyer stated a target) --- */
+  const targetCard = document.getElementById('targetScenarioCard');
+  if (targetPrice) {
+    targetCard.style.display = 'block';
+    document.getElementById('targetPriceDisplayEl').textContent = fmt(targetPrice);
+    document.getElementById('targetLoanEl').textContent = fmt(targetLoan);
+    document.getElementById('targetMonthlyEl').textContent = fmt(targetMonthly);
+    document.getElementById('targetDownpaymentLabel').textContent = targetMsrCapped
+      ? `Cash/CPF for Financing Gap (${Math.round(targetDownpayment/targetPrice*100)}%)`
+      : `Downpayment Required (${(downpaymentPct*100).toFixed(0)}%)`;
+    document.getElementById('targetDownpaymentEl').textContent = fmt(targetDownpayment);
+    document.getElementById('targetCostsEl').textContent = fmt(targetBSD + fixedCashCpfFees);
+    document.getElementById('targetBSDEl').textContent = fmt(targetBSD);
+    document.getElementById('targetFeesEl').textContent = fmt(fixedCashCpfFees);
+    document.getElementById('targetTotalNeededEl').textContent = fmt(targetDownpayment + targetBSD + fixedCashCpfFees);
+    document.getElementById('targetFundsEl').textContent = fmt(targetFundsAvailable) + (cashProvided ? '' : ' (CPF only — cash on hand not entered)');
+    const targetGapLabelEl = document.getElementById('targetGapLabelEl');
+    const targetGapEl = document.getElementById('targetGapEl');
+    if (targetGap > 0.5) {
+      targetGapLabelEl.textContent = 'Shortfall';
+      targetGapEl.textContent = '-' + fmt(targetGap);
+      targetGapEl.classList.add('gap-shortfall');
+    } else {
+      targetGapLabelEl.textContent = 'Surplus';
+      targetGapEl.textContent = fmt(Math.abs(targetGap));
+      targetGapEl.classList.remove('gap-shortfall');
+    }
+    const targetMsrNote = document.getElementById('targetMsrNote');
+    if (targetMsrCapped) {
+      targetMsrNote.style.display = 'block';
+      targetMsrNote.textContent = `MSR caps your loan at ${fmt(maxLoanQuantum)} regardless of this target price — the remaining ${fmt(targetDownpayment)} is financed entirely by cash/CPF, not by borrowing more.`;
+    } else {
+      targetMsrNote.style.display = 'none';
+    }
+  } else {
+    targetCard.style.display = 'none';
+  }
+
+  /* --- Recommendation banner ---
+     Per Serene: if the buyer has a stated target price and it comes out to a
+     cash/CPF surplus (or breakeven), recommend that target price directly.
+     Otherwise, fall back to whichever of Scenario 1 / Scenario 2 is lower —
+     same logic as before the Target Price scenario existed. */
+  const recommendedScenario = cashBinding ? 'Scenario 2' : 'Scenario 1';
+  const heroPrice = targetIsSurplus ? targetPrice : maxPrice;
+  document.getElementById('recommendationLabel').textContent = targetIsSurplus
+    ? `Recommended: Your Target Price of ${fmt(targetPrice)} (sufficient cash/CPF to cover it)`
+    : (cashBinding
+        ? `Recommended: ${recommendedScenario} (Cash/CPF is your binding constraint${cashProvided ? '' : ' — CPF only, cash on hand not entered'})`
+        : `Recommended: ${recommendedScenario} (Income/MSR is your binding constraint)`);
+  document.getElementById('resHeroPriceLabel').textContent = targetIsSurplus
+    ? (propertyType === 'hdb' ? 'Your target HDB purchase price' : 'Your target EC purchase price')
+    : (propertyType === 'hdb' ? 'Estimated maximum HDB purchase price' : 'Estimated maximum EC purchase price');
+  document.getElementById('resHeroPrice').textContent = fmt(heroPrice);
+  document.getElementById('resHeroPriceRange').textContent = targetIsSurplus
+    ? `Backed by ${fmt(targetFundsAvailable)} in cash/CPF, after Buyer Stamp Duty and fees`
+    : `Range: ${fmt(maxPrice*0.9)} – ${fmt(maxPrice)}`;
+  // Note: the old standalone tiles for Loan Amount / Monthly Mortgage / Cash
+  // Needed / Downpayment / CPF Applied were removed as redundant — all of
+  // that is now covered by the Scenario 1 / Scenario 2 / Target Price cards
+  // above, for whichever one the recommendation banner names.
+
+  document.getElementById('assumptionsNote').textContent = (usesHdbLoan
+    ? `Based on a ${tenureYears}-year loan tenure, ${(ltv*100).toFixed(0)}% loan-to-value, and the HDB concessionary loan rate of ${loanRate*100}% p.a., capped by MSR at 30% of your assessable income.`
+    : `Based on a ${tenureYears}-year loan tenure, ${(ltv*100).toFixed(0)}% loan-to-value, and a ${loanRate*100}% p.a. interest rate — capped by the tighter of MSR (30%) and TDSR (55%) of your assessable income.`)
+    + ` These financing variables can be adjusted above if you want to test a different scenario.`
+    + (!targetIsSurplus && cashBinding ? ` Your final estimate above is capped by your cash on hand rather than your income.` : '')
+    + ` Purchase price and loan figures above are net of Buyer Stamp Duty${propertyType === 'hdb' ? ', the HDB resale application fee,' : ' and'} and your stated legal/conveyancing fee, all assumed payable from cash/CPF OA. Additional Buyer's Stamp Duty (ABSD) and CPF withdrawal (Valuation) limits are not modeled — assumes a Singapore Citizen buying a first residential property.`;
+
+  /* --- Income ceiling note (HDB loan eligibility, or New EC purchase eligibility) --- */
+  const loanEligibilityNote = document.getElementById('loanEligibilityNote');
+  // HDB's own income ceiling test uses full average monthly household income (not the
+  // 70%-weighted variable-income figure used above for MSR/TDSR serviceability) — an estimate only.
+  const fullMonthlyIncomeForCeiling = totalFixedIncome + ((bVariable + cbVariable) / 12);
+  if (propertyType === 'hdb') {
+    loanEligibilityNote.style.display = 'block';
+    if (fullMonthlyIncomeForCeiling > HDB_LOAN_INCOME_CEILING) {
+      loanEligibilityNote.innerHTML = `Your estimated household income (~${fmt(fullMonthlyIncomeForCeiling)}/month) is above the current HDB loan income ceiling of ${fmt(HDB_LOAN_INCOME_CEILING)}/month for families (raised from ${fmt(14000)} at National Day Rally 2026, effective 24 Aug 2026). An HDB Concessionary Loan is likely not available at this income level — a bank loan would apply instead. (The ceiling is ${fmt(21000)} for extended families and ${fmt(8000)} for singles.)`;
+    } else {
+      loanEligibilityNote.innerHTML = `Your estimated household income is within the current HDB loan income ceiling of ${fmt(HDB_LOAN_INCOME_CEILING)}/month for families (raised from ${fmt(14000)} at National Day Rally 2026, effective 24 Aug 2026), so an HDB Concessionary Loan may be an option — subject to HDB's other eligibility rules (citizenship, prior HDB loans, property ownership history, remaining lease). Serene can confirm your actual eligibility.`;
+    }
+  } else {
+    // New EC eligibility ceiling was also raised at NDR 2026, but only for EC projects on a
+    // land-sale tender closing on or after 24 Aug 2026 — an EC launch on an earlier land
+    // tender still sits at the old $16,000 ceiling. Shown as a range since this tool has no
+    // way to know which specific launch a client is asking about.
+    loanEligibilityNote.style.display = 'block';
+    if (fullMonthlyIncomeForCeiling > EC_INCOME_CEILING_NEW) {
+      loanEligibilityNote.innerHTML = `Your estimated household income (~${fmt(fullMonthlyIncomeForCeiling)}/month) is above the New EC income ceiling either way — ${fmt(EC_INCOME_CEILING_OLD)} for EC launches on an older land tender, or ${fmt(EC_INCOME_CEILING_NEW)} for those on a land tender closing on/after 24 Aug 2026 (raised at National Day Rally 2026). You'd likely need to look at a resale EC or private property instead — Serene can confirm which projects you qualify for.`;
+    } else if (fullMonthlyIncomeForCeiling > EC_INCOME_CEILING_OLD) {
+      loanEligibilityNote.innerHTML = `Your estimated household income (~${fmt(fullMonthlyIncomeForCeiling)}/month) is above the older New EC income ceiling of ${fmt(EC_INCOME_CEILING_OLD)}, but within the new ${fmt(EC_INCOME_CEILING_NEW)} ceiling that applies to EC projects on a land tender closing on/after 24 Aug 2026 (National Day Rally 2026). Which launches you qualify for depends on that project's land-tender date — Serene can confirm.`;
+    } else {
+      loanEligibilityNote.innerHTML = `Your estimated household income is within the New EC income ceiling (${fmt(EC_INCOME_CEILING_OLD)}–${fmt(EC_INCOME_CEILING_NEW)}/month depending on the project's land-tender date), so a New EC may be an option — subject to HDB's other eligibility rules (citizenship, prior property ownership, remaining lease). Serene can confirm your actual eligibility.`;
+    }
+  }
+
+  lastResults = {
+    maxLoanAmount: loanQuantumAtMaxPrice, maxLoanAmountLow: loanQuantumAtMaxPrice*0.9,
+    maxPrice, maxPriceLow: maxPrice*0.9, monthlyMortgage: monthlyAtMaxPrice,
+    totalCashNeeded, downpaymentTotal, downpaymentPct: (downpaymentPct*100).toFixed(0), cpfApplied, tenureYears, targetPrice,
+    propertyType, loanType: usesHdbLoan ? 'HDB Concessionary Loan' : 'Bank Loan', cappedBy: cappedByLabel,
+    cashOnHand: cashProvided ? cashOnHand : null, cashBinding,
+    // Raw client inputs — stashed here so the lead payload can send exactly what the
+    // client typed in, not just the computed results.
+    bIncome, bAge, bVariable: bVariable || null,
+    hasCB, cbIncome: hasCB ? cbIncome : null, cbAge: hasCB ? cbAge : null, cbVariable: hasCB ? (cbVariable || null) : null,
+    bOA: bOA || null, cbOA: hasCB ? (cbOA || null) : null,
+    carLoan: num('car-loan') || null, otherDebt: num('other-debt') || null,
+    loanRatePct: (loanRate*100).toFixed(2), ltvPct: (ltv*100).toFixed(0),
+    // Upfront transaction costs deducted from cash/CPF above (BSD is price-dependent,
+    // so it's shown per-scenario; legal + HDB resale fee are the same in both)
+    legalFee: legalFee || null, hdbResaleFee: hdbResaleFeeAmt || null, fixedCashCpfFees,
+    // Two-scenario breakdown (Income/MSR vs Cash/CPF) for the PDF
+    scn1Loan, scn1Price, scn1Monthly, scn1Downpayment, scn1BSD, scn1FundsAvailable, scn1Gap,
+    scn2Price, scn2Loan, scn2Monthly, scn2Downpayment, scn2BSD, scn2FundsAvailable, scn2Gap, scn2MsrCapped,
+    // Target Price scenario (only populated if the buyer stated one) + which
+    // one ended up recommended, for the PDF's "Recommended" section
+    targetLoan, targetMonthly, targetBSD, targetDownpayment, targetFundsAvailable, targetGap, targetMsrCapped,
+    targetIsSurplus, heroPrice, maxLoanQuantum,
+    cashChecked: cashProvided
+  };
+
+  document.getElementById('resultsPanel').classList.add('show');
+  document.getElementById('resultsPanel').scrollIntoView({behavior:'smooth', block:'start'});
+  equalizeScenarioTitles();
+});
+
+/* ---------- Keep Scenario 1 / Scenario 2 card titles the same height ----------
+   Scenario 1's title text ("...MSR & TDSR") is longer than Scenario 2's
+   ("...Cash/CPF") and can wrap to more lines than it, at any given viewport
+   width. If the two titles aren't forced to the same height, every row below
+   them (price, loan, monthly instalment, etc.) drifts out of alignment
+   between the two side-by-side cards. A fixed CSS min-height is fragile here
+   (the "right" height depends on font-size and column width, both of which
+   change across breakpoints), so instead we measure the two titles' natural
+   rendered heights after each render and set both to the taller of the two. */
+function equalizeScenarioTitles(){
+  const t1 = document.getElementById('scn1Title');
+  const t2 = document.getElementById('scn2Title');
+  if (!t1 || !t2) return;
+  t1.style.height = 'auto';
+  t2.style.height = 'auto';
+  // Force layout so the heights below reflect the reset above, not stale values.
+  void t1.offsetHeight;
+  const naturalH1 = t1.getBoundingClientRect().height;
+  const naturalH2 = t2.getBoundingClientRect().height;
+  const maxH = Math.max(naturalH1, naturalH2);
+  t1.style.height = maxH + 'px';
+  t2.style.height = maxH + 'px';
+}
+let equalizeTitlesResizeTimer = null;
+window.addEventListener('resize', function(){
+  if (!document.getElementById('resultsPanel').classList.contains('show')) return;
+  clearTimeout(equalizeTitlesResizeTimer);
+  equalizeTitlesResizeTimer = setTimeout(equalizeScenarioTitles, 150);
+});
+
+/* ---------- Unlock lead form ---------- */
+document.getElementById('unlockBtn').addEventListener('click', function(){
+  document.getElementById('leadForm').classList.add('show');
+  this.style.display = 'none';
+});
+
+/* ---------- PDF generation ---------- */
+/* Draws the 2- or 3-column scenario comparison as an actual bordered table
+   (header row + striped body rows), rather than stacked label:value lines.
+   Returns the y-coordinate immediately below the finished table. */
+function drawScenarioTable(doc, x0, y0, labelW, colW, scenarios, rowDefs){
+  const rowH = 8.5;
+  const tableW = labelW + colW * scenarios.length;
+  const navy = [11,42,74], gold = [201,162,39], stripe = [245,244,240],
+        darkText = [24,36,48], danger = [192,57,43], goldDark = [169,132,26], white = [255,255,255];
+
+  // Header row — the recommended column gets a gold cell instead of navy, plus a star.
+  doc.setFillColor(navy[0], navy[1], navy[2]);
+  doc.rect(x0, y0, tableW, rowH, 'F');
+  scenarios.forEach((s, i) => {
+    if (s.recommended) {
+      doc.setFillColor(gold[0], gold[1], gold[2]);
+      doc.rect(x0 + labelW + i * colW, y0, colW, rowH, 'F');
+    }
+  });
+  doc.setFont(undefined, 'bold');
+  doc.setFontSize(9.5);
+  scenarios.forEach((s, i) => {
+    const c = s.recommended ? navy : white;
+    doc.setTextColor(c[0], c[1], c[2]);
+    const cx = x0 + labelW + i * colW + colW / 2;
+    const label = s.title + (s.recommended ? '  ★' : '') + (s.msrCapped ? '  †' : '');
+    doc.text(label, cx, y0 + rowH / 2 + 2.2, { align: 'center' });
+  });
+
+  // Body rows
+  let y = y0 + rowH;
+  doc.setFontSize(8.5);
+  rowDefs.forEach((row, ri) => {
+    if (ri % 2 === 1) {
+      doc.setFillColor(stripe[0], stripe[1], stripe[2]);
+      doc.rect(x0, y, tableW, rowH, 'F');
+    }
+    doc.setFont(undefined, row.bold ? 'bold' : 'normal');
+    doc.setTextColor(darkText[0], darkText[1], darkText[2]);
+    doc.text(row.label, x0 + 2, y + rowH / 2 + 2.2, { maxWidth: labelW - 4 });
+    scenarios.forEach((s, i) => {
+      if (row.isGap) {
+        const c = s.gap > 0.5 ? danger : goldDark;
+        doc.setTextColor(c[0], c[1], c[2]);
+      } else {
+        doc.setTextColor(darkText[0], darkText[1], darkText[2]);
+      }
+      const cx = x0 + labelW + i * colW + colW - 3;
+      doc.text(row.get(s), cx, y + rowH / 2 + 2.2, { align: 'right' });
+    });
+    y += rowH;
+  });
+
+  // Grid lines
+  doc.setDrawColor(225, 222, 210);
+  doc.setLineWidth(0.2);
+  const totalRows = rowDefs.length + 1;
+  for (let i = 0; i <= totalRows; i++) {
+    doc.line(x0, y0 + i * rowH, x0 + tableW, y0 + i * rowH);
+  }
+  doc.line(x0, y0, x0, y0 + totalRows * rowH);
+  doc.line(x0 + labelW, y0, x0 + labelW, y0 + totalRows * rowH);
+  for (let i = 1; i <= scenarios.length; i++) {
+    doc.line(x0 + labelW + i * colW, y0, x0 + labelW + i * colW, y0 + totalRows * rowH);
+  }
+  doc.setTextColor(darkText[0], darkText[1], darkText[2]);
+  doc.setFont(undefined, 'normal');
+  return y0 + totalRows * rowH;
+}
+
+function generatePdf(lead){
+  try{
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const marginLeft = 14, marginRight = 14;
+
+    doc.setFontSize(16);
+    doc.text('Your Affordability Breakdown', marginLeft, 16);
+    doc.setFontSize(10);
+    doc.text('Prepared via sereneleeproperty.com — Serene Lee, ERA Realty (CEA Reg. R027578Z)', marginLeft, 22);
+
+    doc.setFontSize(11);
+    let y = 32;
+    const line = (label, val) => { doc.text(`${label}: ${val}`, marginLeft, y); y += 6; };
+    const ptypeLabel = lastResults.propertyType === 'hdb' ? 'Resale HDB Flat' : 'New Exec Condo';
+    line('Property type', ptypeLabel);
+    line('Loan type', lastResults.loanType);
+    y += 2;
+
+    /* --- Build the scenario columns present: Scenario 1 and Scenario 2 always,
+       Your Target Price only if the buyer stated one. --- */
+    const scenarios = [
+      {
+        title: 'Scenario 1 (Income)',
+        price: lastResults.scn1Price, loan: lastResults.scn1Loan, monthly: lastResults.scn1Monthly,
+        downpayment: lastResults.scn1Downpayment, bsd: lastResults.scn1BSD, fees: lastResults.fixedCashCpfFees,
+        totalNeeded: lastResults.scn1Downpayment + lastResults.scn1BSD + lastResults.fixedCashCpfFees,
+        funds: lastResults.scn1FundsAvailable, gap: lastResults.scn1Gap,
+        recommended: !lastResults.targetIsSurplus && !lastResults.cashBinding
+      }
+    ];
+    // Scenario 2 is always computed and shown on-screen now (CPF-only when no
+    // cash figure was entered), so it's always included here too.
+    scenarios.push({
+      title: 'Scenario 2 (Cash/CPF)',
+      price: lastResults.scn2Price, loan: lastResults.scn2Loan, monthly: lastResults.scn2Monthly,
+      downpayment: lastResults.scn2Downpayment, bsd: lastResults.scn2BSD, fees: lastResults.fixedCashCpfFees,
+      totalNeeded: lastResults.scn2Downpayment + lastResults.scn2BSD + lastResults.fixedCashCpfFees,
+      funds: lastResults.scn2FundsAvailable, gap: lastResults.scn2Gap,
+      recommended: !lastResults.targetIsSurplus && lastResults.cashBinding,
+      msrCapped: lastResults.scn2MsrCapped
+    });
+    if (lastResults.targetPrice) {
+      scenarios.push({
+        title: 'Your Target Price',
+        price: lastResults.targetPrice, loan: lastResults.targetLoan, monthly: lastResults.targetMonthly,
+        downpayment: lastResults.targetDownpayment, bsd: lastResults.targetBSD, fees: lastResults.fixedCashCpfFees,
+        totalNeeded: lastResults.targetDownpayment + lastResults.targetBSD + lastResults.fixedCashCpfFees,
+        funds: lastResults.targetFundsAvailable, gap: lastResults.targetGap,
+        recommended: !!lastResults.targetIsSurplus,
+        msrCapped: lastResults.targetMsrCapped
+      });
+    }
+    const anyMsrCapped = scenarios.some(s => s.msrCapped);
+
+    // Note: MSR caps the loan in every column at lastResults.maxLoanQuantum — for
+    // Scenario 1 that's exactly what defines its price, so "Downpayment" there is
+    // always the standard %; for Scenario 2 / Target Price the label is generic
+    // since the actual split can exceed the standard % once a column is MSR-capped
+    // (marked with † in its header) — the dollar figure is always correct either way.
+    const rowDefs = [
+      { label: 'Purchase Price', get: s => fmt(s.price) },
+      { label: 'Loan Amount (MSR-capped)', get: s => fmt(s.loan) },
+      { label: 'Monthly Instalment', get: s => fmt(s.monthly) },
+      { label: 'Downpayment / Cash-CPF Gap', get: s => fmt(s.downpayment) },
+      { label: 'Buyer Stamp Duty (BSD)', get: s => fmt(s.bsd) },
+      { label: 'Legal & Resale Fees', get: s => fmt(s.fees) },
+      { label: 'Total Cash/CPF Needed', get: s => fmt(s.totalNeeded), bold: true },
+      { label: 'Your Cash + CPF Available', get: s => fmt(s.funds) },
+      { label: 'Shortfall / Surplus', get: s => (s.gap > 0.5 ? '-' + fmt(s.gap) : fmt(Math.abs(s.gap))), bold: true, isGap: true }
+    ];
+
+    const labelW = 62;
+    const availableW = pageWidth - marginLeft - marginRight;
+    const colW = (availableW - labelW) / scenarios.length;
+    y = drawScenarioTable(doc, marginLeft, y, labelW, colW, scenarios, rowDefs) + (anyMsrCapped ? 5 : 8);
+
+    if (anyMsrCapped) {
+      doc.setFontSize(8);
+      doc.setFont(undefined, 'italic');
+      doc.text('† MSR caps the loan regardless of price — the balance above is financed entirely by cash/CPF, not by borrowing more.', marginLeft, y);
+      doc.setFont(undefined, 'normal');
+      y += 7;
+    }
+
+    doc.setFontSize(11);
+    doc.setFont(undefined, 'bold');
+    const recommendationText = lastResults.targetIsSurplus
+      ? `Recommended: Your Target Price of ${fmt(lastResults.heroPrice)} — you have sufficient cash/CPF to cover it after Buyer Stamp Duty & fees.`
+      : (lastResults.cashBinding
+          ? `Recommended: Scenario 2 — Cash/CPF is your binding constraint. Estimated maximum price ${fmt(lastResults.maxPrice)}.`
+          : `Recommended: Scenario 1 — Income/MSR is your binding constraint. Estimated maximum price ${fmt(lastResults.maxPrice)}.`);
+    doc.text(recommendationText, marginLeft, y);
+    doc.setFont(undefined, 'normal');
+    y += 8;
+
+    doc.setFontSize(10);
+    if (lastResults.cashOnHand !== null) line('Cash on hand stated', fmt(lastResults.cashOnHand));
+    line('Loan tenure used in this estimate', `${lastResults.tenureYears} years`);
+    y += 2;
+
+    doc.setFontSize(9);
+    const disclaimer = 'This is an illustrative estimate based on public MAS/CPF formulas only. It is not a bank loan approval, mortgage advice, or financial advice. Buyer Stamp Duty, HDB resale application fee, and legal/conveyancing fee are deducted from cash/CPF as shown; Additional Buyer\'s Stamp Duty (ABSD) and CPF withdrawal limits are not modeled. Actual eligibility is determined by your bank/HDB and CPF Board based on your full financial profile. Speak with Serene to get a proper affordability assessment.';
+    const split = doc.splitTextToSize(disclaimer, availableW);
+    doc.text(split, marginLeft, y);
+
+    // Grab a base64 copy before saving, so it can also ride along to Serene's
+    // pre-alert email as an attachment — this doesn't affect the visitor's
+    // own download below.
+    const pdfBase64 = doc.output('datauristring').split(',')[1] || null;
+    doc.save('Affordability-Breakdown-' + (lead.name || 'Lead').replace(/\s+/g,'-') + '.pdf');
+    return pdfBase64;
+  } catch(err){
+    console.error('PDF generation failed', err);
+    return null;
+  }
+}
+
+/* ---------- Shared lead submit handler ---------- */
+function submitLead(lead, formEl, errorEl, thankYouEl, generatePdfAfter){
+  // Build the PDF first (when this lead gets one) so a copy can be sent along
+  // with the webhook payload — the Apps Script attaches it to Serene's
+  // pre-alert email. This still also triggers the visitor's own download,
+  // exactly as before.
+  if (generatePdfAfter) {
+    lead.pdfFilename = 'Affordability-Breakdown-' + (lead.name || 'Lead').replace(/\s+/g,'-') + '.pdf';
+    lead.pdfBase64 = generatePdf(lead);
+  }
+
+  if (GAS_WEBHOOK_URL){
+    fetch(GAS_WEBHOOK_URL, {
+      method:'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type':'text/plain'},
+      body: JSON.stringify(lead)
+    }).catch(()=>{ /* fire-and-forget; still proceed for the user */ });
+  } else {
+    console.warn('GAS_WEBHOOK_URL is not set — lead was not saved anywhere. See README.md.');
+  }
+
+  if (formEl) formEl.style.display = 'none';
+  if (thankYouEl) thankYouEl.classList.add('show');
+}
+
+/* ---------- Calculator gate lead form ---------- */
+document.getElementById('leadForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const name = document.getElementById('lead-name').value.trim();
+  const phone = document.getElementById('lead-phone').value.trim();
+  const email = document.getElementById('lead-email').value.trim();
+  const bestTime = document.getElementById('lead-time').value;
+  const errorEl = document.getElementById('leadError');
+
+  if (!name || !phone || !email){
+    errorEl.classList.add('show');
+    return;
+  }
+  errorEl.classList.remove('show');
+
+  const lead = {
+    source: 'calculator', name, phone, email, bestTime,
+    maxPrice: lastResults ? Math.round(lastResults.maxPrice) : '',
+    monthlyMortgage: lastResults ? Math.round(lastResults.monthlyMortgage) : '',
+    cashNeeded: lastResults ? Math.round(lastResults.totalCashNeeded) : '',
+    targetPrice: lastResults && lastResults.targetPrice ? Math.round(lastResults.targetPrice) : '',
+    topic: lastResults ? `${lastResults.propertyType.toUpperCase()} / ${lastResults.loanType}` : '',
+    // What the client actually typed into the form — sent as its own fields so
+    // every input shows up as a column in the Sheet, not just the results.
+    propertyType: lastResults ? (lastResults.propertyType === 'hdb' ? 'Resale HDB Flat' : 'New Exec Condo') : '',
+    loanType: lastResults ? lastResults.loanType : '',
+    buyerIncome: lastResults ? lastResults.bIncome : '',
+    buyerAge: lastResults ? lastResults.bAge : '',
+    buyerVariableIncome: lastResults && lastResults.bVariable ? lastResults.bVariable : '',
+    hasCobuyer: lastResults ? (lastResults.hasCB ? 'Yes' : 'No') : '',
+    cobuyerIncome: lastResults && lastResults.cbIncome ? lastResults.cbIncome : '',
+    cobuyerAge: lastResults && lastResults.cbAge ? lastResults.cbAge : '',
+    cobuyerVariableIncome: lastResults && lastResults.cbVariable ? lastResults.cbVariable : '',
+    buyerCpfOA: lastResults && lastResults.bOA ? lastResults.bOA : '',
+    cobuyerCpfOA: lastResults && lastResults.cbOA ? lastResults.cbOA : '',
+    carLoan: lastResults && lastResults.carLoan ? lastResults.carLoan : '',
+    otherDebt: lastResults && lastResults.otherDebt ? lastResults.otherDebt : '',
+    cashOnHand: lastResults && lastResults.cashOnHand ? lastResults.cashOnHand : '',
+    loanTenureYears: lastResults ? lastResults.tenureYears : '',
+    interestRatePct: lastResults ? lastResults.loanRatePct : '',
+    ltvPct: lastResults ? lastResults.ltvPct : ''
+  };
+
+  submitLead(lead, this, errorEl, document.getElementById('thankYou'), true);
+});
+</script>
+</body>
+</html>
