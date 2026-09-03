@@ -39,6 +39,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -106,7 +107,7 @@
 
   <!-- SECTION 3 -->
   <div class="checklist-group">
-    <h2>Section 3 — Can I Afford the Condo?</h2>
+    <h2>Section 3 — Can I Afford My Next Home?</h2>
     <label class="checkbox-row"><input type="checkbox" class="score-check"> Have I checked my potential loan eligibility?</label>
     <label class="checkbox-row"><input type="checkbox" class="score-check"> Have I calculated the estimated monthly mortgage?</label>
     <label class="checkbox-row"><input type="checkbox" class="score-check"> Have I budgeted for stamp duties and other purchase costs?</label>
@@ -149,17 +150,45 @@
     <label class="checkbox-row"><input type="checkbox"> Have I built a Plan B?</label>
   </div>
 
+  <!-- FINAL SCORE RECAP -->
+  <div class="score-panel score-neutral" id="scorePanelEnd">
+    <div class="score-fraction">Your Final Score: <span id="scoreValueEnd">0</span> / 12</div>
+    <div class="score-band-label" id="scoreBandLabelEnd">Start checking the boxes above</div>
+    <div class="score-desc" id="scoreBandDescEnd">Work through Sections 1–3 above to see your Upgrade Readiness Score here.</div>
+  </div>
+
   <!-- CTA -->
   <div class="checklist-cta-panel">
     <h3>Not sure what your score means?</h3>
     <p>Every HDB upgrader's situation is different. Your CPF usage, existing loan, income, cash position and property timeline can significantly change the best strategy. Let me help you work it out before you make your next move.</p>
     <div class="checklist-cta-row">
       <a href="calculator.html" class="btn btn-gold">Calculate My Affordability &rarr;</a>
-      <a href="#" id="waAssessmentLink" target="_blank" rel="noopener" class="btn btn-outline">WhatsApp Serene for a Personal Assessment &rarr;</a>
+      <button type="button" id="pdfWaBtn" class="btn btn-outline">Generate a PDF &amp; WhatsApp Serene for a Personalized Consultation &rarr;</button>
     </div>
   </div>
 
 </section>
+
+<!-- NAME MODAL -->
+<div class="modal-overlay" id="nameModalOverlay">
+  <div class="modal-card">
+    <h3>What's your name?</h3>
+    <p>We'll add it to your PDF summary and let Serene know who's reaching out.</p>
+    <div class="field">
+      <label for="visitor-name">Your name</label>
+      <input type="text" id="visitor-name" placeholder="e.g. Jamie Tan">
+    </div>
+    <div class="field">
+      <label for="visitor-phone">Your phone / WhatsApp number</label>
+      <input type="tel" id="visitor-phone" placeholder="e.g. 9123 4567">
+    </div>
+    <div class="error-text" id="nameError">Please enter your name and phone number to continue.</div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-gold btn-block" id="nameSubmitBtn">Generate My PDF &amp; WhatsApp Serene</button>
+      <button type="button" class="btn-text" id="nameCancelBtn">Cancel</button>
+    </div>
+  </div>
+</div>
 
 <!-- FOOTER -->
 <footer>
@@ -187,39 +216,53 @@
 
 <script src="main.js"></script>
 <script>
+const GAS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzxomLsd_yvi8pEaXvHK3qddAPdnX7889wnjU4i5AoxXIv7dQv7h973bZ9gwQq_1dk/exec";
+
 /* ---------- Live Upgrade Readiness Score (Sections 1-3, 12 items) ---------- */
 const scoreChecks = document.querySelectorAll('.score-check');
 const scoreValueEl = document.getElementById('scoreValue');
 const scorePanel = document.getElementById('scorePanel');
 const scoreBandLabel = document.getElementById('scoreBandLabel');
 const scoreBandDesc = document.getElementById('scoreBandDesc');
+const scoreValueEndEl = document.getElementById('scoreValueEnd');
+const scorePanelEnd = document.getElementById('scorePanelEnd');
+const scoreBandLabelEnd = document.getElementById('scoreBandLabelEnd');
+const scoreBandDescEnd = document.getElementById('scoreBandDescEnd');
 
 function updateScore(){
   const total = scoreChecks.length;
   const checked = Array.from(scoreChecks).filter(c => c.checked).length;
   scoreValueEl.textContent = checked;
+  scoreValueEndEl.textContent = checked;
 
-  scorePanel.classList.remove('score-neutral','score-green','score-amber','score-red');
-
+  let band, label, desc;
   if (checked === 0){
-    scorePanel.classList.add('score-neutral');
-    scoreBandLabel.textContent = 'Start checking the boxes below';
-    scoreBandDesc.textContent = 'Your Upgrade Readiness Score is based on the 12 checks in Sections 1–3. Work through them at your own pace.';
+    band = 'score-neutral';
+    label = 'Start checking the boxes below';
+    desc = 'Your Upgrade Readiness Score is based on the 12 checks in Sections 1–3. Work through them at your own pace.';
   } else if (checked >= 10){
-    scorePanel.classList.add('score-green');
-    scoreBandLabel.textContent = '🟢 Ready to Start Planning';
-    scoreBandDesc.textContent = 'You have a relatively clear picture and can start evaluating your next property.';
+    band = 'score-green';
+    label = '🟢 Ready to Start Planning';
+    desc = 'You have a relatively clear picture and can start evaluating your next property.';
   } else if (checked >= 6){
-    scorePanel.classList.add('score-amber');
-    scoreBandLabel.textContent = '🟡 Plan Before You Commit';
-    scoreBandDesc.textContent = 'There are some important financial or timing questions to resolve first.';
+    band = 'score-amber';
+    label = '🟡 Plan Before You Commit';
+    desc = 'There are some important financial or timing questions to resolve first.';
   } else {
-    scorePanel.classList.add('score-red');
-    scoreBandLabel.textContent = "🔴 Don't Rush Your Upgrade";
-    scoreBandDesc.textContent = 'Get your numbers and timeline clarified before committing to your next property.';
+    band = 'score-red';
+    label = "🔴 Don't Rush Your Upgrade";
+    desc = 'Get your numbers and timeline clarified before committing to your next property.';
   }
 
-  updateWhatsAppLink(checked, total);
+  [scorePanel, scorePanelEnd].forEach(p => p.classList.remove('score-neutral','score-green','score-amber','score-red'));
+  scorePanel.classList.add(band);
+  scorePanelEnd.classList.add(band);
+  scoreBandLabel.textContent = label;
+  scoreBandLabelEnd.textContent = label;
+  scoreBandDesc.textContent = desc;
+  scoreBandDescEnd.textContent = checked === 0
+    ? 'Work through Sections 1–3 above to see your Upgrade Readiness Score here.'
+    : desc;
 }
 scoreChecks.forEach(c => c.addEventListener('change', updateScore));
 
@@ -247,15 +290,162 @@ function updatePathHint(){
 }
 pathChecks.forEach(c => c.addEventListener('change', updatePathHint));
 
-/* ---------- WhatsApp CTA with score pre-filled ---------- */
-function updateWhatsAppLink(checked, total){
+/* ---------- Generate PDF summary from the visitor's actual checklist answers ---------- */
+function generateChecklistPdf(checked, total, bandLabel, visitorName){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const marginLeft = 16;
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const contentW = pageWidth - marginLeft * 2;
+  let y = 18;
+
+  doc.setFontSize(16);
+  doc.setFont(undefined, 'bold');
+  doc.text('Your HDB Upgrade Readiness Checklist', marginLeft, y);
+  y += 6;
+  doc.setFontSize(9.5);
+  doc.setFont(undefined, 'normal');
+  doc.text('Prepared for ' + visitorName + ' via sereneleeproperty.com — Serene Lee, ERA Realty (CEA Reg. R027578Z)', marginLeft, y);
+  y += 4;
+  doc.text('Generated on ' + new Date().toLocaleDateString('en-SG', { day:'numeric', month:'long', year:'numeric' }), marginLeft, y);
+  y += 10;
+
+  // Score summary box
+  const bandPlain = bandLabel.replace(/[^\x00-\x7F]/g, '').trim();
+  doc.setFillColor(11,42,74);
+  doc.rect(marginLeft, y, contentW, 20, 'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(13);
+  doc.setFont(undefined, 'bold');
+  doc.text(`Upgrade Readiness Score: ${checked} / ${total}`, marginLeft + 4, y + 8);
+  doc.setFontSize(10);
+  doc.setFont(undefined, 'normal');
+  doc.text(bandPlain, marginLeft + 4, y + 15);
+  doc.setTextColor(24,36,48);
+  y += 30;
+
+  function ensureSpace(needed){
+    if (y + needed > pageHeight - 22){ doc.addPage(); y = 18; }
+  }
+
+  document.querySelectorAll('.checklist-group').forEach(group => {
+    const heading = group.querySelector('h2').textContent.trim();
+    ensureSpace(14);
+    doc.setFontSize(11.5);
+    doc.setFont(undefined, 'bold');
+    doc.text(heading, marginLeft, y);
+    y += 6.5;
+    doc.setFontSize(9.5);
+    doc.setFont(undefined, 'normal');
+
+    group.querySelectorAll('.checkbox-row').forEach(row => {
+      const input = row.querySelector('input[type="checkbox"]');
+      const text = row.textContent.trim();
+      const mark = input.checked ? '[x]' : '[ ]';
+      const lines = doc.splitTextToSize(`${mark} ${text}`, contentW - 4);
+      ensureSpace(5 * lines.length);
+      doc.text(lines, marginLeft + 2, y);
+      y += 5 * lines.length;
+    });
+
+    // Section 4 (sell-first vs buy-first) also gets its live comparison hint
+    if (group.querySelector('.path-compare')){
+      const hint = document.getElementById('pathHint').textContent.trim();
+      const hintLines = doc.splitTextToSize(hint, contentW - 4);
+      ensureSpace(5 * hintLines.length + 3);
+      y += 2;
+      doc.setFont(undefined, 'italic');
+      doc.text(hintLines, marginLeft + 2, y);
+      y += 5 * hintLines.length;
+      doc.setFont(undefined, 'normal');
+    }
+    y += 4;
+  });
+
+  ensureSpace(24);
+  y += 2;
+  doc.setDrawColor(225,222,210);
+  doc.setLineWidth(0.2);
+  doc.line(marginLeft, y, pageWidth - marginLeft, y);
+  y += 6;
+  doc.setFontSize(8);
+  doc.setFont(undefined, 'italic');
+  const disclaimer = 'This checklist is for general information only and does not constitute financial, mortgage, or legal advice. Answers are self-reported and not verified. It is a starting point for your own thinking, not a substitute for a proper assessment of your finances with Serene.';
+  const dLines = doc.splitTextToSize(disclaimer, contentW);
+  doc.text(dLines, marginLeft, y);
+
+  const safeName = visitorName.replace(/[^a-zA-Z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  doc.save('HDB-Upgrade-Readiness-Checklist-' + safeName + '.pdf');
+}
+
+/* ---------- "Generate a PDF & WhatsApp Serene" button — asks for name first ---------- */
+const nameModalOverlay = document.getElementById('nameModalOverlay');
+const visitorNameInput = document.getElementById('visitor-name');
+const visitorPhoneInput = document.getElementById('visitor-phone');
+const nameError = document.getElementById('nameError');
+
+document.getElementById('pdfWaBtn').addEventListener('click', function(){
+  nameError.classList.remove('show');
+  visitorNameInput.value = '';
+  visitorPhoneInput.value = '';
+  nameModalOverlay.classList.add('show');
+  visitorNameInput.focus();
+});
+
+document.getElementById('nameCancelBtn').addEventListener('click', function(){
+  nameModalOverlay.classList.remove('show');
+});
+
+nameModalOverlay.addEventListener('click', function(e){
+  if (e.target === nameModalOverlay) nameModalOverlay.classList.remove('show');
+});
+
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape' && nameModalOverlay.classList.contains('show')) {
+    nameModalOverlay.classList.remove('show');
+  }
+});
+
+document.getElementById('nameSubmitBtn').addEventListener('click', function(){
+  const visitorName = visitorNameInput.value.trim();
+  const visitorPhone = visitorPhoneInput.value.trim();
+  if (!visitorName || !visitorPhone){
+    nameError.classList.add('show');
+    (!visitorName ? visitorNameInput : visitorPhoneInput).focus();
+    return;
+  }
+  nameError.classList.remove('show');
+
+  const total = scoreChecks.length;
+  const checked = Array.from(scoreChecks).filter(c => c.checked).length;
+  const bandLabel = scoreBandLabel.textContent;
+
+  generateChecklistPdf(checked, total, bandLabel, visitorName);
+
   const bandText = checked >= 10 ? 'Ready to Start Planning' : checked >= 6 ? 'Plan Before You Commit' : "Don't Rush My Upgrade";
   const msg = checked > 0
-    ? `Hi Serene, I completed the HDB Upgrader Checklist and scored ${checked}/${total} (${bandText}). I'd like a personal assessment.`
-    : `Hi Serene, I found the HDB Upgrader Checklist on your website and would like a personal assessment.`;
-  document.getElementById('waAssessmentLink').href = `https://wa.me/6580868568?text=${encodeURIComponent(msg)}`;
-}
-updateWhatsAppLink(0, scoreChecks.length);
+    ? `Hi Serene, my name is ${visitorName}. I completed the HDB Upgrader Checklist and scored ${checked}/${total} (${bandText}). I've downloaded my PDF summary and would like a personal assessment.`
+    : `Hi Serene, my name is ${visitorName}. I found the HDB Upgrader Checklist on your website and would like a personal assessment.`;
+  window.open(`https://wa.me/6580868568?text=${encodeURIComponent(msg)}`, '_blank');
+
+  if (GAS_WEBHOOK_URL){
+    fetch(GAS_WEBHOOK_URL, {
+      method:'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type':'text/plain'},
+      body: JSON.stringify({
+        source: 'upgrade-checklist',
+        name: visitorName,
+        phone: visitorPhone,
+        score: `${checked}/${total}`,
+        readiness: bandText
+      })
+    }).catch(()=>{ /* fire-and-forget; PDF + WhatsApp still proceed either way */ });
+  }
+
+  nameModalOverlay.classList.remove('show');
+});
 </script>
 </body>
 </html>
