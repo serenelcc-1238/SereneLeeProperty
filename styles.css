@@ -225,10 +225,13 @@ header{
 .testi-band .headline{color:#fff;font-weight:700;font-size:1.05rem;margin-bottom:6px;}
 .testi-band p{color:#9fb2c2;font-size:.9rem;max-width:520px;margin:0 auto;}
 
-/* CTA BANNER */
+/* CTA BANNER: text and buttons split into two even 50/50 columns */
 .cta-banner{background:var(--gold);display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;}
-.cta-banner h2{margin:0;font-size:1.5rem;color:var(--navy-900);}
-.cta-banner .btns{display:flex;gap:14px;flex-wrap:wrap;}
+.cta-banner h2{margin:0;font-size:1.5rem;color:var(--navy-900);flex:1 1 0;min-width:240px;}
+.cta-banner .btns{display:flex;gap:14px;flex-wrap:wrap;flex:1 1 0;min-width:240px;justify-content:flex-end;}
+@media(max-width:700px){
+  .cta-banner .btns{justify-content:flex-start;}
+}
 
 /* ABOUT */
 .about-grid{display:grid;grid-template-columns:300px 1fr;gap:46px;align-items:start;}
