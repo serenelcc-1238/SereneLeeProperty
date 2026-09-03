@@ -162,8 +162,8 @@
     <h3>Not sure what your score means?</h3>
     <p>Every HDB upgrader's situation is different. Your CPF usage, existing loan, income, cash position and property timeline can significantly change the best strategy. Let me help you work it out before you make your next move.</p>
     <div class="checklist-cta-row">
-      <a href="calculator.html" class="btn btn-gold">Calculate My Affordability &rarr;</a>
-      <button type="button" id="pdfWaBtn" class="btn btn-outline">Generate a PDF &amp; WhatsApp Serene for a Personalized Consultation &rarr;</button>
+      <button type="button" id="pdfWaBtn" class="btn btn-gold btn-block">Generate a PDF &amp; WhatsApp Serene for a Personalized Consultation &rarr;</button>
+      <a href="calculator.html" class="btn btn-outline btn-block">Calculate My Affordability &rarr;</a>
     </div>
   </div>
 
@@ -377,7 +377,13 @@ function generateChecklistPdf(checked, total, bandLabel, visitorName){
   doc.text(dLines, marginLeft, y);
 
   const safeName = visitorName.replace(/[^a-zA-Z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-  doc.save('HDB-Upgrade-Readiness-Checklist-' + safeName + '.pdf');
+  const pdfFilename = 'HDB-Upgrade-Readiness-Checklist-' + safeName + '.pdf';
+  doc.save(pdfFilename);
+
+  // Also return a copy as base64 so it can be attached to Serene's email
+  // alert via the webhook — same approach as the calculator's PDF.
+  const pdfBase64 = doc.output('datauristring').split(',')[1] || null;
+  return { pdfFilename, pdfBase64 };
 }
 
 /* ---------- "Generate a PDF & WhatsApp Serene" button — asks for name first ---------- */
@@ -422,7 +428,7 @@ document.getElementById('nameSubmitBtn').addEventListener('click', function(){
   const checked = Array.from(scoreChecks).filter(c => c.checked).length;
   const bandLabel = scoreBandLabel.textContent;
 
-  generateChecklistPdf(checked, total, bandLabel, visitorName);
+  const { pdfFilename, pdfBase64 } = generateChecklistPdf(checked, total, bandLabel, visitorName);
 
   const bandText = checked >= 10 ? 'Ready to Start Planning' : checked >= 6 ? 'Plan Before You Commit' : "Don't Rush My Upgrade";
   const msg = checked > 0
@@ -440,7 +446,9 @@ document.getElementById('nameSubmitBtn').addEventListener('click', function(){
         name: visitorName,
         phone: visitorPhone,
         score: `${checked}/${total}`,
-        readiness: bandText
+        readiness: bandText,
+        pdfFilename,
+        pdfBase64
       })
     }).catch(()=>{ /* fire-and-forget; PDF + WhatsApp still proceed either way */ });
   }
