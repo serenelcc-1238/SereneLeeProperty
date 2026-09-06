@@ -157,4 +157,35 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
   }
+
+  /* Lease decay blog post only: click-to-enlarge lightbox for the infographic.
+     No-op on any page without #infographicImg / #infographicLightbox. */
+  var infographicImg = document.getElementById('infographicImg');
+  var infographicLightbox = document.getElementById('infographicLightbox');
+  if (infographicImg && infographicLightbox) {
+    var lightboxClose = document.getElementById('lightboxClose');
+
+    function openInfographicLightbox() {
+      infographicLightbox.hidden = false;
+      document.body.style.overflow = 'hidden';
+    }
+    function closeInfographicLightbox() {
+      infographicLightbox.hidden = true;
+      document.body.style.overflow = '';
+    }
+
+    infographicImg.addEventListener('click', openInfographicLightbox);
+    if (lightboxClose) {
+      lightboxClose.addEventListener('click', function (e) {
+        e.stopPropagation();
+        closeInfographicLightbox();
+      });
+    }
+    infographicLightbox.addEventListener('click', function () {
+      closeInfographicLightbox();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeInfographicLightbox();
+    });
+  }
 });
