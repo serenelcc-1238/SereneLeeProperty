@@ -104,11 +104,13 @@ document.addEventListener('DOMContentLoaded', function () {
     applyLaunchFilters();
   }
 
-  /* Subscribe form (currently on index.html only) — posts to a Google Apps
-     Script Web App, same pattern as the Upgrade Checklist's lead capture.
-     No-op on any page without a #subscribeForm. Replace SUBSCRIBE_WEBHOOK_URL
-     below once the Apps Script is deployed — see subscribe-apps-script/SETUP-GUIDE.md. */
-  var SUBSCRIBE_WEBHOOK_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+  /* Subscribe form (currently on index.html only) — posts to the SAME Google
+     Apps Script Web App used by the calculator, contact form and upgrade
+     checklist (see GAS_WEBHOOK_URL in those pages). That one script now
+     handles both: it tells this request apart by formType: 'subscribe'
+     below, and files it into a separate "Subscribers" tab in the same
+     Google Sheet. No-op on any page without a #subscribeForm. */
+  var SUBSCRIBE_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzxomLsd_yvi8pEaXvHK3qddAPdnX7889wnjU4i5AoxXIv7dQv7h973bZ9gwQq_1dk/exec";
   var subscribeForm = document.getElementById('subscribeForm');
   if (subscribeForm) {
     var subscribeEmail = document.getElementById('subscribeEmail');
@@ -141,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function () {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({ email: email, source: window.location.pathname, page: window.location.href })
+        body: JSON.stringify({ formType: 'subscribe', email: email, source: window.location.pathname, page: window.location.href })
       })
         .then(function () {
           subscribeSuccess.classList.add('show');

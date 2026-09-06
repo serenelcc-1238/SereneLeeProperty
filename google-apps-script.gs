@@ -1,53 +1,46 @@
 /**
- * Serene Lee website — lead capture webhook
- * ------------------------------------------
- * This script receives form submissions from sereneleeproperty.com (the main
- * calculator lead form AND the footer contact form) and appends each one
- * as a new row in this Google Sheet.
+ * Serene Lee website — lead capture + blog subscriber webhook
+ * -------------------------------------------------------------
+ * ONE script, ONE Google Sheet, TWO tabs:
+ *   - Tab 1 (your existing leads tab — whatever you've named it): website
+ *     leads from the calculator, contact form and upgrade checklist.
+ *     Unchanged in behavior from before, except it's now addressed by
+ *     position (first tab) instead of "whichever tab happens to be open" —
+ *     see the note above doPost for why that matters now that there are
+ *     two tabs in this Sheet.
+ *   - Tab 2 ("Subscribers", created automatically the first time someone
+ *     subscribes on the blog): blog subscriber emails, used by the
+ *     "📧 Blog Broadcast" menu at the bottom of this file.
  *
- * SETUP (one-time):
- * 1. Create a new Google Sheet. Name it something like "Serene Lee Website Leads".
- * 2. In row 1, add these column headers (exact order matters for readability,
- *    not for the script — the script writes by position):
- *      Timestamp | Source | Name | Phone | Email | Best Time to Call |
- *      Est. Max Price | Est. Monthly Mortgage | Est. Cash Needed | Target Price |
- *      Property Type | Loan Type | Buyer Income | Buyer Age | Buyer Variable Income |
- *      Has Co-buyer | Co-buyer Income | Co-buyer Age | Co-buyer Variable Income |
- *      Buyer CPF OA | Co-buyer CPF OA | Car Loan | Other Debt | Cash on Hand |
- *      Loan Tenure (yrs) | Interest Rate (%) | LTV (%)
- *    (If you already have an older sheet with only the first 10 columns, just
- *    add these 17 extra headers starting at column K — new leads will fill
- *    them in going forward; existing rows won't be back-filled.)
- *    (There used to be a "Current HDB Price" column between "Cash on Hand" and
- *    "Loan Tenure" — the calculator no longer asks for that figure, so it was
- *    dropped from both the header list and the row data below. If your sheet
- *    still has that column, delete it so "Loan Tenure" lines back up.)
- * 3. In the Sheet, go to Extensions > Apps Script.
- * 4. Delete any placeholder code, paste this entire file in, and save
- *    (name the project "Serene Lee Leads Webhook" or similar).
- * 5. Click Deploy > New deployment.
- *    - Select type: "Web app"
- *    - Description: "Lead capture webhook"
- *    - Execute as: "Me"
- *    - Who has access: "Anyone"
- *    - Click Deploy, then "Authorize access" and approve the permissions
- *      (you'll see a Google warning screen for unverified apps — click
- *      "Advanced" > "Go to [project name] (unsafe)" — this is expected
- *      for a script you wrote yourself).
- * 6. Copy the "Web app URL" it gives you (ends in /exec).
- * 7. Paste that URL into index.html, in the line:
- *      const GAS_WEBHOOK_URL = "";
- *    so it reads:
- *      const GAS_WEBHOOK_URL = "https://script.google.com/macros/s/XXXXX/exec";
- * 8. Re-deploy the site (or just re-upload index.html) so the change goes live.
+ * Both flows share the SAME Web App URL — the one already pasted into
+ * calculator.html, contact.html and upgrade-checklist.html. The blog's
+ * Subscribe form (main.js) posts to that same URL with formType: "subscribe",
+ * which is how this script tells the two kinds of submission apart.
+ *
+ * SETUP (one-time, updating your EXISTING Apps Script project — the one
+ * already deployed at the URL used by calculator.html / contact.html /
+ * upgrade-checklist.html):
+ * 1. Open that Google Sheet → Extensions > Apps Script.
+ * 2. Select all the existing code in Code.gs and replace it with this
+ *    entire file.
+ * 3. Click the "+" next to "Files" → "HTML" → name the new file exactly
+ *    SendDialog (Apps Script adds the .html itself). Paste in the contents
+ *    of SendDialog.html (in this same delivery) and save.
+ * 4. Deploy > Manage deployments > click the pencil (edit) icon on your
+ *    existing deployment > under "Version" choose "New version" > Deploy.
+ *    This keeps the SAME Web App URL, so calculator.html, contact.html and
+ *    upgrade-checklist.html need no changes at all.
+ * 5. Reload the Google Sheet tab in your browser (so the new
+ *    "📧 Blog Broadcast" menu appears at the top).
+ * That's it — no new URL, no changes needed anywhere else on the site.
  *
  * NOTE ON CORS: the site calls this webhook using `mode: 'no-cors'`, which
  * means the browser can't read a response back — but the POST still reaches
  * this script and still gets written to the Sheet. This is the standard,
  * reliable pattern for a static site + Apps Script combo.
  *
- * If you ever change the form fields in index.html, update the appendRow()
- * order below to match.
+ * If you ever change the form fields in index.html/calculator.html/etc,
+ * update the appendRow() order below to match.
  *
  * NOTE ON EMAIL NOTIFICATIONS: Google Sheets' own "Notification rules"
  * (Tools > Notification rules) will NOT email you for these rows, even if
@@ -68,12 +61,26 @@
  * the Sheet (it would make every row huge) — only the email gets it.
  */
 const NOTIFY_EMAIL = 'serenelcc@gmail.com';
+const SUBSCRIBERS_SHEET_NAME = 'Subscribers';
+const SENDER_NAME = 'Serene Lee, ERA Realty';
 
+/* IMPORTANT: leads are written to the FIRST tab of this spreadsheet by
+   POSITION (Sheets[0]), not "whichever tab is currently open" (the old
+   getActiveSheet() approach). That distinction didn't matter when this
+   Sheet only had one tab — now that a second "Subscribers" tab exists,
+   getActiveSheet() would silently write leads into whichever tab you
+   happen to be looking at, which is why this was changed. Your leads tab
+   stays tab 1 no matter what you're viewing when a lead comes in. */
 function doPost(e) {
-  console.log('doPost CODE-CHECK v4 is running (build 30-Aug-D, dropped Current HDB Price column)');
   try {
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
     const data = JSON.parse(e.postData.contents);
+
+    if (data.formType === 'subscribe') {
+      return handleSubscribe(data);
+    }
+
+    console.log('doPost CODE-CHECK v4 is running (build 30-Aug-D, dropped Current HDB Price column)');
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
 
     sheet.appendRow([
       new Date(),
@@ -174,10 +181,151 @@ function testEmail() {
   MailApp.sendEmail(NOTIFY_EMAIL, 'Test email from your website script', 'If you got this, email sending is working.');
 }
 
-// Optional: lets you sanity-check the deployment by visiting the /exec URL
-// directly in a browser — you should see {"status":"ready"}.
+// Sanity-check the deployment by visiting the /exec URL directly in a
+// browser — you should see {"status":"ready"}. Also handles the
+// unsubscribe link inside every blog broadcast email (?unsubscribe=TOKEN).
 function doGet(e) {
+  const token = e.parameter.unsubscribe;
+  if (token) {
+    const sheet = getSubscribersSheet();
+    const rows = sheet.getDataRange().getValues();
+    for (let i = 1; i < rows.length; i++) {
+      if (rows[i][4] === token) {
+        sheet.getRange(i + 1, 4).setValue('unsubscribed');
+        return HtmlService.createHtmlOutput(
+          wrapHtml("You've been unsubscribed. You won't receive any further blog updates from Serene Lee.")
+        );
+      }
+    }
+    return HtmlService.createHtmlOutput(wrapHtml('Link not found, or already unsubscribed.'));
+  }
+
   return ContentService
     .createTextOutput(JSON.stringify({ status: 'ready' }))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+/* =========================================================================
+   BLOG SUBSCRIBERS — Tab 2 of this same Sheet
+   ========================================================================= */
+
+/* ---------- Website signup (POST from the blog's Subscribe form) ---------- */
+function handleSubscribe(data) {
+  try {
+    const email = (data.email || '').toString().trim().toLowerCase();
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return jsonOutput({ ok: false, error: 'invalid email' });
+    }
+
+    const sheet = getSubscribersSheet();
+    const rows = sheet.getDataRange().getValues();
+
+    for (let i = 1; i < rows.length; i++) {
+      if ((rows[i][1] || '').toString().toLowerCase() === email) {
+        // Already on the list — if they'd unsubscribed before, welcome them back.
+        sheet.getRange(i + 1, 4).setValue('active');
+        return jsonOutput({ ok: true, existing: true });
+      }
+    }
+
+    const token = Utilities.getUuid();
+    sheet.appendRow([new Date(), email, data.source || '', 'active', token]);
+    return jsonOutput({ ok: true });
+
+  } catch (err) {
+    return jsonOutput({ ok: false, error: err.message });
+  }
+}
+
+function wrapHtml(message) {
+  return '<div style="font-family:Arial,sans-serif;max-width:480px;margin:60px auto;text-align:center;color:#182430;">' +
+    '<p style="font-size:16px;">' + message + '</p></div>';
+}
+
+function jsonOutput(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
+
+/* ---------- Tab 2 itself — created automatically on first subscribe ---------- */
+function getSubscribersSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SUBSCRIBERS_SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(SUBSCRIBERS_SHEET_NAME);
+    sheet.appendRow(['Timestamp', 'Email', 'Source', 'Status', 'UnsubToken']);
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
+}
+
+function getActiveSubscriberCount() {
+  const sheet = getSubscribersSheet();
+  const rows = sheet.getDataRange().getValues();
+  return rows.slice(1).filter(function (r) { return r[3] === 'active'; }).length;
+}
+
+/* ---------- The "📧 Blog Broadcast" menu + button ---------- */
+function onOpen() {
+  SpreadsheetApp.getUi()
+    .createMenu('📧 Blog Broadcast')
+    .addItem('Send New Post to Subscribers', 'showSendDialog')
+    .addToUi();
+}
+
+function showSendDialog() {
+  const html = HtmlService.createHtmlOutputFromFile('SendDialog')
+    .setWidth(480)
+    .setHeight(460);
+  SpreadsheetApp.getUi().showModalDialog(html, 'Send New Post to Subscribers');
+}
+
+/* Called by the dialog's "Send to All Subscribers" button. */
+function sendBroadcast(payload) {
+  const sheet = getSubscribersSheet();
+  const rows = sheet.getDataRange().getValues();
+  const webAppUrl = ScriptApp.getService().getUrl();
+  let sent = 0;
+
+  for (let i = 1; i < rows.length; i++) {
+    const email = rows[i][1];
+    const status = rows[i][3];
+    const token = rows[i][4];
+    if (status !== 'active' || !email) continue;
+
+    const unsubUrl = webAppUrl + '?unsubscribe=' + token;
+    MailApp.sendEmail({
+      to: email,
+      subject: payload.subject,
+      htmlBody: buildEmailHtml(payload, unsubUrl),
+      name: SENDER_NAME
+    });
+    sent++;
+    Utilities.sleep(200); // gentle pacing, well inside Gmail's daily quota
+  }
+  return sent;
+}
+
+function buildEmailHtml(payload, unsubUrl) {
+  return '' +
+    '<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;color:#182430;">' +
+    '  <p style="font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:#a9841a;font-weight:bold;margin:0 0 6px;">New Guide from Serene Lee</p>' +
+    '  <h2 style="color:#0b2a4a;margin:0 0 14px;">' + escapeHtml(payload.title) + '</h2>' +
+    '  <p style="line-height:1.6;font-size:14px;">' + escapeHtml(payload.excerpt) + '</p>' +
+    '  <p style="margin:24px 0;">' +
+    '    <a href="' + payload.url + '" style="background:#c9a227;color:#0b2a4a;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;font-size:14px;">Read the Full Guide &rarr;</a>' +
+    '  </p>' +
+    '  <hr style="border:none;border-top:1px solid #e6e2d8;margin:30px 0 16px;">' +
+    '  <p style="font-size:12px;color:#5c6b78;line-height:1.6;">' +
+    '    Serene Lee &middot; ERA Realty Network Pte Ltd &middot; CEA Registration No. R027578Z<br>' +
+    '    <a href="' + unsubUrl + '" style="color:#5c6b78;">Unsubscribe from these emails</a>' +
+    '  </p>' +
+    '</div>';
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 }

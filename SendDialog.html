@@ -1,0 +1,68 @@
+<style>
+  body{font-family:Arial,sans-serif;padding:4px 6px;color:#182430;}
+  #count{font-size:12px;color:#5c6b78;margin-bottom:14px;}
+  label{display:block;font-weight:bold;margin:12px 0 4px;font-size:12.5px;color:#0b2a4a;}
+  input,textarea{width:100%;padding:8px 10px;box-sizing:border-box;border:1px solid #ccc;border-radius:6px;font-size:13px;font-family:Arial,sans-serif;}
+  textarea{height:64px;resize:vertical;}
+  button{margin-top:18px;background:#c9a227;color:#0b2a4a;border:none;padding:11px 22px;border-radius:6px;font-weight:bold;cursor:pointer;font-size:13px;width:100%;}
+  button:disabled{opacity:.6;cursor:not-allowed;}
+  #status{margin-top:12px;font-size:13px;min-height:18px;}
+  #status.error{color:#c0392b;}
+  #status.ok{color:#1f5c3e;font-weight:bold;}
+</style>
+
+<div id="count">Loading subscriber count&hellip;</div>
+
+<label>Post title</label>
+<input id="title" placeholder="e.g. Lease Decay in Singapore: What Happens When Your 99-Year Property Has 60 Years Left?">
+
+<label>Post URL</label>
+<input id="url" placeholder="https://sereneleeproperty.com/blog-post-....html">
+
+<label>Short teaser (1&ndash;2 sentences)</label>
+<textarea id="excerpt" placeholder="What the post is about, in a sentence or two — this is what subscribers read in the email."></textarea>
+
+<label>Email subject line</label>
+<input id="subject" placeholder="e.g. New Guide: What Happens at 60 Years Left on Your Lease?">
+
+<button id="sendBtn" onclick="send()">Send to All Subscribers</button>
+<div id="status"></div>
+
+<script>
+  google.script.run.withSuccessHandler(function (n) {
+    document.getElementById('count').textContent =
+      n + ' active subscriber' + (n === 1 ? '' : 's') + ' will receive this.';
+  }).getActiveSubscriberCount();
+
+  function send() {
+    const title = document.getElementById('title').value.trim();
+    const url = document.getElementById('url').value.trim();
+    const excerpt = document.getElementById('excerpt').value.trim();
+    const subject = document.getElementById('subject').value.trim();
+    const status = document.getElementById('status');
+    const btn = document.getElementById('sendBtn');
+
+    status.className = '';
+    if (!title || !url || !excerpt || !subject) {
+      status.textContent = 'Please fill in every field.';
+      status.className = 'error';
+      return;
+    }
+    if (!confirm('Send this post to every active subscriber now? This can\'t be undone.')) return;
+
+    btn.disabled = true;
+    status.textContent = 'Sending…';
+
+    google.script.run
+      .withSuccessHandler(function (sent) {
+        status.textContent = 'Sent to ' + sent + ' subscriber' + (sent === 1 ? '' : 's') + '!';
+        status.className = 'ok';
+      })
+      .withFailureHandler(function (err) {
+        status.textContent = 'Error: ' + err.message;
+        status.className = 'error';
+        btn.disabled = false;
+      })
+      .sendBroadcast({ title: title, url: url, excerpt: excerpt, subject: subject });
+  }
+</script>
