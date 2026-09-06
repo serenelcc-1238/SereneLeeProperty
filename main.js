@@ -158,14 +158,20 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  /* Lease decay blog post only: click-to-enlarge lightbox for the infographic.
-     No-op on any page without #infographicImg / #infographicLightbox. */
-  var infographicImg = document.getElementById('infographicImg');
+  /* Click-to-enlarge lightbox for any .enlargeable-img (currently: the two
+     lease decay infographics). Add the class to any future image to get the
+     same behavior. No-op on any page without .enlargeable-img / #infographicLightbox. */
+  var enlargeableImgs = document.querySelectorAll('.enlargeable-img');
   var infographicLightbox = document.getElementById('infographicLightbox');
-  if (infographicImg && infographicLightbox) {
+  if (enlargeableImgs.length && infographicLightbox) {
     var lightboxClose = document.getElementById('lightboxClose');
+    var lightboxImg = document.getElementById('lightboxImg');
 
-    function openInfographicLightbox() {
+    function openInfographicLightbox(src, alt) {
+      if (lightboxImg) {
+        lightboxImg.src = src;
+        lightboxImg.alt = alt || '';
+      }
       infographicLightbox.hidden = false;
       document.body.style.overflow = 'hidden';
     }
@@ -174,7 +180,11 @@ document.addEventListener('DOMContentLoaded', function () {
       document.body.style.overflow = '';
     }
 
-    infographicImg.addEventListener('click', openInfographicLightbox);
+    enlargeableImgs.forEach(function (img) {
+      img.addEventListener('click', function () {
+        openInfographicLightbox(img.src, img.alt);
+      });
+    });
     if (lightboxClose) {
       lightboxClose.addEventListener('click', function (e) {
         e.stopPropagation();
