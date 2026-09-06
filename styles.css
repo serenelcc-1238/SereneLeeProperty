@@ -493,6 +493,7 @@ footer .container{display:flex;gap:44px;flex-wrap:wrap;}
 .quiz-explain{display:none;font-size:.86rem;color:var(--muted);line-height:1.5;margin-top:14px;padding:12px 14px;background:var(--cream-2);border-radius:8px;border-left:3px solid var(--gold);}
 .quiz-explain.show{display:block;}
 .quiz-retake{display:block;margin:0 auto;}
+.quiz-next{display:flex;margin:0 auto 26px;}
 
 /* SUBSCRIBE PANEL */
 .subscribe-panel{max-width:640px;margin:0 auto;text-align:center;background:#fff;border:1.5px solid var(--line);border-radius:var(--radius);padding:30px 28px;box-shadow:var(--shadow);}
