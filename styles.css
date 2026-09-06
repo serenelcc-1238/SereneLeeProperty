@@ -190,7 +190,9 @@ header{
 .card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
 @media(max-width:860px){.card-grid{grid-template-columns:1fr 1fr;}}
 @media(max-width:600px){.card-grid{grid-template-columns:1fr;}}
-.launch-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;}
+.card-grid.two-col{grid-template-columns:repeat(2,1fr);}
+@media(max-width:600px){.card-grid.two-col{grid-template-columns:1fr;}}
+.launch-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;text-decoration:none;color:inherit;}
 .launch-thumb{height:150px;position:relative;overflow:hidden;background:var(--cream-2);}
 .launch-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
 .launch-status{

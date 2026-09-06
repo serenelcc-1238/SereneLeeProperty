@@ -103,4 +103,58 @@ document.addEventListener('DOMContentLoaded', function () {
 
     applyLaunchFilters();
   }
+
+  /* Subscribe form (currently on index.html only) — posts to a Google Apps
+     Script Web App, same pattern as the Upgrade Checklist's lead capture.
+     No-op on any page without a #subscribeForm. Replace SUBSCRIBE_WEBHOOK_URL
+     below once the Apps Script is deployed — see subscribe-apps-script/SETUP-GUIDE.md. */
+  var SUBSCRIBE_WEBHOOK_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+  var subscribeForm = document.getElementById('subscribeForm');
+  if (subscribeForm) {
+    var subscribeEmail = document.getElementById('subscribeEmail');
+    var subscribeBtn = document.getElementById('subscribeBtn');
+    var subscribeSuccess = document.getElementById('subscribeSuccess');
+    var subscribeError = document.getElementById('subscribeError');
+
+    subscribeForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      subscribeSuccess.classList.remove('show');
+      subscribeError.classList.remove('show');
+
+      var email = subscribeEmail.value.trim();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        subscribeError.textContent = 'Please enter a valid email address.';
+        subscribeError.classList.add('show');
+        return;
+      }
+
+      if (!SUBSCRIBE_WEBHOOK_URL || SUBSCRIBE_WEBHOOK_URL.indexOf('PASTE_YOUR') === 0) {
+        subscribeError.textContent = "Subscriptions aren't connected yet — please WhatsApp Serene directly for now.";
+        subscribeError.classList.add('show');
+        return;
+      }
+
+      subscribeBtn.disabled = true;
+      subscribeBtn.textContent = 'Subscribing...';
+
+      fetch(SUBSCRIBE_WEBHOOK_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ email: email, source: window.location.pathname, page: window.location.href })
+      })
+        .then(function () {
+          subscribeSuccess.classList.add('show');
+          subscribeForm.reset();
+        })
+        .catch(function () {
+          subscribeError.textContent = 'Something went wrong — please try again or WhatsApp Serene directly.';
+          subscribeError.classList.add('show');
+        })
+        .finally(function () {
+          subscribeBtn.disabled = false;
+          subscribeBtn.textContent = 'Subscribe';
+        });
+    });
+  }
 });
