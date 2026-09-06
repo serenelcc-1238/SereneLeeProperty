@@ -92,11 +92,39 @@
   </div>
 </section>
 
+<section style="padding-top:26px;padding-bottom:6px;">
+  <div class="container">
+    <div class="subscribe-panel">
+      <h3>Get New Guides in Your Inbox</h3>
+      <p>A short email whenever a new guide goes up &mdash; no spam, no schedule, unsubscribe anytime.</p>
+      <form class="subscribe-form" id="subscribeForm">
+        <input type="email" id="subscribeEmail" placeholder="you@email.com" required autocomplete="email">
+        <button type="submit" class="btn btn-gold" id="subscribeBtn">Subscribe</button>
+      </form>
+      <div class="subscribe-msg success" id="subscribeSuccess">You're on the list &mdash; thanks for subscribing!</div>
+      <div class="subscribe-msg error" id="subscribeError">Something went wrong &mdash; please try again, or WhatsApp Serene directly.</div>
+      <p class="subscribe-note">By subscribing, you agree to receive occasional blog update emails from Serene Lee. No spam, unsubscribe anytime.</p>
+    </div>
+  </div>
+</section>
+
 <section style="padding-top:20px;padding-bottom:0;">
   <div class="container">
     <div class="blog-section-head">
       <h2>Guides</h2>
       <p>In-depth guides on HDB upgrading, new launches, and the decisions in between — not summaries of someone else's article.</p>
+    </div>
+    <div class="own-post-card">
+      <div class="blog-row-thumb" style="background:linear-gradient(135deg,#0f3b63,#071c30);display:flex;align-items:center;justify-content:center;">
+        <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>
+      </div>
+      <div>
+        <span class="blog-tag blog-tag-own">Guide</span>
+        <span style="font-size:.75rem;color:var(--muted);margin-left:8px;">Serene Lee, ERA &middot; 6 Sep 2026 &middot; 7 min read</span>
+        <div class="blog-title" style="font-size:1.2rem;">Lease Decay in Singapore: What Happens When Your 99-Year Property Has 60 Years Left?</div>
+        <div class="blog-excerpt" style="max-width:700px;">Applies to HDB flats and private property alike — CPF restrictions, financing hurdles and a shrinking buyer pool all start to bite once a 99-year lease crosses 60 years remaining. Here's what to watch and when to act.</div>
+        <a href="blog-post-lease-decay-99-year-property.html" style="font-size:.85rem;font-weight:700;color:var(--navy-900);">Read the full guide &rarr;</a>
+      </div>
     </div>
     <div class="own-post-card">
       <div class="blog-row-thumb" style="background:linear-gradient(135deg,#0b2a4a,#0f3b63);display:flex;align-items:center;justify-content:center;">
@@ -227,5 +255,61 @@
 </a>
 
 <script src="main.js"></script>
+<script>
+/* ---------- Blog subscribe form ----------
+   Posts to a Google Apps Script Web App (same pattern as the Upgrade
+   Checklist's lead capture). Replace SUBSCRIBE_WEBHOOK_URL below once
+   the Apps Script is deployed — see the setup guide Serene has for this. */
+const SUBSCRIBE_WEBHOOK_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+const subscribeForm = document.getElementById('subscribeForm');
+if (subscribeForm) {
+  const subscribeEmail = document.getElementById('subscribeEmail');
+  const subscribeBtn = document.getElementById('subscribeBtn');
+  const subscribeSuccess = document.getElementById('subscribeSuccess');
+  const subscribeError = document.getElementById('subscribeError');
+
+  subscribeForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    subscribeSuccess.classList.remove('show');
+    subscribeError.classList.remove('show');
+
+    const email = subscribeEmail.value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      subscribeError.textContent = 'Please enter a valid email address.';
+      subscribeError.classList.add('show');
+      return;
+    }
+
+    if (!SUBSCRIBE_WEBHOOK_URL || SUBSCRIBE_WEBHOOK_URL.indexOf('PASTE_YOUR') === 0) {
+      subscribeError.textContent = "Subscriptions aren't connected yet — please WhatsApp Serene directly for now.";
+      subscribeError.classList.add('show');
+      return;
+    }
+
+    subscribeBtn.disabled = true;
+    subscribeBtn.textContent = 'Subscribing...';
+
+    fetch(SUBSCRIBE_WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ email: email, source: 'blog.html', page: window.location.href })
+    })
+      .then(function () {
+        subscribeSuccess.classList.add('show');
+        subscribeForm.reset();
+      })
+      .catch(function () {
+        subscribeError.textContent = 'Something went wrong — please try again or WhatsApp Serene directly.';
+        subscribeError.classList.add('show');
+      })
+      .finally(function () {
+        subscribeBtn.disabled = false;
+        subscribeBtn.textContent = 'Subscribe';
+      });
+  });
+}
+</script>
 </body>
 </html>
