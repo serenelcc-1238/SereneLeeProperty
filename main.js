@@ -49,7 +49,10 @@ document.addEventListener('DOMContentLoaded', function () {
      ("CCR"/"RCR"/"OCR"), data-tenure ("leasehold"/"freehold") and
      data-top (year.quarter, e.g. "2029.3" for TOP Q3 2029) to any new
      .launch-card and it's picked up automatically — no script changes
-     needed for new projects. */
+     needed for new projects. Add data-pinned="true" to Serene's own
+     new-launch spotlight write-ups (as opposed to the regular ERA
+     listings) to always keep them first, ahead of the TOP-date sort,
+     regardless of what the visitor picks in the Sort by TOP dropdown. */
   var launchGrid = document.getElementById('launchGrid');
   if (launchGrid) {
     var regionButtons = Array.prototype.slice.call(document.querySelectorAll('[data-filter-region]'));
@@ -63,14 +66,19 @@ document.addEventListener('DOMContentLoaded', function () {
       var cards = Array.prototype.slice.call(launchGrid.querySelectorAll('.launch-card'));
       var visibleCount = 0;
 
-      cards.sort(function (a, b) {
+      var pinned = cards.filter(function (card) { return card.getAttribute('data-pinned') === 'true'; });
+      var rest = cards.filter(function (card) { return card.getAttribute('data-pinned') !== 'true'; });
+
+      rest.sort(function (a, b) {
         var topA = parseFloat(a.getAttribute('data-top')) || 0;
         var topB = parseFloat(b.getAttribute('data-top')) || 0;
         return (topSort && topSort.value === 'desc') ? topB - topA : topA - topB;
       });
-      cards.forEach(function (card) { launchGrid.appendChild(card); });
 
-      cards.forEach(function (card) {
+      var ordered = pinned.concat(rest);
+      ordered.forEach(function (card) { launchGrid.appendChild(card); });
+
+      ordered.forEach(function (card) {
         var regionMatch = activeRegion === 'all' || card.getAttribute('data-region') === activeRegion;
         var tenureMatch = activeTenure === 'all' || card.getAttribute('data-tenure') === activeTenure;
         var show = regionMatch && tenureMatch;
