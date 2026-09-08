@@ -1,7 +1,9 @@
 {
-  "name": "old-waterfall-48ea",
+  "name": "sereneleeproperty",
   "compatibility_date": "2026-08-01",
+  "main": "worker.js",
   "assets": {
-    "directory": "./"
+    "directory": "./",
+    "binding": "ASSETS"
   }
 }
