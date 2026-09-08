@@ -555,6 +555,8 @@ footer .container{display:flex;gap:44px;flex-wrap:wrap;}
   border:1px solid var(--line);
   display:flex;flex-direction:column;overflow:hidden;
 }
+.chatbot-panel[hidden]{display:none;}
+
 .chatbot-header{
   background:var(--navy);color:#fff;padding:14px 16px;
   display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0;
