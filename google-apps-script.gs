@@ -5,9 +5,9 @@
  * Google Sheet (Extensions > Apps Script). The live version is the one in Google;
  * keep this copy in step with it when either changes.
  *
- * ⚠ SECRETS: this repository is PUBLIC. The Telegram bot token is kept in
- * Apps Script's Script Properties (TELEGRAM_BOT_TOKEN), never in this file,
- * so the whole file can be copied into Google and replaced safely.
+ * ⚠ SECRETS: this repository is PUBLIC. The real Telegram bot token is only in
+ * the Google copy — here it is a placeholder. Never paste the real token into
+ * this file. (If you copy this whole file into Google, put the real token back.)
  *
  * ONE script, ONE Google Sheet, THREE tabs:
  *   - Tab 1 (your existing leads tab — whatever you've named it): website
@@ -49,8 +49,8 @@
  * upgrade-checklist.html):
  * 1. Open that Google Sheet → Extensions > Apps Script.
  * 2. Select all the existing code in Code.gs and replace it with this
- *    entire file. (One-time: Project Settings > Script Properties > add
- *    TELEGRAM_BOT_TOKEN with your bot token, for Telegram alerts.)
+ *    entire file — then put your real Telegram bot token back in
+ *    TELEGRAM_BOT_TOKEN below.
  * 3. On your LEADS tab (tab 1), add three new header labels at the end of
  *    row 1 (purely for your own readability — the script itself uses
  *    column position, not the header text): "Nurture Stage",
@@ -98,10 +98,7 @@
 const NOTIFY_EMAIL = 'serenelcc@gmail.com';
 const SUBSCRIBERS_SHEET_NAME = 'Subscribers';
 const SENDER_NAME = 'Serene Lee, ERA Realty';
-// The Telegram bot token is NOT written in this file. It is stored once in
-// Apps Script: Project Settings (gear icon) > Script Properties >
-// property TELEGRAM_BOT_TOKEN. That way this whole file can be copied and
-// replaced safely, and the public GitHub copy never contains the secret.
+const TELEGRAM_BOT_TOKEN = 'PASTE_REAL_TOKEN_IN_GOOGLE_ONLY'; // real value lives only in the Google copy — never commit it
 const TELEGRAM_CHAT_ID = '1016354859';
 
 // Leads tab (tab 1) column positions, 1-indexed — must match the appendRow()
@@ -242,12 +239,7 @@ function sendLeadNotification(data) {
 
 function sendTelegramNotification(text) {
   try {
-    const botToken = PropertiesService.getScriptProperties().getProperty('TELEGRAM_BOT_TOKEN');
-    if (!botToken) {
-      console.error('Telegram not sent: add TELEGRAM_BOT_TOKEN in Project Settings > Script Properties.');
-      return;
-    }
-    const url = 'https://api.telegram.org/bot' + botToken + '/sendMessage';
+    const url = 'https://api.telegram.org/bot' + TELEGRAM_BOT_TOKEN + '/sendMessage';
     UrlFetchApp.fetch(url, {
       method: 'post',
       contentType: 'application/x-www-form-urlencoded',
