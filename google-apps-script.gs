@@ -79,6 +79,10 @@ function doPost(e) {
       return handleSubscribe(data);
     }
 
+    if (data.formType === 'referral') {
+      return handleReferral(data);
+    }
+
     console.log('doPost CODE-CHECK v4 is running (build 30-Aug-D, dropped Current HDB Price column)');
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
 
@@ -245,6 +249,72 @@ function wrapHtml(message) {
 
 function jsonOutput(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
+
+/* ---------- Referrals (subscribers page "Refer someone" form) ----------
+   Each referral becomes a row in a "Referrals" tab (created automatically on
+   the first referral), and Serene gets an email alert, like a lead. */
+const REFERRALS_SHEET_NAME = 'Referrals';
+
+function handleReferral(data) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(REFERRALS_SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(REFERRALS_SHEET_NAME);
+    sheet.appendRow([
+      'Timestamp', 'Referred by', 'Referrer phone / email', 'Friend name', 'Friend phone',
+      'Friend email', 'Looking to', 'Notes', 'Consent confirmed', 'Page', 'Status'
+    ]);
+    sheet.setFrozenRows(1);
+  }
+
+  // A leading = + - @ would make Sheets treat typed text as a formula.
+  const clean = (v) => {
+    const s = String(v || '').trim().slice(0, 500);
+    return /^[=+\-@]/.test(s) ? "'" + s : s;
+  };
+
+  sheet.appendRow([
+    new Date(),
+    clean(data.referrerName),
+    clean(data.referrerContact),
+    clean(data.friendName),
+    clean(data.friendPhone),
+    clean(data.friendEmail),
+    clean(data.lookingTo),
+    clean(data.notes),
+    data.consent ? 'Yes' : 'No',
+    clean(data.page),
+    'New'
+  ]);
+
+  try {
+    MailApp.sendEmail(
+      NOTIFY_EMAIL,
+      'New referral: ' + (data.friendName || 'Unknown') + ' (from ' + (data.referrerName || 'unknown') + ')',
+      [
+        'A new referral just came in from your Subscribers page:',
+        '',
+        'Referred by: ' + (data.referrerName || '-') + ' (' + (data.referrerContact || '-') + ')',
+        '',
+        'Friend: ' + (data.friendName || '-'),
+        'Phone: ' + (data.friendPhone || '-'),
+        'Email: ' + (data.friendEmail || '-'),
+        'Looking to: ' + (data.lookingTo || '-'),
+        'Notes: ' + (data.notes || '-'),
+        '',
+        'The referrer confirmed the friend agreed to be contacted: ' + (data.consent ? 'Yes' : 'No'),
+        '',
+        'Open the Sheet (Referrals tab) to see the full list.'
+      ].join('\n')
+    );
+  } catch (err) {
+    console.error('Referral email failed: ' + err); // the row is already saved
+  }
+
+  return ContentService
+    .createTextOutput(JSON.stringify({ status: 'ok' }))
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
 /* ---------- Tab 2 itself — created automatically on first subscribe ---------- */

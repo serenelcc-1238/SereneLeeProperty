@@ -145,8 +145,27 @@
       <div class="referral-card">
         <span class="eyebrow">Refer</span>
         <h3>Know someone buying, selling or renting?</h3>
-        <p>Introduce them to Serene for a no-pressure, numbers-first chat. A quick WhatsApp is all it takes.</p>
-        <a class="btn btn-navy btn-sm" href="https://wa.me/6580868568?text=Hi%20Serene%2C%20I%27d%20like%20to%20refer%20a%20friend%20who%20is%20looking%20to%20buy%2C%20sell%20or%20rent." target="_blank" rel="noopener">Refer someone on WhatsApp</a>
+        <p>Introduce them to Serene for a no-pressure, numbers-first chat. Leave their details and Serene will reach out.</p>
+        <form class="referral-form" id="referralForm" novalidate>
+          <div class="referral-fields">
+            <label>Your name<input type="text" id="refYourName" autocomplete="name" maxlength="80" required></label>
+            <label>Your phone or email<input type="text" id="refYourContact" autocomplete="tel" maxlength="120" required></label>
+            <label>Friend&rsquo;s name<input type="text" id="refFriendName" autocomplete="off" maxlength="80" required></label>
+            <label>Friend&rsquo;s phone<input type="tel" id="refFriendPhone" autocomplete="off" maxlength="40" required></label>
+            <label>Friend&rsquo;s email <span class="optional">(optional)</span><input type="email" id="refFriendEmail" autocomplete="off" maxlength="120"></label>
+            <label>They&rsquo;re looking to
+              <select id="refLookingTo">
+                <option>Buy</option><option>Sell</option><option>Rent</option><option>Buy &amp; sell (upgrading)</option><option>Not sure yet</option>
+              </select>
+            </label>
+            <label class="wide">Anything Serene should know? <span class="optional">(optional)</span><textarea id="refNotes" rows="2" maxlength="500" placeholder="e.g. looking for a 4-room in Tampines, best to call after 7pm"></textarea></label>
+          </div>
+          <label class="referral-consent"><input type="checkbox" id="refConsent" required> <span>My friend has agreed to be contacted by Serene about property.</span></label>
+          <button type="submit" class="btn btn-navy btn-sm" id="refSubmit">Send referral</button>
+          <div class="subscribe-msg success" id="refSuccess">Thank you! Serene will get in touch with your friend soon.</div>
+          <div class="subscribe-msg error" id="refError">Something went wrong &mdash; please try again, or WhatsApp Serene directly.</div>
+        </form>
+        <a class="referral-wa" href="https://wa.me/6580868568?text=Hi%20Serene%2C%20I%27d%20like%20to%20refer%20a%20friend%20who%20is%20looking%20to%20buy%2C%20sell%20or%20rent." target="_blank" rel="noopener">Prefer WhatsApp? Message Serene directly &rarr;</a>
       </div>
     </div>
   </div>

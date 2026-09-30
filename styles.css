@@ -627,3 +627,16 @@ footer .container{display:flex;gap:44px;flex-wrap:wrap;}
 .footer-subscribe:hover{text-decoration:underline;}
 /* Medium screens: slightly tighter menu so the WhatsApp button stays on one line */
 @media(min-width:901px) and (max-width:1180px){.nav-links{gap:16px;}.nav-cta .btn{white-space:nowrap;}}
+/* Referral form (subscribers page) */
+.referral-form{width:100%;display:grid;gap:12px;}
+.referral-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;}
+@media(max-width:520px){.referral-fields{grid-template-columns:1fr;}}
+.referral-fields label{display:grid;gap:4px;font-size:.8rem;font-weight:600;color:var(--navy-900);}
+.referral-fields label.wide{grid-column:1/-1;}
+.referral-fields .optional{font-weight:400;color:var(--muted);}
+.referral-card select,.referral-card textarea{width:100%;font:inherit;font-size:16px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--navy-900);}
+.referral-card textarea{resize:vertical;}
+.referral-consent{display:flex;gap:10px;align-items:flex-start;font-size:.85rem;color:var(--muted);cursor:pointer;}
+.referral-consent input{width:16px;height:16px;margin-top:2px;flex-shrink:0;accent-color:var(--navy);}
+.referral-form .btn{justify-self:start;}
+.referral-wa{font-size:.85rem;font-weight:600;color:var(--navy-900);}

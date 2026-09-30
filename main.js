@@ -231,6 +231,69 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  /* "Refer someone" form (subscribers.html) — saved to the "Referrals" tab of the
+     same Google Sheet (formType: 'referral'), and Serene gets an email alert. */
+  var referralForm = document.getElementById('referralForm');
+  if (referralForm) {
+    var refSubmit = document.getElementById('refSubmit');
+    var refSuccess = document.getElementById('refSuccess');
+    var refError = document.getElementById('refError');
+    var val = function (id) { return document.getElementById(id).value.trim(); };
+
+    referralForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      refSuccess.classList.remove('show');
+      refError.classList.remove('show');
+
+      var problem =
+        !val('refYourName') ? 'Please enter your name.' :
+        !val('refYourContact') ? 'Please enter your phone or email, so Serene knows who referred.' :
+        !val('refFriendName') ? "Please enter your friend's name." :
+        !/^\+?[\d\s-]{8,}$/.test(val('refFriendPhone')) ? "Please enter your friend's phone number." :
+        val('refFriendEmail') && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val('refFriendEmail')) ? "Please check your friend's email address." :
+        !document.getElementById('refConsent').checked ? 'Please confirm your friend has agreed to be contacted.' :
+        '';
+      if (problem) {
+        refError.textContent = problem;
+        refError.classList.add('show');
+        return;
+      }
+
+      refSubmit.disabled = true;
+      refSubmit.textContent = 'Sending...';
+
+      fetch(SUBSCRIBE_WEBHOOK_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+          formType: 'referral',
+          referrerName: val('refYourName'),
+          referrerContact: val('refYourContact'),
+          friendName: val('refFriendName'),
+          friendPhone: val('refFriendPhone'),
+          friendEmail: val('refFriendEmail'),
+          lookingTo: val('refLookingTo'),
+          notes: val('refNotes'),
+          consent: true,
+          page: window.location.href
+        })
+      })
+        .then(function () {
+          refSuccess.classList.add('show');
+          referralForm.reset();
+        })
+        .catch(function () {
+          refError.textContent = 'Something went wrong — please try again, or WhatsApp Serene directly.';
+          refError.classList.add('show');
+        })
+        .finally(function () {
+          refSubmit.disabled = false;
+          refSubmit.textContent = 'Send referral';
+        });
+    });
+  }
+
   /* Click-to-enlarge lightbox for any .enlargeable-img (currently: the two
      lease decay infographics). Add the class to any future image to get the
      same behavior. No-op on any page without .enlargeable-img / #infographicLightbox. */
