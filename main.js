@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
     applyLaunchFilters();
   }
 
-  /* Subscribe form (currently on index.html only) — posts to the SAME Google
+  /* Subscribe form (on subscribers.html only) — posts to the SAME Google
      Apps Script Web App used by the calculator, contact form and upgrade
      checklist (see GAS_WEBHOOK_URL in those pages). That one script now
      handles both: it tells this request apart by formType: 'subscribe'
