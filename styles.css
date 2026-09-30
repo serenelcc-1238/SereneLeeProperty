@@ -158,7 +158,7 @@ header{
   background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);
   padding:8px 14px;border-radius:999px;
 }
-.page-hero{padding:56px 0 20px;}
+.page-hero{padding:56px 20px 20px;}
 .page-hero p{color:var(--muted);max-width:600px;font-size:.98rem;}
 
 /* SECTION HEAD */
