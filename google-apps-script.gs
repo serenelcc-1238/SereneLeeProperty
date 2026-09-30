@@ -438,6 +438,10 @@ function handleSubscribe(data) {
 
     const token = Utilities.getUuid();
     sheet.appendRow([new Date(), email, data.source || '', 'active', token]);
+    sendTelegramNotification(
+      '📧 New subscriber: ' + email + '\n' +
+      'Source: ' + (data.source || 'website')
+    );
     return jsonOutput({ ok: true });
 
   } catch (err) {
@@ -597,6 +601,14 @@ function handleReferral(data) {
   } catch (err) {
     console.error('Referral email failed: ' + err); // the row is already saved
   }
+
+  sendTelegramNotification(
+    '🤝 New referral: ' + (data.friendName || 'Unknown') + '\n' +
+    'Phone: ' + (data.friendPhone || '-') + '\n' +
+    'Looking to: ' + (data.lookingTo || '-') + '\n' +
+    'Referred by: ' + (data.referrerName || '-') + ' (' + (data.referrerContact || '-') + ')' +
+    (data.notes ? '\nNotes: ' + data.notes : '')
+  );
 
   return ContentService
     .createTextOutput(JSON.stringify({ status: 'ok' }))
