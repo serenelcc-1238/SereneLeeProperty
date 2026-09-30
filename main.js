@@ -144,6 +144,23 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
       }
 
+      // Subscribers page only: which topics were ticked, and who referred them (?ref=Name).
+      // Both go into the existing "Source" column, so the Google Apps Script needs no change.
+      var source = window.location.pathname;
+      var topicBoxes = document.querySelectorAll('input[name="subscribeTopic"]');
+      if (topicBoxes.length) {
+        var topics = [];
+        topicBoxes.forEach(function (box) { if (box.checked) topics.push(box.value); });
+        if (!topics.length) {
+          subscribeError.textContent = 'Please tick at least one: Blog updates or Newsletter.';
+          subscribeError.classList.add('show');
+          return;
+        }
+        source += ' · ' + topics.join(' + ');
+      }
+      var referrer = getReferrer();
+      if (referrer) source += ' · referred by: ' + referrer;
+
       subscribeBtn.disabled = true;
       subscribeBtn.textContent = 'Subscribing...';
 
@@ -151,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function () {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({ formType: 'subscribe', email: email, source: window.location.pathname, page: window.location.href })
+        body: JSON.stringify({ formType: 'subscribe', email: email, source: source, page: window.location.href })
       })
         .then(function () {
           subscribeSuccess.classList.add('show');
@@ -165,6 +182,52 @@ document.addEventListener('DOMContentLoaded', function () {
           subscribeBtn.disabled = false;
           subscribeBtn.textContent = 'Subscribe';
         });
+    });
+  }
+
+  /* Referrals (subscribers.html). A friend's link looks like subscribers.html?ref=Jane%20Tan —
+     the name is shown on arrival and sent along with their subscription. */
+  function getReferrer() {
+    var ref = new URLSearchParams(window.location.search).get('ref');
+    return ref ? ref.replace(/[<>]/g, '').trim().slice(0, 60) : '';
+  }
+
+  var referredBy = document.getElementById('referredBy');
+  if (referredBy && getReferrer()) {
+    referredBy.textContent = getReferrer() + ' invited you to subscribe.';
+    referredBy.hidden = false;
+  }
+
+  var refName = document.getElementById('refName');
+  if (refName) {
+    var refLink = document.getElementById('refLink');
+    var refCopy = document.getElementById('refCopy');
+    var refWhatsApp = document.getElementById('refWhatsApp');
+    var pageUrl = 'https://sereneleeproperty.com/subscribers.html';
+
+    var updateRefLink = function () {
+      var name = refName.value.trim();
+      var link = name ? pageUrl + '?ref=' + encodeURIComponent(name) : pageUrl;
+      refLink.value = link;
+      refWhatsApp.href = 'https://wa.me/?text=' + encodeURIComponent(
+        "I've been reading Serene Lee's Singapore property guides — subscribe here for new guides and new launch updates: " + link
+      );
+    };
+    refName.addEventListener('input', updateRefLink);
+    updateRefLink();
+
+    refCopy.addEventListener('click', function () {
+      var done = function () {
+        refCopy.textContent = 'Copied!';
+        setTimeout(function () { refCopy.textContent = 'Copy link'; }, 2000);
+      };
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(refLink.value).then(done, function () { refLink.select(); });
+      } else {
+        refLink.select();
+        document.execCommand('copy');
+        done();
+      }
     });
   }
 
