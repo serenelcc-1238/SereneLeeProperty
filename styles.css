@@ -623,3 +623,7 @@ footer .container{display:flex;gap:44px;flex-wrap:wrap;}
 .referral-link{display:flex;gap:8px;width:100%;}
 .referral-card input{width:100%;min-width:0;font:inherit;font-size:16px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--navy-900);}
 .referral-link input{flex:1;font-size:.85rem;color:var(--muted);}
+.footer-subscribe{color:var(--navy-900);font-weight:600;text-decoration:none;}
+.footer-subscribe:hover{text-decoration:underline;}
+/* Medium screens: slightly tighter menu so the WhatsApp button stays on one line */
+@media(min-width:901px) and (max-width:1180px){.nav-links{gap:16px;}.nav-cta .btn{white-space:nowrap;}}
