@@ -11,6 +11,38 @@ posthog.init('phc_rg6iVEBgbirYoH76SaVRhMCa43uwjWztDfHiS8peBGJK', {
   enable_heatmaps: true
 });
 
+/* Exclude Serene's own visits. Open any page once with ?notrack=1 on each of
+   your own phones/browsers and that browser stops being counted (it stays off
+   until browser data is cleared). Undo with ?track=1. */
+(function () {
+  var q = new URLSearchParams(window.location.search);
+  if (q.get('notrack') === '1') {
+    posthog.opt_out_capturing();
+    alert('Analytics is now OFF for this browser. Your visits will not be counted.');
+  } else if (q.get('track') === '1') {
+    posthog.opt_in_capturing();
+    alert('Analytics is now ON for this browser.');
+  }
+})();
+
+/* WhatsApp lead clicks: record every tap on a WhatsApp link (header button,
+   floating button, CTA banners, blog posts, chatbot) as a "whatsapp_clicked"
+   event, sent instantly so it isn't lost when the WhatsApp app opens. */
+document.addEventListener('click', function (e) {
+  var link = e.target.closest && e.target.closest('a[href*="wa.me"], a[href*="whatsapp.com"]');
+  if (!link) return;
+  var where = link.classList.contains('fab-wa') ? 'floating button'
+    : link.closest('header') ? 'header'
+    : link.closest('.cta-banner') ? 'cta banner'
+    : link.closest('footer') ? 'footer'
+    : 'page content';
+  posthog.capture('whatsapp_clicked', {
+    button_text: (link.textContent || '').trim().slice(0, 60) || '(icon)',
+    button_location: where,
+    page_path: window.location.pathname
+  }, { send_instantly: true, transport: 'sendBeacon' });
+}, true);
+
 /* Shared across every page: mobile nav toggle + footer year */
 document.addEventListener('DOMContentLoaded', function () {
   var toggle = document.getElementById('navToggle');
