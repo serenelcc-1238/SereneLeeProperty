@@ -81,12 +81,55 @@
 
 <style>
 /* Market map page. Uses the site tokens from styles.css (navy / gold / cream). */
-:root{--mm-r0:#e3e9ef;--mm-r1:#bccbda;--mm-r2:#8ea8c1;--mm-r3:#5e81a3;--mm-r4:#2f5880;--mm-r5:#0b2a4a;--mm-none:#ece9e1;--mm-partial:#c77c12}
-.filter-group[hidden]{display:none}
+:root{--mm-r0:#e3e9ef;--mm-r1:#bccbda;--mm-r2:#8ea8c1;--mm-r3:#5e81a3;--mm-r4:#2f5880;--mm-r5:#0b2a4a;--mm-none:#ece9e1;--mm-partial:#c77c12;--mm-hl:rgba(201,162,39,.18)}
+.filter-group[hidden],.mm-row[hidden],.mm-form[hidden],.mm-bar2[hidden]{display:none}
 .mm-updated{font-size:.82rem;color:var(--muted);margin-top:6px}
 .mm-updated b{color:var(--navy-900);font-weight:600}
 .mm-stale{color:var(--amber-ink);background:var(--amber-bg);padding:2px 8px;border-radius:999px;font-weight:600;margin-left:6px}
-.mm-bar{margin-bottom:18px}
+
+/* Check my block / condo */
+.mm-look{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;margin-bottom:28px}
+.mm-look h2{font-size:1.35rem;margin-bottom:4px}
+.mm-look .sub{color:var(--muted);font-size:.9rem;margin:0 0 16px;max-width:640px}
+.mm-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.mm-form{display:grid;grid-template-columns:120px minmax(0,1fr) 150px auto;gap:12px;align-items:end}
+.mm-form.pte{grid-template-columns:minmax(0,1fr) 150px auto}
+.mm-form .field{margin:0;min-width:0}
+.mm-form .field input{width:100%}
+.mm-form .btn{height:46px;white-space:nowrap}
+@media(max-width:720px){.mm-form,.mm-form.pte{grid-template-columns:1fr 1fr}.mm-form .f-wide{grid-column:1/-1}.mm-form .btn{grid-column:1/-1}}
+.mm-msg{margin-top:14px;font-size:.88rem;color:var(--muted)}
+.mm-msg.err{color:var(--amber-ink);background:var(--amber-bg);padding:10px 14px;border-radius:10px}
+.mm-pick{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.mm-res{margin-top:20px;border-top:1px solid var(--line);padding-top:18px;display:grid;gap:16px}
+.mm-res-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px 20px;align-items:baseline}
+.mm-res-head h3{margin:0;font-size:1.25rem}
+.mm-res-head .meta{color:var(--muted);font-size:.86rem}
+.mm-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.mm-tile{background:var(--cream);border-radius:12px;padding:12px 14px;min-width:0}
+.mm-tile.you{background:var(--mm-hl);border:1px solid rgba(201,162,39,.5)}
+.mm-tile .k{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.mm-tile .v{font:600 1.25rem/1.25 'Fraunces',Georgia,serif;color:var(--navy-900);margin:4px 0 2px;font-variant-numeric:tabular-nums}
+.mm-tile .s{font-size:.8rem;color:var(--muted)}
+.mm-tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+.mm-table{width:100%;border-collapse:collapse;font-size:.84rem;min-width:560px}
+.mm-table th{text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:9px 12px;background:var(--cream);font-weight:700}
+.mm-table td{padding:8px 12px;border-top:1px solid var(--line);font-variant-numeric:tabular-nums;color:var(--ink)}
+.mm-table td.r,.mm-table th.r{text-align:right}
+.mm-table tr.you td{background:var(--mm-hl)}
+.mm-table tr[hidden]{display:none}
+.mm-tag{display:inline-block;font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--gold);color:var(--navy-900);margin-left:6px;vertical-align:1px}
+.mm-tag.grey{background:var(--line);color:var(--muted)}
+.mm-res-cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;background:var(--navy-900);color:#fff;border-radius:12px;padding:14px 18px}
+.mm-res-cta p{margin:0;font-size:.92rem;max-width:520px}
+.mm-linkbtn{background:none;border:0;padding:0;color:var(--navy);font-weight:600;text-decoration:underline;cursor:pointer;font-size:.86rem}
+
+/* Map controls */
+.mm-bar{margin-bottom:12px;padding-bottom:14px}
+.mm-bar2{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.mm-bar2 .filter-group{min-width:0;max-width:100%}
+.mm-bar2 .sort-select{min-width:0;max-width:100%}
+@media(max-width:520px){.mm-bar2 .filter-group:has(select){flex:1 1 100%;flex-wrap:nowrap}.mm-bar2 .sort-select{flex:1}}
 .mm-quarter{display:flex;align-items:center;gap:10px;flex:1 1 340px;min-width:0}
 .mm-qlabel{font:600 1.5rem/1 'Fraunces',Georgia,serif;color:var(--navy-900);min-width:5.4ch;font-variant-numeric:tabular-nums}
 .mm-nav{width:34px;height:34px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--navy-900);font-size:1.1rem;cursor:pointer}
@@ -100,10 +143,13 @@
 .mm-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:16px;min-width:0}
 .mm-mapcard{position:relative}
 .mm-map{width:100%;height:auto;display:block}
-.mm-map path{stroke:#fff;stroke-width:.9;fill:var(--mm-none);transition:fill .25s}
+.mm-map path{stroke:#fff;stroke-width:.9;fill:var(--mm-none);transition:fill .25s,opacity .25s}
 .mm-map path.town{cursor:pointer}
+.mm-map path.town.out{cursor:default}
 .mm-map path.town:hover,.mm-map path.sel{stroke:var(--gold);stroke-width:2}
+.mm-map path.town.out:hover{stroke:#fff;stroke-width:.9}
 .mm-map text{font:600 9.5px 'Inter',sans-serif;fill:var(--navy-900);pointer-events:none;paint-order:stroke;stroke:#fff;stroke-width:2.6px;stroke-linejoin:round}
+.mm-map text.out{opacity:.35}
 .mm-map circle{fill:var(--gold);fill-opacity:.62;stroke:var(--navy);stroke-width:1.1;cursor:pointer;transition:r .25s}
 .mm-map circle:hover,.mm-map circle.sel{stroke-width:2.4;fill-opacity:.85}
 .mm-map.pte path{cursor:default}
@@ -113,7 +159,7 @@
 .mm-swatches{display:flex}
 .mm-swatches span{width:28px;height:10px}
 .mm-na{display:inline-block;width:14px;height:10px;background:var(--mm-none);border:1px solid var(--line);vertical-align:middle;margin-right:4px}
-.mm-tip{position:absolute;pointer-events:none;background:var(--navy-900);color:#fff;padding:9px 12px;border-radius:8px;font-size:.8rem;line-height:1.45;min-width:170px;max-width:240px;opacity:0;transition:opacity .12s;z-index:2}
+.mm-tip{position:absolute;pointer-events:none;background:var(--navy-900);color:#fff;padding:9px 12px;border-radius:8px;font-size:.8rem;line-height:1.45;min-width:170px;max-width:250px;opacity:0;transition:opacity .12s;z-index:2}
 .mm-tip b{font-family:'Fraunces',Georgia,serif;font-size:.95rem;font-weight:600}
 .mm-side h3{font-size:1.02rem;margin-bottom:10px}
 .mm-rank{list-style:none;margin:0;padding:0;display:grid;gap:4px;max-height:520px;overflow:auto}
@@ -143,29 +189,96 @@
 
 <section style="padding-top:12px;">
   <div class="container">
+
+    <div class="mm-look" id="mmLook">
+      <h2>Check your own block or condo</h2>
+      <p class="sub">See what flats in your block, or units in your condo, have actually sold for. Add your unit number to pick out deals on your own floor.</p>
+      <div class="mm-tabs">
+        <button type="button" class="filter-chip active" data-look="hdb">HDB flat</button>
+        <button type="button" class="filter-chip" data-look="pte">Condo / private</button>
+      </div>
+      <form class="mm-form" id="lkHdbForm" autocomplete="off">
+        <div class="field"><label for="lkBlk">Block</label><input type="text" id="lkBlk" placeholder="e.g. 335C" maxlength="6"></div>
+        <div class="field f-wide"><label for="lkStreet">Street</label><input type="text" id="lkStreet" list="lkStreets" placeholder="e.g. Yishun St 31"><datalist id="lkStreets"></datalist></div>
+        <div class="field"><label for="lkUnit">Unit <span style="font-weight:400;color:var(--muted)">(optional)</span></label><input type="text" id="lkUnit" placeholder="#08-123" maxlength="10"></div>
+        <button type="submit" class="btn btn-navy">Check my block</button>
+      </form>
+      <form class="mm-form pte" id="lkPteForm" autocomplete="off" hidden>
+        <div class="field f-wide"><label for="lkProj">Condo or project name</label><input type="text" id="lkProj" list="lkProjs" placeholder="e.g. Riverparc Residence"><datalist id="lkProjs"></datalist></div>
+        <div class="field"><label for="lkPUnit">Unit <span style="font-weight:400;color:var(--muted)">(optional)</span></label><input type="text" id="lkPUnit" placeholder="#12-05" maxlength="10"></div>
+        <button type="submit" class="btn btn-navy">Check my condo</button>
+      </form>
+      <div id="lkOut" aria-live="polite"></div>
+    </div>
+
     <div class="filter-bar mm-bar">
       <div class="filter-group">
         <span class="filter-group-label">Market:</span>
         <button type="button" class="filter-chip active" data-layer="hdb">HDB resale</button>
         <button type="button" class="filter-chip" data-layer="pte">Private (URA)</button>
       </div>
-      <div class="filter-group" id="mmHdbOpts">
-        <span class="filter-group-label">Show:</span>
-        <button type="button" class="filter-chip active" data-metric="vol">Transactions</button>
-        <button type="button" class="filter-chip" data-metric="px">Avg price</button>
-      </div>
-      <div class="filter-group" id="mmPteOpts" hidden>
-        <span class="filter-group-label">Sale type:</span>
-        <button type="button" class="filter-chip active" data-sale="all">All</button>
-        <button type="button" class="filter-chip" data-sale="0">New launch</button>
-        <button type="button" class="filter-chip" data-sale="1">Sub sale</button>
-        <button type="button" class="filter-chip" data-sale="2">Resale</button>
-      </div>
       <div class="mm-quarter">
         <button type="button" class="mm-nav" id="mmPrev" aria-label="Previous quarter">&lsaquo;</button>
         <span class="mm-qlabel" id="mmQ">&nbsp;</span>
         <button type="button" class="mm-nav" id="mmNext" aria-label="Next quarter">&rsaquo;</button>
         <input type="range" id="mmRange" min="0" max="0" value="0" aria-label="Quarter">
+      </div>
+    </div>
+
+    <div class="mm-bar2" id="mmHdbOpts">
+      <div class="filter-group">
+        <span class="filter-group-label">Region:</span>
+        <button type="button" class="filter-chip active" data-hreg="all">All</button>
+        <button type="button" class="filter-chip" data-hreg="Central">Central</button>
+        <button type="button" class="filter-chip" data-hreg="East">East</button>
+        <button type="button" class="filter-chip" data-hreg="North">North</button>
+        <button type="button" class="filter-chip" data-hreg="North-East">North-East</button>
+        <button type="button" class="filter-chip" data-hreg="West">West</button>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group-label" for="mmTown">Estate:</label>
+        <select id="mmTown" class="sort-select"><option value="">All estates</option></select>
+      </div>
+      <div class="filter-group" id="mmFtGroup">
+        <label class="filter-group-label" for="mmFt">Flat type:</label>
+        <select id="mmFt" class="sort-select">
+          <option value="all">All types</option><option value="2">2-room</option><option value="3">3-room</option>
+          <option value="4">4-room</option><option value="5">5-room</option><option value="E">Executive</option>
+          <option value="M">Multi-gen</option><option value="1">1-room</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-group-label">Show:</span>
+        <button type="button" class="filter-chip active" data-metric="vol">Transactions</button>
+        <button type="button" class="filter-chip" data-metric="px">Avg price</button>
+      </div>
+    </div>
+
+    <div class="mm-bar2" id="mmPteOpts" hidden>
+      <div class="filter-group" id="mmSegGroup">
+        <span class="filter-group-label">Region:</span>
+        <button type="button" class="filter-chip active" data-seg="all">All</button>
+        <button type="button" class="filter-chip" data-seg="CCR">CCR</button>
+        <button type="button" class="filter-chip" data-seg="RCR">RCR</button>
+        <button type="button" class="filter-chip" data-seg="OCR">OCR</button>
+      </div>
+      <div class="filter-group">
+        <label class="filter-group-label" for="mmDist">District:</label>
+        <select id="mmDist" class="sort-select"><option value="">All districts</option></select>
+      </div>
+      <div class="filter-group" id="mmPtGroup">
+        <label class="filter-group-label" for="mmPt">Property:</label>
+        <select id="mmPt" class="sort-select">
+          <option value="all">All private</option><option value="C">Condo &amp; apartment</option>
+          <option value="E">Executive condo (EC)</option><option value="L">Landed</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-group-label">Sale type:</span>
+        <button type="button" class="filter-chip active" data-sale="all">All</button>
+        <button type="button" class="filter-chip" data-sale="0">New launch</button>
+        <button type="button" class="filter-chip" data-sale="1">Sub sale</button>
+        <button type="button" class="filter-chip" data-sale="2">Resale</button>
       </div>
     </div>
 
@@ -189,9 +302,10 @@
     </div>
 
     <div class="mm-notes">
-      <p><strong>How to read it.</strong> Tap a town or district for its figures and its own quarterly trend. Tap a bar to jump to that quarter. HDB average price is a simple mean across all flat types, so a shift in the mix of flats sold moves it.</p>
-      <p><strong>HDB:</strong> Resale flat prices based on registration date from Jan 2017 onwards, Housing &amp; Development Board, via <a href="https://data.gov.sg/datasets/d_8b84c4ee58e3cfc0ece0d773c8ca6abc/view" target="_blank" rel="noopener">data.gov.sg</a>. HDB's Central Area town is drawn across the city-centre planning areas; grey areas have no HDB resale town of their own.</p>
-      <p><strong>Private:</strong> Private residential transactions from caveats lodged, <a href="https://eservice.ura.gov.sg/maps/api/" target="_blank" rel="noopener">URA Data Service</a>, last five years. Counts are units: condos, apartments, executive condos and landed. "New launch" means sales by developers. Caveats are lodged after the contract, so the latest quarter keeps filling in for several weeks. Each bubble sits at the average location of the district's transacted projects.</p>
+      <p><strong>How to read it.</strong> Tap a town or district for its figures and its own quarterly trend. Tap a bar to jump to that quarter. Average price is a simple mean, so choose a flat type for a like-for-like comparison.</p>
+      <p><strong>Your block or condo.</strong> HDB and URA publish floor bands, not unit numbers, so your unit number is only used to find your floor band (3 floors for HDB, 5 for private). HDB block lookup covers resale deals in the last 3 years; private covers the last 5 years. $psf uses floor area converted from square metres. Bulk deals of several units are marked and left out of $psf.</p>
+      <p><strong>HDB:</strong> Resale flat prices based on registration date from Jan 2017 onwards, Housing &amp; Development Board, via <a href="https://data.gov.sg/datasets/d_8b84c4ee58e3cfc0ece0d773c8ca6abc/view" target="_blank" rel="noopener">data.gov.sg</a>. Regions are URA planning regions. HDB's Central Area town is drawn across the city-centre planning areas; grey areas have no HDB resale town of their own.</p>
+      <p><strong>Private:</strong> Private residential transactions from caveats lodged, <a href="https://eservice.ura.gov.sg/maps/api/" target="_blank" rel="noopener">URA Data Service</a>, last five years. CCR, RCR and OCR follow URA's market segment for each project. Counts are units. "New launch" means sales by developers. Caveats are lodged after the contract, so the latest quarter keeps filling in for several weeks. Each bubble sits at the average location of the district's transacted projects.</p>
       <p>Boundaries: URA Master Plan 2019 planning areas, via data.gov.sg. Figures are for general information only and are not a valuation or financial advice.</p>
     </div>
   </div>
@@ -199,7 +313,7 @@
 
 <section class="cta-banner">
   <div class="container cta-banner">
-    <h2>Want these numbers for your own block or project?</h2>
+    <h2>Thinking of selling or upgrading?</h2>
     <div class="btns">
       <a href="upgrade-checklist.html" class="btn btn-navy">Check My Upgrade Readiness</a>
       <a href="https://wa.me/6580868568?text=Hi%20Serene%2C%20I%20saw%20your%20market%20map%20and%20would%20like%20a%20closer%20look%20at%20my%20area." target="_blank" rel="noopener" class="btn" style="background:#fff;color:var(--navy-900);">Ask Serene on WhatsApp</a>
@@ -215,34 +329,71 @@ const LABEL_AT={"CENTRAL AREA":"DOWNTOWN CORE","KALLANG/WHAMPOA":"KALLANG"};
 const SHORT={"ANG MO KIO":"AMK","BUKIT BATOK":"Bt Batok","BUKIT MERAH":"Bt Merah","BUKIT PANJANG":"Bt Panjang","BUKIT TIMAH":"Bt Timah","CENTRAL AREA":"Central","CHOA CHU KANG":"CCK","JURONG EAST":"Jurong E","JURONG WEST":"Jurong W","KALLANG/WHAMPOA":"Kallang","MARINE PARADE":"Marine Pde"};
 const DNAME={"01":"Raffles Place, Marina","02":"Tanjong Pagar, Anson","03":"Queenstown, Tiong Bahru","04":"Telok Blangah, HarbourFront","05":"Pasir Panjang, Clementi","06":"City Hall, Beach Road","07":"Bugis, Golden Mile","08":"Little India, Farrer Park","09":"Orchard, River Valley","10":"Bukit Timah, Holland, Tanglin","11":"Novena, Thomson, Newton","12":"Balestier, Toa Payoh","13":"Macpherson, Braddell","14":"Geylang, Eunos","15":"Katong, Joo Chiat, Marine Parade","16":"Bedok, Upper East Coast","17":"Loyang, Changi","18":"Tampines, Pasir Ris","19":"Serangoon Gdn, Hougang, Punggol, Sengkang","20":"Bishan, Ang Mo Kio","21":"Upper Bt Timah, Clementi Park","22":"Jurong, Boon Lay","23":"Bukit Batok, Bt Panjang, CCK","24":"Lim Chu Kang, Tengah","25":"Kranji, Woodlands","26":"Upper Thomson, Springleaf","27":"Yishun, Sembawang","28":"Seletar, Yio Chu Kang"};
 const SALE=["New launch","Sub sale","Resale"];
-const VOL_BRK=[60,150,250,350,450], PX_BRK=[500,560,620,680,760];
+const FT={"1":"1-room","2":"2-room","3":"3-room","4":"4-room","5":"5-room","E":"Executive","M":"Multi-gen"};
+const PT={"C":"Condo & apartment","E":"Executive condo","L":"Landed"};
+const SQFT=10.7639;
 const $=id=>document.getElementById(id), NS="http://www.w3.org/2000/svg";
-const title=s=>s.toLowerCase().replace(/(^|[\s\/])\w/g,m=>m.toUpperCase());
-const fmtK=k=>"$"+(k>=1000?(k/1000).toFixed(2)+"M":k+"k");
+const title=s=>s.toLowerCase().replace(/(^|[\s\/(])\w/g,m=>m.toUpperCase());
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmtK=k=>"$"+(k>=1000?(k/1000).toFixed(2)+"M":Math.round(k)+"k");
+const fmt$=v=>"$"+Math.round(v).toLocaleString();
 const pct=(a,b)=>{const v=Math.round((a/b-1)*100);return (v>=0?"+":"")+v+"%";};
+const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const ym=s=>MON[+s.slice(5,7)-1]+" "+s.slice(0,4);
+const median=a=>{if(!a.length)return 0;const s=[...a].sort((x,y)=>x-y),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2;};
 const track=(ev,props)=>{try{window.posthog&&posthog.capture(ev,props)}catch(e){}};
+const WA=t=>"https://wa.me/6580868568?text="+encodeURIComponent(t);
 
-let DATA, Q=[], towns=[], dists=[], hq={}, uq={}, totals=[], avgAll=[];
+let DATA, Q=[], towns=[], dists=[], hq={}, uq={};
 let layer="hdb", metric="vol", sale="all", sel=null, qi=0, hdbLast=0, pteFirst=0, pteLast=0;
+let hReg="all", hFt="all", pSeg="all", pPt="all", hasFt=false, hasX=false;
 
+/* ---------------- data access ---------------- */
 function townOf(pa){ if(DATA.hdb.towns[pa]) return pa; if(pa==="KALLANG") return "KALLANG/WHAMPOA"; if(CENTRAL.includes(pa)) return "CENTRAL AREA"; return null; }
-const hn=(t,i)=>{const k=hq[Q[i]];return k===undefined?0:DATA.hdb.towns[t].n[k];};
-const hp=(t,i)=>{const k=hq[Q[i]];return k===undefined?0:DATA.hdb.towns[t].p[k];};
-const pv=(d,i)=>{const k=uq[Q[i]];if(k===undefined)return 0;const n=DATA.ura.districts[d].n;return sale==="all"?n[0][k]+n[1][k]+n[2][k]:n[+sale][k];};
+const T=t=>DATA.hdb.towns[t];
+function hser(t){const x=T(t);if(hFt==="all"||!hasFt)return x;return (x.ft&&x.ft[hFt])||null;}
+const hn=(t,i)=>{const k=hq[Q[i]],s=hser(t);return k===undefined||!s?0:s.n[k];};
+const hp=(t,i)=>{const k=hq[Q[i]],s=hser(t);return k===undefined||!s?0:s.p[k];};
+const inReg=t=>hReg==="all"||T(t).region===hReg;
+const htot=i=>towns.reduce((a,t)=>a+(inReg(t)?hn(t,i):0),0);
+const havg=i=>{let n=0,s=0;towns.forEach(t=>{if(inReg(t)){n+=hn(t,i);s+=hn(t,i)*hp(t,i);}});return n?Math.round(s/n):0;};
+function pv(d,i){
+  const k=uq[Q[i]]; if(k===undefined)return 0;
+  const D=DATA.ura.districts[d], add=n=>sale==="all"?n[0][k]+n[1][k]+n[2][k]:n[+sale][k];
+  if(!hasX||(pSeg==="all"&&pPt==="all"))return add(D.n);
+  let s=0; for(const [key,n] of Object.entries(D.x||{})){const [g,p]=key.split("|"); if((pSeg==="all"||g===pSeg)&&(pPt==="all"||p===pPt)) s+=add(n);} return s;
+}
 const ptot=i=>dists.reduce((a,d)=>a+pv(d,i),0);
-const ramp=v=>{const b=metric==="vol"?VOL_BRK:PX_BRK;let k=0;while(k<b.length&&v>=b[k])k++;return "var(--mm-r"+k+")";};
 const hdbPartial=i=>DATA.hdb.last_partial&&i===hdbLast;
 
+/* Colour breaks follow the current filter, so a single flat type still uses the full scale */
+const brkCache={};
+function breaks(){
+  const key=metric+"|"+hFt; if(brkCache[key])return brkCache[key];
+  const vals=[]; for(const t of towns)for(let i=0;i<=hdbLast;i++){const v=metric==="vol"?hn(t,i):hp(t,i);if(v>0)vals.push(v);}
+  vals.sort((a,b)=>a-b);
+  const step=metric==="vol"?(vals.at(-1)>200?10:5):10;
+  const b=[1,2,3,4,5].map(j=>{const v=vals[Math.floor(vals.length*j/6)]||0;return Math.max(step,Math.round(v/step)*step);});
+  for(let j=1;j<b.length;j++)if(b[j]<=b[j-1])b[j]=b[j-1]+step;
+  return brkCache[key]=b;
+}
+const ramp=v=>{const b=breaks();let k=0;while(k<b.length&&v>=b[k])k++;return "var(--mm-r"+k+")";};
+
+/* ---------------- map ---------------- */
 function build(){
   const svg=$("mmMap");
   for(const [pa,v] of Object.entries(P)){const [d]=v.split("|");const p=document.createElementNS(NS,"path");p.setAttribute("d",d);const t=townOf(pa);if(t){p.dataset.town=t;p.classList.add("town");p.tabIndex=0;}svg.appendChild(p);}
-  for(const t of towns){const pa=LABEL_AT[t]||t;if(!P[pa])continue;const [x,y]=P[pa].split("|")[1].split(",").map(Number);const tx=document.createElementNS(NS,"text");tx.setAttribute("class","lbl-town");tx.setAttribute("x",x);tx.setAttribute("y",y+3);tx.setAttribute("text-anchor","middle");tx.textContent=SHORT[t]||title(t);svg.appendChild(tx);}
+  for(const t of towns){const pa=LABEL_AT[t]||t;if(!P[pa])continue;const [x,y]=P[pa].split("|")[1].split(",").map(Number);const tx=document.createElementNS(NS,"text");tx.setAttribute("class","lbl-town");tx.dataset.t=t;tx.setAttribute("x",x);tx.setAttribute("y",y+3);tx.setAttribute("text-anchor","middle");tx.textContent=SHORT[t]||title(t);svg.appendChild(tx);}
   for(const d of dists){const c=document.createElementNS(NS,"circle");const [x,y]=DATA.ura.districts[d].c;c.setAttribute("cx",x);c.setAttribute("cy",y);c.dataset.dist=d;c.tabIndex=0;svg.appendChild(c);
     const tx=document.createElementNS(NS,"text");tx.setAttribute("class","lbl-dist");tx.setAttribute("text-anchor","middle");tx.setAttribute("x",x);tx.dataset.d=d;tx.textContent="D"+d;svg.appendChild(tx);}
+  const ts=$("mmTown"); [...towns].sort().forEach(t=>ts.add(new Option(title(t),t)));
+  const ds=$("mmDist"); dists.forEach(d=>ds.add(new Option("D"+d+" "+(DNAME[d]||""),d)));
+  $("mmFtGroup").hidden=!hasFt; $("mmSegGroup").hidden=!hasX; $("mmPtGroup").hidden=!hasX;
+
   const tip=$("mmTip"), card=$("mmMapCard");
-  const keyOf=el=>el.dataset&&(layer==="hdb"?el.dataset.town:el.dataset.dist);
+  const keyOf=el=>{if(!el.dataset)return null;if(layer==="hdb"){const t=el.dataset.town;return t&&inReg(t)?t:null;}return el.dataset.dist;};
   const html=k=>layer==="hdb"?tipTown(k):tipDist(k);
-  const show=(k,e)=>{tip.innerHTML=html(k);const r=card.getBoundingClientRect();let x=e.clientX-r.left+14,y=e.clientY-r.top+14;if(x>r.width-250)x-=270;tip.style.left=x+"px";tip.style.top=y+"px";tip.style.opacity=1;};
+  const show=(k,e)=>{tip.innerHTML=html(k);const r=card.getBoundingClientRect();let x=e.clientX-r.left+14,y=e.clientY-r.top+14;if(x>r.width-260)x-=280;tip.style.left=x+"px";tip.style.top=y+"px";tip.style.opacity=1;};
   svg.addEventListener("mousemove",e=>{const k=keyOf(e.target);if(k)show(k,e);else tip.style.opacity=0;});
   svg.addEventListener("mouseleave",()=>tip.style.opacity=0);
   svg.addEventListener("click",e=>{const k=keyOf(e.target);if(k){select(k);show(k,e);}});
@@ -252,18 +403,32 @@ function build(){
   $("mmRange").addEventListener("input",e=>{qi=+e.target.value;render();});
   $("mmPrev").onclick=()=>{qi--;render();};
   $("mmNext").onclick=()=>{qi++;render();};
-  const group=(sel,fn)=>{const bs=[...document.querySelectorAll(sel)];bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.toggle("active",x===b));fn(b);render();});};
+  ts.onchange=()=>{sel=ts.value||null;if(sel&&!inReg(sel))setChip("[data-hreg]","all",()=>hReg="all");if(sel)track("market_map_area",{layer,area:sel,via:"filter"});render();};
+  ds.onchange=()=>{sel=ds.value||null;if(sel)track("market_map_area",{layer,area:sel,via:"filter"});render();};
+  $("mmFt").onchange=e=>{hFt=e.target.value;track("market_map_filter",{flat_type:hFt});render();};
+  $("mmPt").onchange=e=>{pPt=e.target.value;track("market_map_filter",{property:pPt});render();};
   group("[data-layer]",b=>{layer=b.dataset.layer;sel=null;qi=layer==="pte"?pteLast:defaultHdbQ();track("market_map_layer",{layer});});
   group("[data-metric]",b=>{metric=b.dataset.metric;});
   group("[data-sale]",b=>{sale=b.dataset.sale;track("market_map_sale_type",{sale:b.textContent});});
+  group("[data-hreg]",b=>{hReg=b.dataset.hreg;if(sel&&!inReg(sel))sel=null;track("market_map_filter",{region:hReg});});
+  group("[data-seg]",b=>{pSeg=b.dataset.seg;track("market_map_filter",{segment:pSeg});});
 }
+function group(selector,fn){const bs=[...document.querySelectorAll(selector)];bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.toggle("active",x===b));fn(b);render();});}
+function setChip(selector,val,fn){document.querySelectorAll(selector).forEach(b=>b.classList.toggle("active",Object.values(b.dataset)[0]===val));fn();}
 function select(k){sel=sel===k?null:k;if(sel)track("market_map_area",{layer,area:k});render();}
 function defaultHdbQ(){return hdbPartial(hdbLast)?hdbLast-1:hdbLast;}
+function setLayer(l){layer=l;document.querySelectorAll("[data-layer]").forEach(b=>b.classList.toggle("active",b.dataset.layer===l));}
 
 function tipTown(t){const n=hn(t,qi),px=hp(t,qi);const yoy=qi>=4&&!hdbPartial(qi)&&hn(t,qi-4)?"<br>"+pct(n,hn(t,qi-4))+" vs "+Q[qi-4]:"";
-  return `<b>${title(t)}</b><br>${n.toLocaleString()} resale flats sold<br>Average ${n?fmtK(px):"–"}${yoy}`;}
-function tipDist(d){const k=uq[Q[qi]],n=DATA.ura.districts[d].n,tot=pv(d,qi),prev=uq[Q[qi-4]]!==undefined?pv(d,qi-4):0;
-  return `<b>D${d} ${DNAME[d]||""}</b><br>${tot.toLocaleString()} units${sale==="all"&&k!==undefined?`<br>New launch ${n[0][k]} · Sub sale ${n[1][k]} · Resale ${n[2][k]}`:" ("+SALE[+sale].toLowerCase()+")"}${prev?"<br>"+pct(tot,prev)+" vs "+Q[qi-4]:""}`;}
+  return `<b>${title(t)}</b><br>${n.toLocaleString()} ${hFt==="all"?"":FT[hFt]+" "}resale flats sold<br>Average ${n?fmtK(px):"–"}${yoy}`;}
+function tipDist(d){const tot=pv(d,qi),prev=uq[Q[qi-4]]!==undefined?pv(d,qi-4):0;
+  let mix="";if(sale==="all"){const s0=sale;mix="<br>"+[0,1,2].map(s=>{sale=String(s);const v=pv(d,qi);sale=s0;return SALE[s]+" "+v;}).join(" · ");}
+  return `<b>D${d} ${DNAME[d]||""}</b><br>${tot.toLocaleString()} units${sale==="all"?"":" ("+SALE[+sale].toLowerCase()+")"}${mix}${prev&&qi!==pteLast?"<br>"+pct(tot,prev)+" vs "+Q[qi-4]:""}`;}
+
+function scopeLabel(){
+  if(layer==="hdb"){const a=hReg==="all"?"All towns":hReg+" region";return a+(hFt==="all"?"":" · "+FT[hFt]);}
+  const a=pSeg==="all"?"All districts":pSeg;return a+(pPt==="all"?"":" · "+PT[pPt]);
+}
 
 function render(){
   const pte=layer==="pte", lo=pte?pteFirst:0, hi=pte?pteLast:hdbLast;
@@ -272,22 +437,27 @@ function render(){
   $("mmQ").textContent=Q[qi];
   const svg=$("mmMap");svg.classList.toggle("pte",pte);svg.classList.toggle("hdb",!pte);
   $("mmHdbOpts").hidden=pte;$("mmPteOpts").hidden=!pte;
+  $("mmTown").value=!pte&&sel?sel:""; $("mmDist").value=pte&&sel?sel:"";
   if(!pte){
-    svg.querySelectorAll("path.town").forEach(p=>{const t=p.dataset.town;p.style.fill=ramp(metric==="vol"?hn(t,qi):hp(t,qi));p.classList.toggle("sel",t===sel);});
-    const yoy=qi>=4&&!hdbPartial(qi)?`<span>Year on year <b>${pct(totals[qi],totals[qi-4])}</b></span>`:"";
-    $("mmStats").innerHTML=`<span>All towns <b>${totals[qi].toLocaleString()}</b> resale flats</span><span>Average <b>${fmtK(avgAll[qi])}</b></span>${yoy}${hdbPartial(qi)?'<span class="mm-flag">Quarter in progress</span>':""}`;
-    const b=metric==="vol"?VOL_BRK:PX_BRK;
-    $("mmLegend").innerHTML=`<span>${metric==="vol"?"Flats sold in the quarter":"Average resale price"}</span><span class="mm-swatches">${[0,1,2,3,4,5].map(i=>`<span style="background:var(--mm-r${i})"></span>`).join("")}</span><span>${metric==="vol"?"under "+b[0]+" to "+b.at(-1)+"+":"under "+fmtK(b[0])+" to "+fmtK(b.at(-1))+"+"}</span><span><i class="mm-na"></i>No HDB resale town</span>`;
-    const rows=towns.map(t=>({k:t,name:title(t),v:metric==="vol"?hn(t,qi):hp(t,qi)})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
+    svg.querySelectorAll("path.town").forEach(p=>{const t=p.dataset.town,ok=inReg(t);p.classList.toggle("out",!ok);p.style.fill=ok?ramp(metric==="vol"?hn(t,qi):hp(t,qi)):"var(--mm-none)";p.classList.toggle("sel",t===sel);});
+    svg.querySelectorAll("text.lbl-town").forEach(x=>x.classList.toggle("out",!inReg(x.dataset.t)));
+    const tot=htot(qi), yoy=qi>=4&&!hdbPartial(qi)&&htot(qi-4)?`<span>Year on year <b>${pct(tot,htot(qi-4))}</b></span>`:"";
+    $("mmStats").innerHTML=`<span>${esc(scopeLabel())} <b>${tot.toLocaleString()}</b> resale flats</span><span>Average <b>${tot?fmtK(havg(qi)):"–"}</b></span>${yoy}${hdbPartial(qi)?'<span class="mm-flag">Quarter in progress</span>':""}`;
+    const b=breaks(), f=v=>metric==="vol"?v.toLocaleString():fmtK(v);
+    $("mmLegend").innerHTML=`<span>${metric==="vol"?"Flats sold in the quarter":"Average resale price"}${hFt==="all"?"":" ("+FT[hFt]+")"}</span><span class="mm-swatches">${[0,1,2,3,4,5].map(i=>`<span style="background:var(--mm-r${i})"></span>`).join("")}</span><span>under ${f(b[0])} to ${f(b.at(-1))}+</span><span><i class="mm-na"></i>No HDB resale town${hReg==="all"?"":" / outside region"}</span>`;
+    const rows=towns.filter(inReg).map(t=>({k:t,name:title(t),v:metric==="vol"?hn(t,qi):hp(t,qi)})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
     rank(rows,(metric==="vol"?"Most flats sold":"Highest average price")+" · "+Q[qi],v=>metric==="vol"?v.toLocaleString():fmtK(v),true);
   } else {
-    const MAXR=40,MAXV=1800;
-    svg.querySelectorAll("path.town").forEach(p=>{p.style.fill="";p.classList.remove("sel");});
-    svg.querySelectorAll("circle").forEach(c=>{const d=c.dataset.dist,v=pv(d,qi),rad=v?Math.max(3,Math.sqrt(v/MAXV)*MAXR):0;c.setAttribute("r",rad);c.classList.toggle("sel",d===sel);
-      const t=svg.querySelector(`text.lbl-dist[data-d="${d}"]`);t.setAttribute("y",+c.getAttribute("cy")+(rad>11?3:-rad-3));t.style.display=v?"":"none";});
+    let maxv=1; for(const d of dists)for(let i=pteFirst;i<=pteLast;i++)maxv=Math.max(maxv,pv(d,i));
+    const MAXR=40, rad=v=>v?Math.max(3,Math.sqrt(v/maxv)*MAXR):0;
+    svg.querySelectorAll("path.town").forEach(p=>{p.style.fill="";p.classList.remove("sel","out");});
+    svg.querySelectorAll("circle").forEach(c=>{const d=c.dataset.dist,v=pv(d,qi),rr=rad(v);c.setAttribute("r",rr);c.classList.toggle("sel",d===sel);
+      const t=svg.querySelector(`text.lbl-dist[data-d="${d}"]`);t.setAttribute("y",+c.getAttribute("cy")+(rr>11?3:-rr-3));t.style.display=v?"":"none";});
     const all=ptot(qi), prev=qi!==pteLast&&uq[Q[qi-4]]!==undefined?ptot(qi-4):0;
-    $("mmStats").innerHTML=`<span>All districts <b>${all.toLocaleString()}</b> units (${sale==="all"?"all sale types":SALE[+sale].toLowerCase()})</span>${prev?`<span>Year on year <b>${pct(all,prev)}</b></span>`:""}${qi===pteLast?'<span class="mm-flag">Latest quarter, still filling in</span>':""}`;
-    $("mmLegend").innerHTML=`<span>Bubble size = units sold</span><svg width="118" height="40" aria-hidden="true">${[100,500,1500].map((v,i)=>{const rr=Math.sqrt(v/MAXV)*MAXR*.55;return `<circle cx="${[12,42,90][i]}" cy="${38-rr}" r="${rr}" fill="var(--gold)" fill-opacity=".62" stroke="var(--navy)"/>`}).join("")}</svg><span>100 · 500 · 1,500 units</span>`;
+    $("mmStats").innerHTML=`<span>${esc(scopeLabel())} <b>${all.toLocaleString()}</b> units (${sale==="all"?"all sale types":SALE[+sale].toLowerCase()})</span>${prev?`<span>Year on year <b>${pct(all,prev)}</b></span>`:""}${qi===pteLast?'<span class="mm-flag">Latest quarter, still filling in</span>':""}`;
+    const nice=v=>{const p=Math.pow(10,Math.floor(Math.log10(Math.max(1,v))));return Math.max(1,Math.round(v/p)*p);};
+    const lv=[nice(maxv/12),nice(maxv/3),nice(maxv)];
+    $("mmLegend").innerHTML=`<span>Bubble size = units sold</span><svg width="118" height="40" aria-hidden="true">${lv.map((v,i)=>{const rr=rad(v)*.55;return `<circle cx="${[12,42,90][i]}" cy="${38-rr}" r="${rr}" fill="var(--gold)" fill-opacity=".62" stroke="var(--navy)"/>`}).join("")}</svg><span>${lv.map(v=>v.toLocaleString()).join(" · ")} units</span>`;
     const rows=dists.map(d=>({k:d,name:"D"+d+" "+(DNAME[d]||""),v:pv(d,qi)})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
     rank(rows,"Most units sold · "+Q[qi],v=>v.toLocaleString(),false);
   }
@@ -295,37 +465,181 @@ function render(){
 }
 function rank(rows,ttl,fmt,colored){
   const mx=rows[0]?rows[0].v:1;$("mmRankTitle").textContent=ttl;
-  $("mmRank").innerHTML=rows.map((r,i)=>`<li data-k="${r.k}" class="${r.k===sel?"sel":""}"><span class="n">${i+1}</span><span>${r.name}</span><span class="v">${fmt(r.v)}</span><span class="bar" style="width:${Math.max(2,r.v/mx*100)}%;background:${colored?ramp(r.v):"var(--gold)"}"></span></li>`).join("")||"<li>No transactions recorded</li>";
+  $("mmRank").innerHTML=rows.map((r,i)=>`<li data-k="${esc(r.k)}" class="${r.k===sel?"sel":""}"><span class="n">${i+1}</span><span>${esc(r.name)}</span><span class="v">${fmt(r.v)}</span><span class="bar" style="width:${Math.max(2,r.v/mx*100)}%;background:${colored?ramp(r.v):"var(--gold)"}"></span></li>`).join("")||'<li style="cursor:default">No transactions for this filter</li>';
 }
 function bars(){
   const pte=layer==="pte", idx=[];for(let i=pte?pteFirst:0;i<=(pte?pteLast:hdbLast);i++)idx.push(i);
-  const val=i=>pte?(sel?pv(sel,i):ptot(i)):(sel?hn(sel,i):totals[i]);
-  const s=idx.map(val), who=sel?(pte?"D"+sel+" "+(DNAME[sel]||""):title(sel)):(pte?"All districts":"All towns");
+  const val=i=>pte?(sel?pv(sel,i):ptot(i)):(sel?hn(sel,i):htot(i));
+  const s=idx.map(val), who=sel?(pte?"D"+sel+" "+(DNAME[sel]||""):title(sel)+(hFt==="all"?"":" · "+FT[hFt])):scopeLabel();
   $("mmTrendTitle").textContent=who+(pte?" · private units sold per quarter":" · HDB resale flats sold per quarter");
-  const L=48,R=8,T=12,B=26,W=1000-L-R,H=200-T-B,bw=W/idx.length,max=Math.max(1,...s)*1.08;
+  const L=48,R=8,Tp=12,B=26,W=1000-L-R,H=200-Tp-B,bw=W/idx.length,max=Math.max(1,...s)*1.08;
   const p=Math.pow(10,Math.floor(Math.log10(max))),top=Math.ceil(max/p)*p;
-  let h=[0,top/2,top].map(v=>{const y=T+H-v/top*H;return `<line x1="${L}" x2="${1000-R}" y1="${y}" y2="${y}" stroke="var(--line)"/><text x="${L-6}" y="${y+3}" text-anchor="end">${v.toLocaleString()}</text>`}).join("");
+  let h=[0,top/2,top].map(v=>{const y=Tp+H-v/top*H;return `<line x1="${L}" x2="${1000-R}" y1="${y}" y2="${y}" stroke="var(--line)"/><text x="${L-6}" y="${y+3}" text-anchor="end">${v.toLocaleString()}</text>`}).join("");
   idx.forEach((i,j)=>{const v=s[j],bh=v/top*H,x=L+j*bw+1.5,late=pte?i===pteLast:hdbPartial(i);
     const fill=i===qi?"var(--gold)":(late?"var(--mm-partial)":"var(--mm-r3)");
-    h+=`<rect x="${x}" y="${T+H-bh}" width="${Math.max(1,bw-3)}" height="${Math.max(bh,.5)}" fill="${fill}" data-i="${i}"><title>${Q[i]}: ${v.toLocaleString()}${late?" (still filling in)":""}</title></rect>`;
+    h+=`<rect x="${x}" y="${Tp+H-bh}" width="${Math.max(1,bw-3)}" height="${Math.max(bh,.5)}" fill="${fill}" data-i="${i}"><title>${Q[i]}: ${v.toLocaleString()}${late?" (still filling in)":""}</title></rect>`;
     if(Q[i].endsWith("Q1")||j===0)h+=`<text x="${x}" y="192">${pte?Q[i]:Q[i].slice(0,4)}</text>`;});
   $("mmBars").innerHTML=h;
 }
 function fmtDate(iso){try{return new Date(iso).toLocaleDateString("en-SG",{day:"numeric",month:"short",year:"numeric"});}catch(e){return iso;}}
+function showOnMap(l,key){setLayer(l);sel=key;qi=l==="pte"?pteLast:defaultHdbQ();
+  if(l==="hdb"&&!inReg(key))setChip("[data-hreg]","all",()=>hReg="all");
+  render();document.querySelector(".mm-bar").scrollIntoView({behavior:"smooth",block:"start"});}
 
+/* ---------------- Check my block / condo ---------------- */
+const cache={}, CAP=12;
+function moreBtn(n,txt){return `<p class="mm-msg" style="margin:0">${n} deal${n>1?"s":""} ${txt}, newest first${n>CAP?`. Showing the latest ${CAP}. <button type="button" class="mm-linkbtn" data-more>Show all ${n}</button>`:"."}</p>`;}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-more]");if(!b)return;const t=b.closest(".mm-res").querySelector(".mm-table");const hid=t.querySelectorAll("tr[hidden]");if(hid.length){hid.forEach(r=>{r.hidden=false;r.dataset.x=1;});b.textContent="Show fewer";}else{t.querySelectorAll("tr[data-x]").forEach(r=>r.hidden=true);b.textContent="Show all "+t.querySelectorAll("tbody tr").length;}});
+function getJSON(path){if(!cache[path])cache[path]=fetch(path,{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();});return cache[path];}
+const NOTREADY='<p class="mm-msg err">The block and condo search is switching on with this week\'s data refresh. Please check back in a day or two, or WhatsApp Serene for the figures now.</p>';
+function parseFloor(s){if(!s)return null;s=String(s).trim();let m=s.match(/(\d{1,2})\s*[-–]\s*\d+/)||s.match(/^#?\s*(\d{1,2})\b/);if(!m)return null;const f=+m[1];return f>0&&f<100?f:null;}
+const ABBR={STREET:"ST",AVENUE:"AVE",ROAD:"RD",DRIVE:"DR",CRESCENT:"CRES",CENTRAL:"CTRL",UPPER:"UPP",BUKIT:"BT",JALAN:"JLN",LORONG:"LOR",NORTH:"NTH",SOUTH:"STH",KAMPONG:"KG",PLACE:"PL",TERRACE:"TER",CLOSE:"CL",HEIGHTS:"HTS",COMMONWEALTH:"C'WEALTH",TANJONG:"TG",MARKET:"MKT",GARDENS:"GDNS",GARDEN:"GDN",PARK:"PK",SAINT:"ST.",LANE:"LN",WALK:"WALK"};
+const norm=s=>s.toUpperCase().replace(/[^A-Z0-9' ]+/g," ").trim().split(/\s+/).map(w=>ABBR[w]||w).join(" ");
+const tight=s=>norm(s).replace(/[\s']/g,"");
+
+let look="hdb", hIndex=null, pIndex=null, pByLabel={};
+document.querySelectorAll("[data-look]").forEach(b=>b.onclick=()=>{look=b.dataset.look;document.querySelectorAll("[data-look]").forEach(x=>x.classList.toggle("active",x===b));$("lkHdbForm").hidden=look!=="hdb";$("lkPteForm").hidden=look!=="pte";$("lkOut").innerHTML="";(look==="hdb"?loadHdbIndex:loadPteIndex)();});
+
+function loadHdbIndex(){if(hIndex)return Promise.resolve(hIndex);return getJSON("data/hdb/index.json").then(ix=>{hIndex=ix;fillStreets();return ix;});}
+function fillStreets(){if(!hIndex)return;const blk=$("lkBlk").value.trim().toUpperCase();const dl=$("lkStreets");
+  const list=Object.entries(hIndex).filter(([s,v])=>!blk||v[1].includes(blk)).map(([s])=>s).sort();
+  dl.innerHTML=list.slice(0,400).map(s=>`<option value="${esc(title(s))}"></option>`).join("");}
+$("lkBlk").addEventListener("focus",()=>loadHdbIndex().catch(()=>{}));
+$("lkStreet").addEventListener("focus",()=>loadHdbIndex().catch(()=>{}));
+$("lkBlk").addEventListener("input",()=>fillStreets());
+
+function matchStreet(input,blk){
+  const want=tight(input); if(!want)return [];
+  const all=Object.keys(hIndex), has=s=>!blk||hIndex[s][1].includes(blk);
+  const exact=all.filter(s=>tight(s)===want&&has(s)); if(exact.length)return exact;
+  const toks=norm(input).split(" ");
+  const part=all.filter(s=>{const n=norm(s);return toks.every(t=>n.split(" ").some(w=>w.startsWith(t)))&&has(s);});
+  return part.slice(0,8);
+}
+
+$("lkHdbForm").addEventListener("submit",e=>{e.preventDefault();runHdb();});
+async function runHdb(){
+  const out=$("lkOut"), blk=$("lkBlk").value.trim().toUpperCase().replace(/^BLK\s*/,""), stIn=$("lkStreet").value.trim(), unit=$("lkUnit").value.trim();
+  if(!blk||!stIn){out.innerHTML='<p class="mm-msg err">Enter both your block number and street name.</p>';return;}
+  out.innerHTML='<p class="mm-msg">Looking up your block…</p>';
+  try{await loadHdbIndex();}catch(err){out.innerHTML=NOTREADY;return;}
+  const hits=matchStreet(stIn,blk);
+  if(!hits.length){
+    const any=matchStreet(stIn,null);
+    out.innerHTML=any.length?`<p class="mm-msg err">No resale deals found for Blk ${esc(blk)} on ${esc(title(any[0]))} in the last 3 years. Check the block number, or the block may not have had a resale yet.</p>`+(any[0]?`<div class="mm-pick"><button type="button" class="filter-chip" data-street="${esc(any[0])}">See other blocks on ${esc(title(any[0]))}</button></div>`:"")
+      :`<p class="mm-msg err">We couldn't find that street. Try picking it from the list as you type, e.g. "Tampines St 21".</p>`;
+    bindPick(out,blk,unit);return;
+  }
+  if(hits.length>1&&tight(hits[0])!==tight(stIn)){
+    out.innerHTML=`<p class="mm-msg">Which street did you mean?</p><div class="mm-pick">${hits.map(s=>`<button type="button" class="filter-chip" data-street="${esc(s)}">${esc(title(s))}</button>`).join("")}</div>`;
+    bindPick(out,blk,unit);return;
+  }
+  showHdb(hits[0],blk,unit);
+}
+function bindPick(out,blk,unit){out.querySelectorAll("[data-street]").forEach(b=>b.onclick=()=>{$("lkStreet").value=title(b.dataset.street);const s=b.dataset.street;if(hIndex[s][1].includes(blk))showHdb(s,blk,unit);else showStreet(s);});}
+
+async function showHdb(street,blk,unit){
+  const out=$("lkOut"), town=hIndex[street][0], info=T(town)||{};
+  let f; try{f=await getJSON("data/hdb/"+(info.file||town.toLowerCase().replace(/[^a-z0-9]+/g,"-"))+".json");}catch(err){out.innerHTML=NOTREADY;return;}
+  const rows=(f.streets[street]||{})[blk]||[]; if(!rows.length){showStreet(street);return;}
+  const floor=parseFloor(unit), band=floor?floor-((floor-1)%3):null, bandTxt=b=>String(b).padStart(2,"0")+" to "+String(b+2).padStart(2,"0");
+  const now=new Date(), lease=rows[0][5], left=99-(now.getFullYear()-lease);
+  const last12=rows[0][0].slice(0,4)-1+rows[0][0].slice(4);
+  const byFt={}; rows.forEach(r=>(byFt[r[1]]=byFt[r[1]]||[]).push(r));
+  const latestQ=defaultHdbQ();
+  const tiles=Object.entries(byFt).sort((a,b)=>b[1].length-a[1].length).slice(0,3).map(([ft,rs])=>{
+    const recent=rs.filter(r=>r[0]>=last12), base=recent.length?recent:rs, med=median(base.map(r=>r[6]));
+    const tp=(T(town).ft&&T(town).ft[ft])?T(town).ft[ft].p[hq[Q[latestQ]]]:0;
+    return `<div class="mm-tile"><div class="k">${FT[ft]||ft} · ${base.length} deal${base.length>1?"s":""} ${recent.length?"in last 12 months":"in 3 years"}</div><div class="v">${fmt$(med)}</div><div class="s">Median in this block${tp?` · ${title(town)} ${FT[ft]} average ${fmtK(tp)} (${Q[latestQ]})`:""}</div></div>`;});
+  let you="";
+  if(band){const m=rows.filter(r=>r[2]===band);
+    you=m.length?`<div class="mm-tile you"><div class="k">Your floor band · ${bandTxt(band)}</div><div class="v">${fmt$(m[0][6])}</div><div class="s">Last sold ${ym(m[0][0])} · ${FT[m[0][1]]}, ${m[0][3]} sqm · ${m.length} deal${m.length>1?"s":""} on these floors</div></div>`
+      :`<div class="mm-tile you"><div class="k">Your floor band · ${bandTxt(band)}</div><div class="v">No deals yet</div><div class="s">No resale on floors ${bandTxt(band)} in this block in the last 3 years</div></div>`;}
+  const table=rows.map((r,ix)=>{const isYou=band&&r[2]===band, sqft=r[3]*SQFT;
+    return `<tr class="${isYou?"you":""}"${ix>=CAP?" hidden":""}><td>${ym(r[0])}</td><td>${FT[r[1]]||r[1]}</td><td>${bandTxt(r[2])}${isYou?'<span class="mm-tag">Your floor</span>':""}</td><td class="r">${r[3]} sqm<br><span style="color:var(--muted)">${Math.round(sqft).toLocaleString()} sqft</span></td><td>${esc(f.models[r[4]]||"")}</td><td class="r"><b>${fmt$(r[6])}</b></td><td class="r">${fmt$(r[6]/sqft)}</td></tr>`;}).join("");
+  const unitTxt=unit?" "+(unit.startsWith("#")?unit:"#"+unit):"";
+  out.innerHTML=`<div class="mm-res">
+    <div class="mm-res-head"><h3>Blk ${esc(blk)} ${esc(title(street))}</h3><span class="meta">${esc(title(town))}${info.region?" · "+info.region+" region":""} · Lease from ${lease}, about ${left} years left · <button type="button" class="mm-linkbtn" id="lkMap">Show ${esc(title(town))} on the map</button></span></div>
+    <div class="mm-tiles">${you}${tiles.join("")}</div>
+    <div class="mm-tablewrap"><table class="mm-table"><thead><tr><th>Month</th><th>Flat type</th><th>Floors</th><th class="r">Size</th><th>Model</th><th class="r">Price</th><th class="r">$psf</th></tr></thead><tbody>${table}</tbody></table></div>
+    ${moreBtn(rows.length,"in this block since "+ym(f.since))}
+    <div class="mm-res-cta"><p>Want to know what <b>Blk ${esc(blk)}${esc(unitTxt)}</b> could sell for today, after your unit's condition and facing? I'll send you a free valuation.</p>
+      <a class="btn btn-gold" target="_blank" rel="noopener" id="lkWa" href="${WA(`Hi Serene, I checked Blk ${blk} ${title(street)}${unitTxt} on your market map. Could you give me a valuation?`)}">Get my free valuation</a></div></div>`;
+  $("lkMap").onclick=()=>showOnMap("hdb",town);
+  $("lkWa").onclick=()=>track("whatsapp_clicked",{button_text:"Get my free valuation",button_location:"market map lookup",page_path:location.pathname});
+  track("market_map_lookup",{kind:"hdb",town,found:true,with_unit:!!band});
+}
+async function showStreet(street){
+  const out=$("lkOut"), town=hIndex[street][0], info=T(town)||{};
+  let f; try{f=await getJSON("data/hdb/"+info.file+".json");}catch(err){out.innerHTML=NOTREADY;return;}
+  const blocks=f.streets[street]||{};
+  const rows=Object.entries(blocks).map(([b,rs])=>`<tr><td><button type="button" class="mm-linkbtn" data-blk="${esc(b)}">Blk ${esc(b)}</button></td><td class="r">${rs.length}</td><td>${ym(rs[0][0])}</td><td>${FT[rs[0][1]]}</td><td class="r">${fmt$(rs[0][6])}</td></tr>`).join("");
+  out.innerHTML=`<div class="mm-res"><div class="mm-res-head"><h3>${esc(title(street))}</h3><span class="meta">${esc(title(town))} · blocks with resale deals since ${ym(f.since)}</span></div>
+    <div class="mm-tablewrap"><table class="mm-table"><thead><tr><th>Block</th><th class="r">Deals</th><th>Latest</th><th>Flat type</th><th class="r">Price</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+  out.querySelectorAll("[data-blk]").forEach(b=>b.onclick=()=>{$("lkBlk").value=b.dataset.blk;showHdb(street,b.dataset.blk,$("lkUnit").value.trim());});
+  track("market_map_lookup",{kind:"hdb",town,found:false});
+}
+
+function loadPteIndex(){if(pIndex)return Promise.resolve(pIndex);return getJSON("data/ura/projects.json").then(ix=>{pIndex=ix;const dl=$("lkProjs");const seen={};
+  dl.innerHTML=ix.map(p=>{let lab=title(p[0])+" · "+title(p[1]);if(seen[lab])lab+=" · D"+p[2];seen[lab]=1;pByLabel[lab.toUpperCase()]=p;return `<option value="${esc(lab)}"></option>`;}).join("");return ix;});}
+$("lkProj").addEventListener("focus",()=>loadPteIndex().catch(()=>{}));
+$("lkPteForm").addEventListener("submit",e=>{e.preventDefault();runPte();});
+async function runPte(){
+  const out=$("lkOut"), q=$("lkProj").value.trim(), unit=$("lkPUnit").value.trim();
+  if(!q){out.innerHTML='<p class="mm-msg err">Enter your condo or project name.</p>';return;}
+  out.innerHTML='<p class="mm-msg">Looking up your project…</p>';
+  try{await loadPteIndex();}catch(err){out.innerHTML=NOTREADY;return;}
+  let p=pByLabel[q.toUpperCase()];
+  if(!p){const n=tight(q);const hits=pIndex.filter(x=>tight(x[0]).includes(n)).sort((a,b)=>b[6]-a[6]);
+    if(hits.length===1)p=hits[0];
+    else if(hits.length){out.innerHTML=`<p class="mm-msg">Which one did you mean?</p><div class="mm-pick">${hits.slice(0,10).map((x,i)=>`<button type="button" class="filter-chip" data-i="${pIndex.indexOf(x)}">${esc(title(x[0]))} · ${esc(title(x[1]))}</button>`).join("")}</div>`;
+      out.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{const x=pIndex[+b.dataset.i];$("lkProj").value=title(x[0])+" · "+title(x[1]);showPte(x,unit);});return;}
+    else{out.innerHTML=`<p class="mm-msg err">No private deals found for "${esc(q)}" in the last 5 years. Try the name as it appears on URA, e.g. "The Interlace", or pick from the list as you type.</p>`;track("market_map_lookup",{kind:"private",found:false});return;}}
+  showPte(p,unit);
+}
+async function showPte(p,unit){
+  const out=$("lkOut"), [name,street,d,seg,mainPt,ten]=p;
+  let f; try{f=await getJSON("data/ura/d"+d+".json");}catch(err){out.innerHTML=NOTREADY;return;}
+  const rows=f[name+"|"+street]||[]; if(!rows.length){out.innerHTML=NOTREADY;return;}
+  const floor=parseFloor(unit), band=floor?Math.floor((floor-1)/5)*5+1:null, bandOf=fr=>parseInt(fr,10);
+  const lastYm=rows[0][0], cut=(+lastYm.slice(0,4)-1)+lastYm.slice(4);
+  const psf=r=>r[5]===1&&r[2]>0?r[4]/(r[2]*SQFT):0;
+  const tile=(lab,rs,sub)=>{const ps=rs.map(psf).filter(Boolean);if(!ps.length)return "";return `<div class="mm-tile"><div class="k">${lab} · ${rs.length} deal${rs.length>1?"s":""}</div><div class="v">${fmt$(median(ps))} psf</div><div class="s">${sub} · ${fmt$(Math.min(...ps))}–${fmt$(Math.max(...ps))} psf</div></div>`;};
+  const res12=rows.filter(r=>r[1]===3&&r[0]>=cut), resAll=rows.filter(r=>r[1]===3), newS=rows.filter(r=>r[1]===1), sub=rows.filter(r=>r[1]===2);
+  const tiles=[res12.length?tile("Resale",res12,"Median, last 12 months on record"):tile("Resale",resAll,"Median, last 5 years"),tile("New launch",newS,"Median developer price"),sub.length>2?tile("Sub sale",sub,"Median"):""].filter(Boolean);
+  let you="";
+  if(band){const m=rows.filter(r=>bandOf(r[3])===band), hiB=band+4;const bt=String(band).padStart(2,"0")+" to "+String(hiB).padStart(2,"0");
+    you=m.length?`<div class="mm-tile you"><div class="k">Your floor band · ${bt}</div><div class="v">${fmt$(m[0][4])}</div><div class="s">${SALE[m[0][1]-1]} ${ym(m[0][0])} · ${Math.round(m[0][2]*SQFT).toLocaleString()} sqft${psf(m[0])?" · "+fmt$(psf(m[0]))+" psf":""} · ${m.length} deal${m.length>1?"s":""} on these floors</div></div>`
+      :`<div class="mm-tile you"><div class="k">Your floor band · ${bt}</div><div class="v">No deals yet</div><div class="s">No deals on floors ${bt} in the last 5 years</div></div>`;}
+  const table=rows.map((r,ix)=>{const isYou=band&&bandOf(r[3])===band, ps=psf(r);
+    return `<tr class="${isYou?"you":""}"${ix>=CAP?" hidden":""}><td>${ym(r[0])}</td><td>${SALE[r[1]-1]}</td><td>${r[3]==="-"?"Landed":esc(r[3])}${isYou?'<span class="mm-tag">Your floor</span>':""}</td><td class="r">${Math.round(r[2]*SQFT).toLocaleString()} sqft</td><td class="r"><b>${fmt$(r[4])}</b>${r[5]>1?`<span class="mm-tag grey">${r[5]} units</span>`:""}</td><td class="r">${ps?fmt$(ps):"–"}</td></tr>`;}).join("");
+  const unitTxt=unit?" "+(unit.startsWith("#")?unit:"#"+unit):"";
+  out.innerHTML=`<div class="mm-res">
+    <div class="mm-res-head"><h3>${esc(title(name))}</h3><span class="meta">${esc(title(street))} · D${d} ${esc(DNAME[d]||"")} · ${seg} · ${PT[mainPt]||""} · ${esc(ten)} · <button type="button" class="mm-linkbtn" id="lkMap">Show D${d} on the map</button></span></div>
+    <div class="mm-tiles">${you}${tiles.join("")}</div>
+    <div class="mm-tablewrap"><table class="mm-table"><thead><tr><th>Month</th><th>Sale</th><th>Floors</th><th class="r">Size</th><th class="r">Price</th><th class="r">$psf</th></tr></thead><tbody>${table}</tbody></table></div>
+    ${moreBtn(rows.length,"in the last 5 years")}
+    <div class="mm-res-cta"><p>Want to know what <b>${esc(title(name))}${esc(unitTxt)}</b> could fetch today, or how it compares with new launches nearby? I'll send you a free analysis.</p>
+      <a class="btn btn-gold" target="_blank" rel="noopener" id="lkWa" href="${WA(`Hi Serene, I checked ${title(name)}${unitTxt} on your market map. Could you give me a valuation?`)}">Get my free valuation</a></div></div>`;
+  $("lkMap").onclick=()=>showOnMap("pte",d);
+  $("lkWa").onclick=()=>track("whatsapp_clicked",{button_text:"Get my free valuation",button_location:"market map lookup",page_path:location.pathname});
+  track("market_map_lookup",{kind:"private",district:d,segment:seg,found:true,with_unit:!!band});
+}
+
+/* ---------------- start ---------------- */
 fetch("data/market-data.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}).then(d=>{
   DATA=d;
   const all=new Set([...(d.hdb?d.hdb.quarters:[]),...(d.ura?d.ura.quarters:[])]);
   Q=[...all].sort();
   (d.hdb.quarters||[]).forEach((q,i)=>hq[q]=i);(d.ura.quarters||[]).forEach((q,i)=>uq[q]=i);
   towns=Object.keys(d.hdb.towns);dists=Object.keys(d.ura.districts);
+  hasFt=towns.some(t=>d.hdb.towns[t].ft); hasX=dists.some(x=>d.ura.districts[x].x);
+  if(!towns.some(t=>d.hdb.towns[t].region)){$("mmHdbOpts").querySelector(".filter-group").hidden=true;}
   hdbLast=Q.indexOf(d.hdb.quarters.at(-1));pteFirst=Q.indexOf(d.ura.quarters[0]);pteLast=Q.indexOf(d.ura.quarters.at(-1));
-  totals=Q.map((_,i)=>towns.reduce((a,t)=>a+hn(t,i),0));
-  avgAll=Q.map((_,i)=>{let n=0,s=0;towns.forEach(t=>{n+=hn(t,i);s+=hn(t,i)*hp(t,i)});return n?Math.round(s/n):0;});
   const stale=d.hdb.status!=="ok"||d.ura.status!=="ok";
   $("mmUpdated").innerHTML=`Data last refreshed <b>${fmtDate(d.generated)}</b> · HDB to ${d.hdb.quarters.at(-1)} · Private to ${d.ura.quarters.at(-1)}${stale?'<span class="mm-stale">One source is behind this week</span>':""}`;
   qi=defaultHdbQ();
-  if(location.hash==="#private"){layer="pte";qi=pteLast;document.querySelectorAll("[data-layer]").forEach(b=>b.classList.toggle("active",b.dataset.layer==="pte"));}
+  if(location.hash==="#private"){setLayer("pte");qi=pteLast;}
   build();render();
 }).catch(()=>{$("mmUpdated").textContent="The market data could not be loaded right now. Please refresh the page in a moment.";$("mmRank").innerHTML="";});
 })();
