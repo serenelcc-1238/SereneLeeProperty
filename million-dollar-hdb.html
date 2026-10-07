@@ -89,9 +89,19 @@
 .md-tile .s{font-size:.8rem;color:var(--muted)}
 .md-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:20px;min-width:0}
 .md-card h2{font-size:1.15rem;margin:0 0 10px}
+.md-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;margin-bottom:20px}
+.md-two .md-card{margin-bottom:0}
+@media(max-width:860px){.md-two{grid-template-columns:1fr}}
+.md-map{width:100%;height:auto;display:block}
+.md-map path.town{cursor:pointer;transition:opacity .15s}
+.md-map path.town:hover{opacity:.75}
+.md-map path.on{stroke:var(--gold);stroke-width:3}
+.md-legend{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font-size:.74rem;color:var(--muted);margin-top:6px}
+.md-legend .sw{display:inline-flex}.md-legend .sw i{width:18px;height:8px;display:block}
+.md-maptip{margin-left:auto;color:var(--navy-900);font-weight:600}
 .md-bars{width:100%;height:auto;display:block}
 .md-bars text{font:500 10px 'Inter',sans-serif;fill:var(--muted)}
-@media(max-width:640px){.md-bars text{font-size:20px}}
+.md-bars text{font-size:13px}
 .md-filters{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-bottom:12px}
 .md-filters .filter-group{min-width:0;max-width:100%}
 .md-filters .sort-select{min-width:0;max-width:100%}
@@ -118,10 +128,18 @@
 <section style="padding-top:12px;">
   <div class="container">
     <div class="md-kpis" id="mdKpis"></div>
-    <div class="md-card">
-      <h2>Million-dollar resales per month</h2>
-      <svg class="md-bars" id="mdBars" viewBox="0 0 1000 190" role="img" aria-label="Million-dollar HDB resales per month"></svg>
-      <p class="md-src" id="mdBarNote"></p>
+    <div class="md-two">
+      <div class="md-card">
+        <h2>Million-dollar resales per month</h2>
+        <svg class="md-bars" id="mdBars" viewBox="0 0 600 300" role="img" aria-label="Million-dollar HDB resales per month"></svg>
+        <p class="md-src" id="mdBarNote"></p>
+      </div>
+      <div class="md-card">
+        <h2 id="mdMapTitle">Where they sold</h2>
+        <svg class="md-map" id="mdMap" viewBox="10 10 980 450" role="img" aria-label="Map of Singapore shaded by million-dollar HDB resales per town"></svg>
+        <div class="md-legend"><span>Fewer</span><span class="sw"><i style="background:#e3e9ef"></i><i style="background:#bccbda"></i><i style="background:#8ea8c1"></i><i style="background:#5e81a3"></i><i style="background:#2f5880"></i><i style="background:#0b2a4a"></i></span><span>More</span><span class="md-maptip" id="mdMapTip">Tap a town to filter the list</span></div>
+        <p class="md-src">Follows the year and flat type chosen in the list below. Grey: no million-dollar resale. Map: URA Master Plan 2019 planning areas (data.gov.sg).</p>
+      </div>
     </div>
     <div class="md-card">
       <h2>The full list</h2>
@@ -185,6 +203,8 @@ fetch("data/hdb/million.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw 0;retu
   ["mdYear","mdTown","mdFt","mdSort"].forEach(id=>$(id).onchange=()=>{shown=PAGE;list();track("million_filter",{[id]:$(id).value});});
   $("mdQ").oninput=()=>{shown=PAGE;list();};
   $("mdMore").onclick=()=>{shown+=PAGE;list();};
+  $("mdMap").addEventListener("click",e=>{const p=e.target.closest("path[data-t]");if(!p)return;const t=p.dataset.t;$("mdTown").value=$("mdTown").value===t?"":t;shown=PAGE;list();track("million_filter",{map_town:t});document.querySelector(".md-filters").scrollIntoView({behavior:"smooth",block:"start"});});
+  $("mdMap").addEventListener("mouseover",e=>{const p=e.target.closest("path[data-t]");if(p)$("mdMapTip").textContent=p.querySelector("title").textContent+" · tap to filter";});
   list();
 }).catch(()=>{$("mdUpdated").textContent="The data could not be loaded right now. Please refresh in a moment.";});
 function prevMonth(s){let y=+s.slice(0,4),m=+s.slice(5,7)-1;if(m<1){m=12;y--;}return y+"-"+String(m).padStart(2,"0");}
@@ -193,16 +213,35 @@ function bars(){
   const by={};D.forEach(d=>by[d[0]]=(by[d[0]]||0)+1);
   const ms=Object.keys(by).sort(), first=ms[0]; const all=[];let y=+first.slice(0,4),mo=+first.slice(5,7);
   while(true){const k=y+"-"+String(mo).padStart(2,"0");all.push(k);if(k===LAST)break;mo++;if(mo>12){mo=1;y++;}}
-  const L=40,R=6,T=10,B=24,W=1000-L-R,H=190-T-B,bw=W/all.length,mx=Math.max(...all.map(k=>by[k]||0))*1.1;
+  const VW=600,VH=300,L=40,R=4,T=10,B=26,W=VW-L-R,H=VH-T-B,bw=W/all.length,mx=Math.max(...all.map(k=>by[k]||0))*1.1;
   const p=Math.pow(10,Math.floor(Math.log10(mx))),top=Math.ceil(mx/p)*p;
-  let h=[0,top/2,top].map(v=>{const yy=T+H-v/top*H;return `<line x1="${L}" x2="${1000-R}" y1="${yy}" y2="${yy}" stroke="var(--line)"/><text x="${L-6}" y="${yy+3}" text-anchor="end">${Math.round(v)}</text>`}).join("");
+  let h=[0,top/2,top].map(v=>{const yy=T+H-v/top*H;return `<line x1="${L}" x2="${VW-R}" y1="${yy}" y2="${yy}" stroke="var(--line)"/><text x="${L-6}" y="${yy+3}" text-anchor="end">${Math.round(v)}</text>`}).join("");
   all.forEach((k,j)=>{const v=by[k]||0,bh=v/top*H,x=L+j*bw+1,last=k===LAST;
     h+=`<rect x="${x}" y="${T+H-bh}" width="${Math.max(1,bw-2)}" height="${Math.max(bh,.5)}" fill="${last?"var(--mm-partial,#c77c12)":"#2f5880"}"><title>${ym(k)}: ${v} deals${last?" (month in progress)":""}</title></rect>`;
-    if(k.endsWith("-01")||j===0)h+=`<text x="${x}" y="184">${k.slice(0,4)}</text>`;});
+    if(k.endsWith("-01"))h+=`<text x="${x}" y="${VH-8}">${k.slice(0,4)}</text>`;});
   $("mdBars").innerHTML=h;
   $("mdBarNote").innerHTML="Number of HDB resales at $1,000,000 or more, by month of registration. Orange: "+ym(LAST)+", still in progress.";
 }
+let G=null;
+fetch("data/sg-map.json").then(r=>r.json()).then(g=>{G=g;drawMap();}).catch(()=>{});
+function drawMap(){
+  if(!G||!D.length)return;
+  const y=$("mdYear").value,f=$("mdFt").value,sel=$("mdTown").value;
+  const towns=[...new Set(D.map(d=>d[1]))], by={};
+  D.forEach(d=>{if((!y||d[0].startsWith(y))&&(!f||d[4]===f))by[d[1]]=(by[d[1]]||0)+1;});
+  const vals=Object.values(by).filter(v=>v>0).sort((a,b)=>a-b), cut=[1,2,3,4,5].map(j=>vals[Math.floor(vals.length*j/6)]||Infinity);
+  const C=["#e3e9ef","#bccbda","#8ea8c1","#5e81a3","#2f5880","#0b2a4a"], col=v=>{let k=0;while(k<5&&v>=cut[k])k++;return C[k];};
+  const ALL=G.towns||null;
+  const townOf=pa=>{if(G.alias[pa])return G.alias[pa];if(G.central.indexOf(pa)>=0)return "CENTRAL AREA";return pa;};
+  let h="";
+  Object.keys(G.paths).forEach(pa=>{const t=townOf(pa),v=by[t]||0,hdb=towns.includes(t)||t==="CENTRAL AREA"||v;
+    if(!v){h+=`<path d="${G.paths[pa]}" fill="#ece9e1" stroke="#fff" stroke-width="1"${towns.includes(t)?` class="town" data-t="${t}"`:""}><title>${title(t)}: no million-dollar resale</title></path>`;return;}
+    h+=`<path class="town${t===sel?" on":""}" data-t="${t}" d="${G.paths[pa]}" fill="${col(v)}" stroke="${t===sel?"#c9a227":"#fff"}" stroke-width="${t===sel?3:1}"><title>${title(t)}: ${v.toLocaleString()} million-dollar resale${v>1?"s":""}</title></path>`;});
+  $("mdMap").innerHTML=h;
+  $("mdMapTitle").textContent="Where they sold · "+(y||"all years")+(f?" · "+FT[f]:"");
+}
 function list(){
+  drawMap();
   const y=$("mdYear").value,t=$("mdTown").value,f=$("mdFt").value,s=$("mdSort").value,q=$("mdQ").value.trim().toUpperCase();
   let r=D.filter(d=>(!y||d[0].startsWith(y))&&(!t||d[1]===t)&&(!f||d[4]===f)&&(!q||(d[2]+" "+d[3]).includes(q)));
   const psf=d=>d[9]/(d[6]*SQFT);
