@@ -98,11 +98,13 @@
 .md-filters input{border:1px solid var(--line);border-radius:10px;padding:9px 12px;font:inherit;min-width:0;width:220px;max-width:100%}
 .md-count{font-size:.86rem;color:var(--muted);margin:0 0 10px}
 .md-tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
-.md-table{width:100%;border-collapse:collapse;font-size:.85rem;min-width:720px}
-.md-table th{text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:9px 12px;background:var(--cream);font-weight:700;white-space:nowrap}
-.md-table td{white-space:nowrap;padding:8px 12px;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+.md-table{width:100%;border-collapse:collapse;font-size:.78rem}
+@media(max-width:760px){.md-table{min-width:680px}}
+.md-table th{text-align:left;font-size:.66rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);padding:8px 8px;background:var(--cream);font-weight:700;white-space:nowrap}
+.md-table td{white-space:nowrap;padding:6px 8px;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
 .md-table td.r,.md-table th.r{text-align:right}
 .md-table a{color:var(--navy-900);font-weight:600}
+.md-table td.wrap{white-space:normal;min-width:150px}
 .md-src{font-size:.75rem;color:var(--muted);margin:10px 0 0;line-height:1.45}
 .md-src a{color:inherit}
 .md-more{margin-top:12px}
@@ -131,7 +133,7 @@
         <input type="search" id="mdQ" placeholder="Search block or street" aria-label="Search block or street">
       </div>
       <p class="md-count" id="mdCount"></p>
-      <div class="md-tablewrap"><table class="md-table"><thead><tr><th>Month</th><th>Town</th><th>Block &amp; street</th><th>Flat type</th><th>Floor</th><th class="r">Size</th><th>Model</th><th>Lease from</th><th class="r">Price</th><th class="r">$psf</th></tr></thead><tbody id="mdBody"></tbody></table></div>
+      <div class="md-tablewrap"><table class="md-table"><thead><tr><th>Month</th><th>Town</th><th>Block &amp; street</th><th>Flat type</th><th>Floor</th><th class="r">Sqft</th><th>Model</th><th>Lease</th><th class="r">Price</th><th class="r">$psf</th></tr></thead><tbody id="mdBody"></tbody></table></div>
       <button type="button" class="btn btn-navy md-more" id="mdMore" hidden>Show more</button>
       <p class="md-src">Source: <a href="https://data.gov.sg/datasets/d_8b84c4ee58e3cfc0ece0d773c8ca6abc/view" target="_blank" rel="noopener">HDB, Resale flat prices based on registration date from Jan 2017 onwards (data.gov.sg)</a><span id="mdRetrieved"></span>. Month is the month HDB registered the resale. Floor is HDB's 3-storey band. $psf uses floor area converted from square metres. Figures are for general information only and are not a valuation.</p>
     </div>
@@ -206,9 +208,9 @@ function list(){
   const psf=d=>d[9]/(d[6]*SQFT);
   if(s==="high")r=r.slice().sort((a,b)=>b[9]-a[9]);else if(s==="psf")r=r.slice().sort((a,b)=>psf(b)-psf(a));
   $("mdCount").textContent=r.length.toLocaleString()+" deal"+(r.length===1?"":"s")+(y?" in "+y:"")+(t?" in "+title(t):"")+(f?" · "+FT[f]:"")+(r.length?" · highest "+fmt$(Math.max(...r.map(d=>d[9]))):"");
-  $("mdBody").innerHTML=r.slice(0,shown).map(d=>{const band=String(d[5]).padStart(2,"0")+" to "+String(d[5]+2).padStart(2,"0");
+  $("mdBody").innerHTML=r.slice(0,shown).map(d=>{const band=String(d[5]).padStart(2,"0")+"–"+String(d[5]+2).padStart(2,"0");
     const link="market-map.html?blk="+encodeURIComponent(d[2])+"&street="+encodeURIComponent(title(d[3]));
-    return `<tr><td>${ym(d[0])}</td><td>${esc(title(d[1]))}</td><td><a href="${link}" title="See every resale in this block">Blk ${esc(d[2])} ${esc(title(d[3]))}</a></td><td>${FT[d[4]]||d[4]}</td><td>${band}</td><td class="r">${Math.round(d[6]*SQFT).toLocaleString()} sqft</td><td>${esc(d[7])}</td><td>${d[8]}</td><td class="r"><b>${fmt$(d[9])}</b></td><td class="r">${fmt$(psf(d))}</td></tr>`;}).join("")||'<tr><td colspan="10">No million-dollar resales for this filter.</td></tr>';
+    return `<tr><td>${ym(d[0])}</td><td class="wrap" style="min-width:0">${esc(title(d[1]))}</td><td class="wrap"><a href="${link}" title="See every resale in this block">Blk ${esc(d[2])} ${esc(title(d[3]))}</a></td><td>${FT[d[4]]||d[4]}</td><td>${band}</td><td class="r">${Math.round(d[6]*SQFT).toLocaleString()}</td><td class="wrap" style="min-width:0">${esc(d[7])}</td><td>${d[8]}</td><td class="r"><b>${fmt$(d[9])}</b></td><td class="r">${fmt$(psf(d))}</td></tr>`;}).join("")||'<tr><td colspan="10">No million-dollar resales for this filter.</td></tr>';
   $("mdMore").hidden=r.length<=shown; $("mdMore").textContent="Show more ("+(r.length-Math.min(shown,r.length)).toLocaleString()+" left)";
 }
 })();
