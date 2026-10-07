@@ -254,7 +254,7 @@
     <div class="mm-panel" id="mmMapPanel">
       <div class="mm-panel-head"><span class="mm-step">1</span><div>
         <h2>Singapore at a glance</h2>
-        <p>Every HDB town or private district for a quarter or period, island-wide. This map is not filtered by your block or area search.</p>
+        <p>Every HDB town or private district for a quarter or period, island-wide. Checking your block or condo above sets this map to your region.</p>
       </div></div>
       <div class="mm-ctrl">
         <div class="mm-seg" aria-label="Map market">
@@ -504,7 +504,7 @@ function build(){
   M.fillQ=fillQ;
   $("mmFrom").onchange=e=>{M.from=+e.target.value;if(M.from>M.to)M.to=M.from;renderAll();};
   $("mmTo").onchange=e=>{M.to=+e.target.value;if(M.to<M.from)M.from=M.to;renderAll();};
-  ts.onchange=()=>{Dd.sel=ts.value||null;if(Dd.sel)track("market_map_area",{layer:"hdb",area:Dd.sel,via:"filter"});renderAll();};
+  ts.onchange=()=>{Dd.sel=ts.value||null;if(Dd.sel&&T(Dd.sel).region){M.hReg=T(Dd.sel).region;setChip("[data-hreg]",M.hReg);}if(Dd.sel)track("market_map_area",{layer:"hdb",area:Dd.sel,via:"filter"});renderAll();};
   ds.onchange=()=>{Dd.sel=ds.value||null;if(Dd.sel)track("market_map_area",{layer:"pte",area:Dd.sel,via:"filter"});renderAll();};
   $("mmFt").onchange=e=>{Dd.hFt=e.target.value;track("market_map_filter",{flat_type:Dd.hFt});renderAll();};
   $("mmPt").onchange=e=>{Dd.pPt=e.target.value;track("market_map_filter",{property:Dd.pPt});renderAll();};
@@ -642,12 +642,14 @@ function syncMap(l,key,o){o=o||{};
   Dd.layer=l;Dd.sel=key;Dd.qi=defQ(l);
   if(l==="hdb"){if(o.ft&&hasFt)Dd.hFt=o.ft;}else{Dd.pPt=hasX?(o.pt||"all"):"all";Dd.sale="all";setChip("[data-sale]","all");}
   if(M.layer!==l){M.layer=l;M.qi=defQ(l);M.span="q";setChip("[data-mlayer]",l);setChip("[data-span]","q");}
-  if(l==="hdb"&&M.hReg!=="all"&&T(key).region!==M.hReg){M.hReg="all";setChip("[data-hreg]","all");}
-  if(l==="pte"&&M.pSeg!=="all"){M.pSeg="all";setChip("[data-seg]","all");}
+  /* The map follows the lookup too: same market, the town's region (HDB) or the project's market segment (private). */
+  if(l==="hdb"){const r=T(key).region;M.hReg=r||"all";setChip("[data-hreg]",M.hReg);}
+  else{M.pSeg=hasX&&["CCR","RCR","OCR"].includes(o.seg)?o.seg:"all";setChip("[data-seg]",M.pSeg);}
   renderAll();}
 function syncNote(){useData();const lab=layer==="hdb"?title(sel)+(hFt==="all"?"":" · "+FT[hFt]):"D"+sel+" "+(DNAME[sel]||"")+(pPt==="all"?"":" · "+PT[pPt]);
-  return `<p class="mm-sync">Section 2 (data &amp; chart) now shows <b>${esc(lab)}</b>. The map in section 1 stays island-wide. <button type="button" class="mm-linkbtn" data-jump>See the trend &darr;</button></p>`;}
-document.addEventListener("click",e=>{if(e.target.closest("[data-jump]"))$("mmDataPanel").scrollIntoView({behavior:"smooth",block:"start"});
+  const scope=layer==="hdb"?(M.hReg==="all"?"all towns":M.hReg+" region"):(M.pSeg==="all"?"all districts":M.pSeg+" projects");
+  return `<p class="mm-sync">The map now shows <b>${esc(scope)}</b> with <b>${esc(layer==="hdb"?title(sel):"D"+sel)}</b> outlined, and the data &amp; chart show <b>${esc(lab)}</b>. <button type="button" class="mm-linkbtn" data-jump>See the map &darr;</button></p>`;}
+document.addEventListener("click",e=>{if(e.target.closest("[data-jump]"))$("mmMapPanel").scrollIntoView({behavior:"smooth",block:"start"});
   const t=e.target.closest(".mm-tile[data-ft]");if(t&&hasFt){Dd.hFt=t.dataset.ft;renderAll();
     document.querySelectorAll(".mm-tile[data-ft]").forEach(x=>x.classList.toggle("on",x===t));const n=document.querySelector(".mm-sync");if(n)n.outerHTML=syncNote();track("market_map_filter",{flat_type:Dd.hFt,via:"lookup_tile"});}});
 
@@ -790,7 +792,7 @@ async function showPte(p,unit){
   if(band){const m=rows.filter(r=>bandOf(r[3])===band), hiB=band+4;const bt=String(band).padStart(2,"0")+" to "+String(hiB).padStart(2,"0");
     you=m.length?`<div class="mm-tile you"><div class="k">Your floor band · ${bt}</div><div class="v">${fmt$(m[0][4])}</div><div class="s">${SALE[m[0][1]-1]} ${ym(m[0][0])} · ${Math.round(m[0][2]*SQFT).toLocaleString()} sqft${psf(m[0])?" · "+fmt$(psf(m[0]))+" psf":""} · ${m.length} deal${m.length>1?"s":""} on these floors</div></div>`
       :`<div class="mm-tile you"><div class="k">Your floor band · ${bt}</div><div class="v">No deals yet</div><div class="s">No deals on floors ${bt} in the last 5 years</div></div>`;}
-  syncMap("pte",d,{pt:mainPt});
+  syncMap("pte",d,{pt:mainPt,seg});
   const oneBand=new Set(rows.map(r=>r[3])).size===1; // e.g. low-rise projects: every deal is 01-05, so no highlight
   const table=rows.map((r,ix)=>{const isYou=band&&!oneBand&&bandOf(r[3])===band, ps=psf(r);
     return `<tr class="${isYou?"you":""}"${ix>=CAP?" hidden":""}><td>${ym(r[0])}</td><td>${SALE[r[1]-1]}</td><td>${r[3]==="-"?"Landed":esc(r[3])}${isYou?'<span class="mm-tag">Your floor</span>':""}</td><td class="r">${Math.round(r[2]*SQFT).toLocaleString()} sqft</td><td class="r"><b>${fmt$(r[4])}</b>${r[5]>1?`<span class="mm-tag grey">${r[5]} units</span>`:""}</td><td class="r">${ps?fmt$(ps):"–"}</td></tr>`;}).join("");
