@@ -582,25 +582,28 @@ function renderData(){
   const sum=f=>{let n=0;for(let i=a;i<=b;i++)n+=f(i);return n;}, sum0=f=>{let n=0;for(let i=a-4;i<=b-4;i++)n+=f(i);return n;};
   if(!pte){
     const ft=hFt==="all"?"All flat types":FT[hFt]+" flats", partial=hdbPartial(b), flag=partial?'<br><span class="mm-flag">Includes the quarter in progress</span>':"";
-    const can0=a-4>=0&&!partial, cmp=partial?"Not compared: quarter still in progress":can0?"Compared with "+spanLabel(a-4,b-4):"No earlier period on record";
-    if(sel){const n=mN(sel,a,b),n0=can0?mN(sel,a-4,b-4):0,px=mP(sel,a,b);
+    /* If the period ends in the quarter still in progress, compare only its finished quarters (or the last finished quarter) with a year earlier. */
+    const cb=partial?b-1:b, ca=partial&&a>cb?cb:a, can0=ca-4>=0&&cb>=0;
+    const cmp=can0?spanLabel(ca,cb)+" vs "+spanLabel(ca-4,cb-4)+(partial?" (finished quarters only; "+Q[b]+" still in progress)":""):"No earlier period on record";
+    if(sel){const n=mN(sel,a,b),n0=can0?mN(sel,ca-4,cb-4):0,nc=mN(sel,ca,cb),px=mP(sel,a,b);
       const all=towns.filter(inReg).map(t=>[t,mN(t,a,b)]).sort((x,y)=>y[1]-x[1]),pos=all.findIndex(x=>x[0]===sel)+1;
       $("mmStats").innerHTML=kpi(esc(title(sel))+" · flats sold · "+SL,n.toLocaleString(),ft+(pos&&n?" · #"+pos+" of "+all.length+" towns"+(hReg==="all"?"":" in "+hReg):"")+flag)
         +kpi(esc(title(sel))+" · average price · "+SL,n?fmtK(px):"–",ft+", simple average")
-        +kpi("Flats sold vs a year earlier",n0?pct(n,n0):"–",n0?cmp:partial?cmp:"No deals a year earlier");}
-    else{const n=sum(htot),n0=can0?sum0(htot):0,px=n?sum(i=>htot(i)*havg(i))/n:0;
-      $("mmStats").innerHTML=kpi(esc(scope)+" · flats sold · "+SL,n.toLocaleString(),ft+flag)+kpi(esc(scope)+" · average price · "+SL,n?fmtK(px):"–",ft+", simple average")+kpi("Flats sold vs a year earlier",n0?pct(n,n0):"–",cmp);}
+        +kpi("Flats sold vs a year earlier",n0?pct(nc,n0):"–",n0?cmp:"No deals a year earlier");}
+    else{const n=sum(htot),rs=(x,y)=>{let k=0;for(let i=x;i<=y;i++)k+=htot(i);return k;},n0=can0?rs(ca-4,cb-4):0,nc=can0?rs(ca,cb):0,px=n?sum(i=>htot(i)*havg(i))/n:0;
+      $("mmStats").innerHTML=kpi(esc(scope)+" · flats sold · "+SL,n.toLocaleString(),ft+flag)+kpi(esc(scope)+" · average price · "+SL,n?fmtK(px):"–",ft+", simple average")+kpi("Flats sold vs a year earlier",n0?pct(nc,n0):"–",cmp);}
   } else {
     const filling=b===pteLast, saleTxt=sale==="all"?"all sale types":SALE[+sale].toLowerCase(), ptTxt=pPt==="all"?"All private":PT[pPt];
-    const can0=!filling&&a-4>=pteFirst, all=sum(ptot), prev=can0?sum0(ptot):0;
+    const cb=filling?b-1:b, ca=filling&&a>cb?cb:a, can0=ca-4>=pteFirst&&cb>=pteFirst, all=sum(ptot);
+    const rs=(f,x,y)=>{let k=0;for(let i=x;i<=y;i++)k+=f(i);return k;}, prev=can0?rs(ptot,ca-4,cb-4):0, allc=can0?rs(ptot,ca,cb):0;
     const ranked=dists.map(d=>[d,mV(d,a,b)]).filter(x=>x[1]>0).sort((x,y)=>y[1]-x[1]), topD=ranked[0]||["",0];
     const fillTag=filling?'<br><span class="mm-flag">Latest quarter, still filling in</span>':"";
-    const vsTxt=filling?"Not compared: latest quarter still filling in":can0?"Compared with "+spanLabel(a-4,b-4):"No earlier period on record";
-    if(sel){const v=mV(sel,a,b),v0=can0?mV(sel,a-4,b-4):0,pos=ranked.findIndex(x=>x[0]===sel)+1;
+    const vsTxt=can0?spanLabel(ca,cb)+" vs "+spanLabel(ca-4,cb-4)+(filling?" (finished quarters only; "+Q[b]+" still filling in)":""):"No earlier period on record";
+    if(sel){const v=mV(sel,a,b),v0=can0?mV(sel,ca-4,cb-4):0,vc=can0?mV(sel,ca,cb):0,pos=ranked.findIndex(x=>x[0]===sel)+1;
       $("mmStats").innerHTML=kpi("D"+sel+" · units sold · "+SL,v.toLocaleString(),esc(DNAME[sel]||"")+" · "+ptTxt+", "+saleTxt+(pSeg==="all"?"":" · "+pSeg+" projects only")+fillTag)
-        +kpi("Units sold vs a year earlier",v0?pct(v,v0):"–",filling?vsTxt:v0?vsTxt:"No deals a year earlier")
+        +kpi("Units sold vs a year earlier",v0?pct(vc,v0):"–",v0?vsTxt:"No deals a year earlier")
         +kpi("District rank · "+SL,pos?"#"+pos:"–",pos?"of "+ranked.length+" districts with deals"+(pSeg==="all"?"":" in "+pSeg):"No deals in this period");}
-    else $("mmStats").innerHTML=kpi(esc(scope)+" · units sold · "+SL,all.toLocaleString(),ptTxt+", "+saleTxt+fillTag)+kpi("Units sold vs a year earlier",prev?pct(all,prev):"–",vsTxt)+kpi("Busiest district · "+SL,topD[1]?"D"+topD[0]:"–",topD[1]?esc(DNAME[topD[0]]||"")+" · "+topD[1].toLocaleString()+" units":"");
+    else $("mmStats").innerHTML=kpi(esc(scope)+" · units sold · "+SL,all.toLocaleString(),ptTxt+", "+saleTxt+fillTag)+kpi("Units sold vs a year earlier",prev?pct(allc,prev):"–",vsTxt)+kpi("Busiest district · "+SL,topD[1]?"D"+topD[0]:"–",topD[1]?esc(DNAME[topD[0]]||"")+" · "+topD[1].toLocaleString()+" units":"");
   }
   bars(a,b);
 }
