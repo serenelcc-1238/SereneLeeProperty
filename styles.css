@@ -747,3 +747,6 @@ a.home-mm-more{text-decoration:none;}
   .hero-md-n b{font-size:1.6rem;}
   .hero-md-sub{font-size:.78rem;}
 }
+
+/* Data pages (Market Map, Million-Dollar HDB): heading and intro use the full content width */
+.page-hero-wide p{max-width:none;}
