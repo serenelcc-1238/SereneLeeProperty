@@ -105,15 +105,19 @@
       <a href="market-map.html" class="see-all" data-hm="see-all">Open the Market Map &rarr;</a>
     </div>
     <div class="home-mm-grid">
-      <a href="market-map.html" class="home-mm-card" data-hm="stats" id="hmStats">
+      <div class="home-mm-card home-mm-main">
         <div class="home-mm-tiles">
-          <div class="home-mm-tile"><div class="k" id="hmK1">HDB resale flats sold</div><div class="v" id="hmV1">&ndash;</div><div class="s" id="hmS1">Loading the latest quarter&hellip;</div></div>
-          <div class="home-mm-tile"><div class="k" id="hmK2">Busiest HDB town</div><div class="v" id="hmV2">&ndash;</div><div class="s" id="hmS2">&nbsp;</div></div>
-          <div class="home-mm-tile"><div class="k" id="hmK3">New launch units sold</div><div class="v" id="hmV3">&ndash;</div><div class="s" id="hmS3">&nbsp;</div></div>
+          <a class="home-mm-tile" href="market-map.html" data-hm="stats"><div class="k" id="hmK1">HDB resale flats sold</div><div class="v" id="hmV1">&ndash;</div><div class="s" id="hmS1">Loading the latest quarter&hellip;</div></a>
+          <a class="home-mm-tile" href="market-map.html" id="hmStats" data-hm="busiest"><div class="k" id="hmK2">Busiest HDB town</div><div class="v" id="hmV2">&ndash;</div><div class="s" id="hmS2">&nbsp;</div></a>
+          <a class="home-mm-tile" href="market-map.html?layer=private" data-hm="newlaunch"><div class="k" id="hmK3">New launch units sold</div><div class="v" id="hmV3">&ndash;</div><div class="s" id="hmS3">&nbsp;</div></a>
         </div>
-        <div class="home-mm-spark"><div class="k">HDB resale flats sold per quarter, last 3 years</div><svg id="hmSpark" viewBox="0 0 600 90" aria-hidden="true"></svg></div>
-        <span class="home-mm-more">See every town and district on the map, filter by region, estate and flat type &rarr;</span>
-      </a>
+        <div class="home-mm-map">
+          <div class="k" id="hmMapK">HDB resale flats sold by town</div>
+          <svg id="hmMap" viewBox="10 10 980 450" role="img" aria-label="Map of Singapore shaded by HDB resale flats sold per town"></svg>
+          <div class="home-mm-legend"><span>Fewer</span><span class="sw"><i style="background:#e3e9ef"></i><i style="background:#bccbda"></i><i style="background:#8ea8c1"></i><i style="background:#5e81a3"></i><i style="background:#2f5880"></i><i style="background:#0b2a4a"></i></span><span>More flats sold</span><span class="tip" id="hmTip">Tap a town to see its trend</span></div>
+        </div>
+        <a class="home-mm-more" href="market-map.html" data-hm="more">Open the full Market Map: every town and district, by quarter, flat type and price &rarr;</a>
+      </div>
       <form class="home-mm-card home-mm-check" action="market-map.html" method="get" id="hmForm">
         <h3>What did flats in your block sell for?</h3>
         <p>Enter your block and street to see every resale in the last 3 years, and the last price on your floor.</p>
@@ -157,12 +161,22 @@
     $("hmK3").textContent="New launch units sold · "+uq[ui];
     $("hmV3").textContent=nlt.toLocaleString();
     $("hmS3").textContent="Most in D"+nl[0][0]+" "+(DN[nl[0][0]]||"")+" ("+nl[0][1].toLocaleString()+")";
-    var from=Math.max(0,li-11), vals=[]; for(var i=from;i<=li;i++) vals.push(tot(i));
-    var mx=Math.max.apply(null,vals), bw=600/vals.length, svg="";
-    vals.forEach(function(v,j){var bh=Math.max(2,v/mx*70), x=j*bw+3, last=j===vals.length-1;
-      svg+='<rect x="'+x+'" y="'+(74-bh)+'" width="'+(bw-6)+'" height="'+bh+'" rx="3" fill="'+(last?"#c9a227":"#8ea8c1")+'"><title>'+hq[from+j]+": "+v.toLocaleString()+'</title></rect>';
-      if(j===0||hq[from+j].slice(-2)==="Q1") svg+='<text x="'+x+'" y="88" font-size="10" fill="#5c6b78" font-family="Inter,sans-serif">'+hq[from+j].slice(0,4)+'</text>';});
-    $("hmSpark").innerHTML=svg;
+    fetch("data/sg-map.json").then(function(r){return r.json();}).then(function(g){
+      var vals=towns.map(function(t){return h.towns[t].n[li]||0;}).sort(function(a,b){return a-b;});
+      var cut=[1,2,3,4,5].map(function(j){return vals[Math.floor(vals.length*j/6)];});
+      var C=["#e3e9ef","#bccbda","#8ea8c1","#5e81a3","#2f5880","#0b2a4a"];
+      function col(v){var k=0;while(k<5&&v>=cut[k])k++;return C[k];}
+      function townOf(pa){if(h.towns[pa])return pa;if(g.alias[pa])return g.alias[pa];if(g.central.indexOf(pa)>=0)return "CENTRAL AREA";return null;}
+      var svg="";
+      Object.keys(g.paths).forEach(function(pa){var t=townOf(pa);
+        if(!t){svg+='<path d="'+g.paths[pa]+'" fill="#ece9e1" stroke="#fff" stroke-width="1"/>';return;}
+        var v=h.towns[t].n[li]||0, slug=t.split("/")[0].toLowerCase().replace(/ /g,"-");
+        svg+='<a href="market-map.html?town='+slug+'" data-t="'+t+'"><path class="town" d="'+g.paths[pa]+'" fill="'+col(v)+'" stroke="'+(t===top?"#c9a227":"#fff")+'" stroke-width="'+(t===top?2.5:1)+'"><title>'+title(t)+": "+v.toLocaleString()+" flats sold in "+hq[li]+'</title></path></a>';});
+      var m=$("hmMap"); m.innerHTML=svg;
+      $("hmMapK").textContent="HDB resale flats sold by town · "+hq[li]+" (gold outline = busiest)";
+      m.addEventListener("mouseover",function(e){var a=e.target.closest&&e.target.closest("a[data-t]");if(a){var t=a.getAttribute("data-t");$("hmTip").textContent=title(t)+": "+(h.towns[t].n[li]||0).toLocaleString()+" flats · tap for its trend";}});
+      m.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[data-t]");if(a)track("map_town");});
+    }).catch(function(){});
     var dt=new Date(d.generated); $("hmSrc").innerHTML=$("hmSrc").innerHTML.replace("Refreshed weekly.","Refreshed weekly; retrieved "+dt.toLocaleDateString("en-SG",{day:"numeric",month:"short",year:"numeric"})+".");
   }).catch(function(){$("hmS1").textContent="Open the Market Map for the latest figures.";});
 })();
