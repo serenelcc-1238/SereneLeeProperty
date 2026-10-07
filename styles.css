@@ -718,3 +718,13 @@ a.home-mm-tile:hover{box-shadow:0 0 0 1px var(--gold-dark);}
 .home-mm-legend .tip{margin-left:auto;color:var(--navy-900);font-weight:600;}
 @media(max-width:600px){.home-mm-legend .tip{margin-left:0;flex-basis:100%;}}
 a.home-mm-more{text-decoration:none;}
+
+/* Homepage: slim million-dollar HDB teaser (data/hdb/million-summary.json, refreshed weekly) */
+.home-md{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-top:16px;padding:12px 16px;border-radius:12px;background:var(--navy-900);color:#fff;text-decoration:none;}
+.home-md:hover{box-shadow:0 0 0 2px var(--gold);}
+.home-md-badge{background:var(--gold);color:var(--navy-900);font-weight:800;font-size:.75rem;padding:4px 10px;border-radius:999px;}
+.home-md-main{font-size:.92rem;}
+.home-md-main b{font-family:'Fraunces',Georgia,serif;font-size:1.15rem;color:var(--gold);}
+.home-md-top{font-size:.8rem;color:#c9d4df;}
+.home-md-go{margin-left:auto;font-weight:700;font-size:.88rem;color:var(--gold);}
+@media(max-width:640px){.home-md-go{margin-left:0;}}

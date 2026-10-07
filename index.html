@@ -130,6 +130,12 @@
         <span class="alt">Own a condo? <a href="market-map.html?look=condo" data-hm="condo">Check your condo &rarr;</a></span>
       </form>
     </div>
+    <a class="home-md" href="million-dollar-hdb.html" data-hm="million" id="hmMd">
+      <span class="home-md-badge">$1M+ HDB</span>
+      <span class="home-md-main"><b id="hmMdN">&ndash;</b> <span id="hmMdTxt">HDB flats resold for $1 million or more this year</span></span>
+      <span class="home-md-top" id="hmMdTop"></span>
+      <span class="home-md-go">See the full list &rarr;</span>
+    </a>
     <p class="home-mm-src" id="hmSrc">Source: <a href="https://data.gov.sg/datasets/d_8b84c4ee58e3cfc0ece0d773c8ca6abc/view" target="_blank" rel="noopener">HDB resale flat prices (data.gov.sg)</a> and <a href="https://eservice.ura.gov.sg/maps/api/" target="_blank" rel="noopener">URA private residential transactions (URA Data Service)</a>. Refreshed weekly.</p>
   </div>
 </section>
@@ -176,6 +182,14 @@
       $("hmMapK").textContent="HDB resale flats sold by town · "+hq[li]+" (gold outline = busiest)";
       m.addEventListener("mouseover",function(e){var a=e.target.closest&&e.target.closest("a[data-t]");if(a){var t=a.getAttribute("data-t");$("hmTip").textContent=title(t)+": "+(h.towns[t].n[li]||0).toLocaleString()+" flats · tap for its trend";}});
       m.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[data-t]");if(a)track("map_town");});
+    }).catch(function(){});
+    fetch("data/hdb/million-summary.json").then(function(r){return r.json();}).then(function(m){
+      var FT={"3":"3-room","4":"4-room","5":"5-room","E":"Executive","M":"Multi-gen"};
+      var lm=m.last_month, y=+lm.slice(0,4), mo=+lm.slice(5,7)-1; if(mo<1){mo=12;y--;} var prev=y+"-"+(mo<10?"0":"")+mo;
+      var MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      $("hmMdN").textContent=m.year_count.toLocaleString();
+      $("hmMdTxt").textContent="HDB flats resold for $1M+ in "+m.year+" so far · "+(m.by_month[prev]||0)+" in "+MON[mo-1]+" "+y;
+      var t=m.top[0]; if(t) $("hmMdTop").textContent="Highest: $"+t[9].toLocaleString()+", Blk "+t[2]+" "+title(t[3])+" ("+(FT[t[4]]||t[4])+")";
     }).catch(function(){});
     var dt=new Date(d.generated); $("hmSrc").innerHTML=$("hmSrc").innerHTML.replace("Refreshed weekly.","Refreshed weekly; retrieved "+dt.toLocaleDateString("en-SG",{day:"numeric",month:"short",year:"numeric"})+".");
   }).catch(function(){$("hmS1").textContent="Open the Market Map for the latest figures.";});

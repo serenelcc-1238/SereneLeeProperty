@@ -71,6 +71,14 @@ document.addEventListener('DOMContentLoaded', function () {
     mm.textContent = 'Market Map';
     menu.appendChild(mm);
   });
+  document.querySelectorAll('.nav-dropdown-menu').forEach(function (menu) {
+    if (menu.querySelector('a[href="million-dollar-hdb.html"]')) return;
+    var md = document.createElement('a');
+    md.href = 'million-dollar-hdb.html';
+    md.textContent = 'Million-Dollar HDB';
+    if (location.pathname.indexOf('million-dollar-hdb') >= 0) md.className = 'active';
+    menu.appendChild(md);
+  });
 
   navDropdowns.forEach(function (dropdown) {
     var toggleBtn = dropdown.querySelector('.nav-dropdown-toggle');

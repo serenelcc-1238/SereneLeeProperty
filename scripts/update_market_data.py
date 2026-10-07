@@ -6,6 +6,7 @@ Pulls two official datasets and writes:
   data/market-data.json      quarterly totals for the map, filters and charts
   data/hdb/index.json        every street and block with a resale deal in the last 3 years
   data/hdb/<town>.json       those resale deals, by street and block (for "Check my block")
+  data/hdb/million.json      every resale of $1,000,000 or more in the same 36 months
   data/ura/projects.json     every private project with a deal in the last 5 years
   data/ura/d<NN>.json        those deals, by project (for "Check my condo")
 
@@ -188,6 +189,25 @@ def build_hdb(rows, now=None):
             index.setdefault(st, [t, []])[1].extend(sorted(blocks))
     files = {slug(t): {"town": t, "since": since, "models": model_list, "streets": streets}
              for t, streets in detail.items()}
+    # Million-dollar resale flats (price >= $1,000,000) in the same 36-month window, newest first.
+    mill = []
+    for t, streets in detail.items():
+        for st, blocks in streets.items():
+            for blk, deals in blocks.items():
+                for d in deals:
+                    if d[6] >= 1_000_000:
+                        mill.append([d[0], t, blk, st, d[1], d[2], d[3], model_list[d[4]], d[5], d[6]])
+    mill.sort(key=lambda x: (x[0], x[9]), reverse=True)
+    files["million"] = {"since": since, "last_month": last, "threshold": 1_000_000,
+                        "fields": ["month", "town", "block", "street", "flat_type", "storey_from", "sqm", "model", "lease_start", "price"],
+                        "deals": mill}
+    yr = last[:4]
+    this_year = [d for d in mill if d[0][:4] == yr]
+    by_month = {}
+    for d in mill:
+        by_month[d[0]] = by_month.get(d[0], 0) + 1
+    files["million-summary"] = {"since": since, "last_month": last, "year": yr, "year_count": len(this_year),
+                                "by_month": by_month, "top": sorted(this_year, key=lambda x: -x[9])[:5]}
 
     summary = {
         "status": "ok",
