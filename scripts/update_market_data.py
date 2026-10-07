@@ -78,6 +78,14 @@ def get(url, headers=None, tries=3):
             time.sleep(5 * (i + 1))
 
 
+def as_json(raw):
+    """URA's file is mostly UTF-8 but can carry an older-encoded accented letter in a project name."""
+    try:
+        return json.loads(raw.decode("utf-8"))
+    except UnicodeDecodeError:
+        return json.loads(raw.decode("cp1252", "replace"))
+
+
 def qlabel(year, q):
     return f"{year} Q{q}"
 
@@ -203,13 +211,13 @@ def svy21_to_svg(e, n):
 
 
 def ura_projects(key):
-    tok = json.loads(get(URA_TOKEN_URL, {"AccessKey": key}))
+    tok = as_json(get(URA_TOKEN_URL, {"AccessKey": key}))
     token = tok.get("Result")
     if not token:
         raise RuntimeError(f"URA token request failed: {tok.get('Message') or tok}")
     projects = []
     for b in range(1, 5):
-        j = json.loads(get(URA_DATA_URL.format(b), {"AccessKey": key, "Token": token}))
+        j = as_json(get(URA_DATA_URL.format(b), {"AccessKey": key, "Token": token}))
         if j.get("Status") != "Success":
             raise RuntimeError(f"URA batch {b} failed: {j.get('Message')}")
         projects += j.get("Result") or []
