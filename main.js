@@ -137,8 +137,11 @@ document.addEventListener('DOMContentLoaded', function () {
       var sortBy = topSort ? topSort.value : 'asc';
       rest.sort(function (a, b) {
         if (sortBy === 'launch') {
-          /* newest launch first; cards without a launch date go last */
-          return (b.getAttribute('data-launch') || '').localeCompare(a.getAttribute('data-launch') || '');
+          /* on sale first (newest launch on top), then coming soon (soonest launch first) */
+          var upA = a.getAttribute('data-status') === 'upcoming', upB = b.getAttribute('data-status') === 'upcoming';
+          if (upA !== upB) return upA ? 1 : -1;
+          var la = a.getAttribute('data-launch') || '', lb = b.getAttribute('data-launch') || '';
+          return upA ? la.localeCompare(lb) : lb.localeCompare(la);
         }
         var topA = parseFloat(a.getAttribute('data-top')) || 0;
         var topB = parseFloat(b.getAttribute('data-top')) || 0;

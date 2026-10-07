@@ -287,9 +287,9 @@ def main(items=None, today=None):
     region = region_lookup()
 
     listing = [x for x in chosen if norm(x["name"]) not in pinned]
-    listing.sort(key=lambda x: x["launchDate"], reverse=True)
-    sell = [x for x in listing if x["_status"] == "selling"]
-    up = [x for x in listing if x["_status"] == "upcoming"]
+    sell = sorted((x for x in listing if x["_status"] == "selling"), key=lambda x: x["launchDate"], reverse=True)
+    up = sorted((x for x in listing if x["_status"] == "upcoming"), key=lambda x: x["launchDate"])
+    listing = sell + up  # same order the page shows by default
     stamp = today.strftime("%-d %b %Y")
 
     body = "\n" + "".join(card(x, region, today) for x in listing) + "      "
