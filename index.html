@@ -85,9 +85,9 @@
     <a href="about.html" class="hero-md-photo" aria-label="About Serene Lee"><img src="assets/serene-photo.jpg" alt="Serene Lee, ERA Realty, CEA Reg. R027578Z"></a>
     <a class="hero-md-card" href="million-dollar-hdb.html" data-hm="million" id="hmMd">
       <span class="home-md-badge">$1M+ HDB</span>
-      <span class="hero-md-n"><b id="hmMdN">&ndash;</b> <span id="hmMdTxt">HDB flats resold for $1 million or more this year</span></span>
+      <span class="hero-md-n" id="hmMdHook">Is your HDB block on the million-dollar list?</span>
       <span class="hero-md-sub" id="hmMdTop">&nbsp;</span>
-      <span class="hero-md-go">See every million-dollar flat &rarr;</span>
+      <span class="hero-md-go">See which blocks made the list &rarr;</span>
     </a>
   </div>
 </section>
@@ -179,9 +179,13 @@
       var FT={"3":"3-room","4":"4-room","5":"5-room","E":"Executive","M":"Multi-gen"};
       var lm=m.last_month, y=+lm.slice(0,4), mo=+lm.slice(5,7)-1; if(mo<1){mo=12;y--;} var prev=y+"-"+(mo<10?"0":"")+mo;
       var MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-      $("hmMdN").textContent=m.year_count.toLocaleString();
-      $("hmMdTxt").textContent="HDB flats resold for $1 million or more in "+m.year+" so far";
-      var t=m.top[0]; $("hmMdTop").textContent=(m.by_month[prev]||0)+" in "+MON[mo-1]+" "+y+(t?" · Highest: $"+t[9].toLocaleString()+", Blk "+t[2]+" "+title(t[3])+" ("+(FT[t[4]]||t[4])+")":"");
+      var n=m.by_month[prev]||0, days=new Date(y,mo,0).getDate(), perDay=Math.round(n/days);
+      var cut=(mo<10?"0":"")+mo, ty=0, ly=0;
+      Object.keys(m.by_month).forEach(function(k){if(k.slice(5)<=cut){if(k.slice(0,4)===String(y))ty+=m.by_month[k];if(k.slice(0,4)===String(y-1))ly+=m.by_month[k];}});
+      var up=ly?Math.round((ty/ly-1)*100):0;
+      $("hmMdHook").innerHTML='<b>'+m.year_count.toLocaleString()+'</b> HDB flats have sold for $1 million or more this year. Is your block next?';
+      var t=m.top[0];
+      $("hmMdTop").textContent="That's about "+perDay+" a day in "+MON[mo-1]+(up>0?", and "+up+"% more than last year":"")+"."+(t?" Record so far: $"+t[9].toLocaleString()+" for a "+(FT[t[4]]||t[4])+" at Blk "+t[2]+" "+title(t[3])+".":"");
     }).catch(function(){});
     var dt=new Date(d.generated); $("hmSrc").innerHTML=$("hmSrc").innerHTML.replace("Refreshed weekly.","Refreshed weekly; retrieved "+dt.toLocaleDateString("en-SG",{day:"numeric",month:"short",year:"numeric"})+".");
   }).catch(function(){$("hmS1").textContent="Open the Market Map for the latest figures.";});
