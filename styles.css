@@ -728,3 +728,22 @@ a.home-mm-more{text-decoration:none;}
 .home-md-top{font-size:.8rem;color:#c9d4df;}
 .home-md-go{margin-left:auto;font-weight:700;font-size:.88rem;color:var(--gold);}
 @media(max-width:640px){.home-md-go{margin-left:0;}}
+
+/* Homepage hero: Serene's photo + million-dollar HDB teaser in one row */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+.hero-md .container{display:grid;grid-template-columns:130px minmax(0,1fr);gap:24px;align-items:center;flex-wrap:nowrap;}
+.hero-md-photo img{width:130px;height:160px;object-fit:cover;border-radius:14px;display:block;box-shadow:0 14px 36px rgba(0,0,0,.35);}
+.hero-md-card{display:flex;flex-direction:column;align-items:flex-start;gap:8px;text-decoration:none;color:#fff;padding:18px 22px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);transition:border-color .15s,background .15s;min-width:0;}
+.hero-md-card:hover{border-color:var(--gold);background:rgba(255,255,255,.09);}
+.hero-md-n{font-size:1.05rem;line-height:1.35;}
+.hero-md-n b{font-family:'Fraunces',Georgia,serif;font-size:2.3rem;color:var(--gold);margin-right:4px;vertical-align:-4px;}
+.hero-md-sub{font-size:.88rem;color:#c9d4df;}
+.hero-md-go{font-weight:700;color:var(--gold);font-size:.92rem;}
+@media(max-width:640px){
+  .hero-md .container{grid-template-columns:76px minmax(0,1fr);gap:14px;}
+  .hero-md-photo img{width:76px;height:96px;}
+  .hero-md-card{padding:12px 14px;}
+  .hero-md-n{font-size:.9rem;}
+  .hero-md-n b{font-size:1.6rem;}
+  .hero-md-sub{font-size:.78rem;}
+}

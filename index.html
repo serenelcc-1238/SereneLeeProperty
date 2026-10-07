@@ -78,19 +78,17 @@
   </div>
 </header>
 
-<!-- HERO -->
-<section class="hero hero-compact">
+<!-- HERO: photo + million-dollar HDB teaser (figures from data/hdb/million-summary.json, refreshed weekly) -->
+<section class="hero hero-compact hero-md">
   <div class="container">
-    <div class="hero-copy">
-      <span class="eyebrow">ERA Realty &middot; CEA Reg. R027578Z</span>
-      <h1>Your HDB Resale, Condo &amp; New Launch Specialist in Singapore</h1>
-      <p class="lead">Numbers-first advice for HDB upgraders and new launch buyers, grounded in what you can actually afford.</p>
-      <div class="cta-row">
-        <a href="calculator.html" class="btn btn-gold">Check My Affordability</a>
-        <a href="new-launches.html" class="btn btn-outline">View New Launches</a>
-      </div>
-    </div>
-    <img src="assets/serene-photo.jpg" alt="Serene Lee, ERA Realty" class="hero-photo">
+    <h1 class="sr-only">Serene Lee, ERA Realty: HDB Resale, Condo &amp; New Launch Specialist in Singapore</h1>
+    <a href="about.html" class="hero-md-photo" aria-label="About Serene Lee"><img src="assets/serene-photo.jpg" alt="Serene Lee, ERA Realty, CEA Reg. R027578Z"></a>
+    <a class="hero-md-card" href="million-dollar-hdb.html" data-hm="million" id="hmMd">
+      <span class="home-md-badge">$1M+ HDB</span>
+      <span class="hero-md-n"><b id="hmMdN">&ndash;</b> <span id="hmMdTxt">HDB flats resold for $1 million or more this year</span></span>
+      <span class="hero-md-sub" id="hmMdTop">&nbsp;</span>
+      <span class="hero-md-go">See every million-dollar flat &rarr;</span>
+    </a>
   </div>
 </section>
 
@@ -130,12 +128,6 @@
         <span class="alt">Own a condo? <a href="market-map.html?look=condo" data-hm="condo">Check your condo &rarr;</a></span>
       </form>
     </div>
-    <a class="home-md" href="million-dollar-hdb.html" data-hm="million" id="hmMd">
-      <span class="home-md-badge">$1M+ HDB</span>
-      <span class="home-md-main"><b id="hmMdN">&ndash;</b> <span id="hmMdTxt">HDB flats resold for $1 million or more this year</span></span>
-      <span class="home-md-top" id="hmMdTop"></span>
-      <span class="home-md-go">See the full list &rarr;</span>
-    </a>
     <p class="home-mm-src" id="hmSrc">Source: <a href="https://data.gov.sg/datasets/d_8b84c4ee58e3cfc0ece0d773c8ca6abc/view" target="_blank" rel="noopener">HDB resale flat prices (data.gov.sg)</a> and <a href="https://eservice.ura.gov.sg/maps/api/" target="_blank" rel="noopener">URA private residential transactions (URA Data Service)</a>. Refreshed weekly.</p>
   </div>
 </section>
@@ -188,8 +180,8 @@
       var lm=m.last_month, y=+lm.slice(0,4), mo=+lm.slice(5,7)-1; if(mo<1){mo=12;y--;} var prev=y+"-"+(mo<10?"0":"")+mo;
       var MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
       $("hmMdN").textContent=m.year_count.toLocaleString();
-      $("hmMdTxt").textContent="HDB flats resold for $1M+ in "+m.year+" so far · "+(m.by_month[prev]||0)+" in "+MON[mo-1]+" "+y;
-      var t=m.top[0]; if(t) $("hmMdTop").textContent="Highest: $"+t[9].toLocaleString()+", Blk "+t[2]+" "+title(t[3])+" ("+(FT[t[4]]||t[4])+")";
+      $("hmMdTxt").textContent="HDB flats resold for $1 million or more in "+m.year+" so far";
+      var t=m.top[0]; $("hmMdTop").textContent=(m.by_month[prev]||0)+" in "+MON[mo-1]+" "+y+(t?" · Highest: $"+t[9].toLocaleString()+", Blk "+t[2]+" "+title(t[3])+" ("+(FT[t[4]]||t[4])+")":"");
     }).catch(function(){});
     var dt=new Date(d.generated); $("hmSrc").innerHTML=$("hmSrc").innerHTML.replace("Refreshed weekly.","Refreshed weekly; retrieved "+dt.toLocaleDateString("en-SG",{day:"numeric",month:"short",year:"numeric"})+".");
   }).catch(function(){$("hmS1").textContent="Open the Market Map for the latest figures.";});
