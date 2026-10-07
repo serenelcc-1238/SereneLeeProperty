@@ -8,9 +8,11 @@ not stories, not posts made directly in the Instagram app), saves each post's
 image into assets/ig/feed/<post id>.jpg and writes data/instagram.json
 (newest first) for the homepage "On Instagram" section.
 
-Needs the repo secret BUFFER_API_KEY (from https://publish.buffer.com/settings/api).
-Without it, only images still missing for posts already in data/instagram.json
-are downloaded, and the script exits 3 so the workflow flags it.
+Two ways to run:
+- With BUFFER_API_KEY (paid Buffer API): fetches the post list itself.
+- Without it (the normal set-up): the "Website IG Sync" Claude task writes the
+  post list into data/instagram.json using the Buffer connector, and this script
+  only downloads images still missing, then exits 3 (not an error).
 Standard library only.
 """
 import json, os, sys, time, urllib.request

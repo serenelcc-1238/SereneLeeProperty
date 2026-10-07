@@ -1,10 +1,12 @@
 name: Update Instagram feed
 
-# Every day 9:23pm Singapore time (13:23 UTC), after the 8:30pm Tue/Thu/Sun posting slots.
-# Also runs on demand from the Actions tab ("Run workflow").
+# Runs whenever data/instagram.json changes (the "Website IG Sync" Claude task adds
+# newly sent Buffer posts to it), and on demand from the Actions tab.
+# Saves each post's image into assets/ig/feed/ and redeploys the site.
 on:
-  schedule:
-    - cron: "23 13 * * *"
+  push:
+    branches: [main]
+    paths: ["data/instagram.json"]
   workflow_dispatch:
 
 permissions:
@@ -33,7 +35,7 @@ jobs:
           python scripts/update_instagram.py
           code=$?
           echo "code=$code" >> "$GITHUB_OUTPUT"
-          if [ "$code" = "1" ]; then exit 1; fi
+          if [ "$code" = "1" ]; then exit 1; fi   # 3 = no Buffer key: images-only mode, which is the normal case
           exit 0
 
       - name: Save to the repo
@@ -64,9 +66,3 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-
-      - name: Flag missing Buffer key
-        if: steps.fetch.outputs.code == '3'
-        run: |
-          echo "BUFFER_API_KEY is not set, so new Instagram posts were not picked up. Add it under Settings > Secrets and variables > Actions."
-          exit 1
