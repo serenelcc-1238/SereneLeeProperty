@@ -84,7 +84,7 @@
 .md-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 20px}
 @media(max-width:760px){.md-kpis{grid-template-columns:1fr 1fr}}
 .md-tile{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}
-.md-tile .k{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.md-tile .k{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
 .md-tile .v{font:600 1.35rem/1.25 'Fraunces',Georgia,serif;color:var(--navy-900);margin:4px 0 2px;font-variant-numeric:tabular-nums}
 .md-tile .s{font-size:.8rem;color:var(--muted)}
 .md-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:20px;min-width:0}
@@ -136,7 +136,6 @@
 </div>
 <section style="padding-top:12px;">
   <div class="container">
-    <div class="md-kpis" id="mdKpis"></div>
     <div class="md-periodbar"><span class="filter-group-label">Period:</span>
       <div class="md-filters md-period" style="margin:0">
         <div class="filter-group">
@@ -152,6 +151,7 @@
         </div>
       </div>
     </div>
+    <div class="md-kpis" id="mdKpis"></div>
     <div class="md-two">
       <div class="md-card">
         <h2>Million-dollar resales per month</h2>
@@ -206,14 +206,7 @@ const track=(ev,props)=>{try{window.posthog&&posthog.capture(ev,props)}catch(e){
 let D=[], TOT=[], shown=PAGE, LAST="", PER="ytd", RF="", RT="", MONTHS=[];
 fetch("data/hdb/million.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw 0;return r.json();}).then(m=>{
   D=m.deals; TOT=m.totals||[]; LAST=m.last_month;
-  const yr=LAST.slice(0,4), ty=D.filter(d=>d[0].startsWith(yr)), lastFull=prevMonth(LAST), lm=D.filter(d=>d[0]===lastFull);
-  const top=ty.slice().sort((a,b)=>b[9]-a[9])[0], towns={};ty.forEach(d=>towns[d[1]]=(towns[d[1]]||0)+1);
-  const tt=Object.entries(towns).sort((a,b)=>b[1]-a[1])[0];
-  const cut=lastFull.slice(5), tyF=ty.filter(d=>d[0].slice(5)<=cut).length, ly=D.filter(d=>d[0].startsWith(String(+yr-1))&&d[0].slice(5)<=cut).length;
-  $("mdKpis").innerHTML=tile("Million-dollar resales · "+yr+" so far",ty.length.toLocaleString(),ly&&lastFull.startsWith(yr)?"Jan–"+MON[+cut-1]+": "+tyF.toLocaleString()+" vs "+ly.toLocaleString()+" in "+(+yr-1)+" ("+(tyF>=ly?"+":"")+Math.round((tyF/ly-1)*100)+"%)":"")
-    +tile("In "+ym(lastFull),lm.length.toLocaleString(),"Latest full month")
-    +tile("Highest price · "+yr,top?fmt$(top[9]):"–",top?"Blk "+esc(top[2])+" "+esc(title(top[3]))+" · "+FT[top[4]]:"")
-    +tile("Most in · "+yr,tt?esc(title(tt[0])):"–",tt?tt[1].toLocaleString()+" deals":"");
+  const yr=LAST.slice(0,4);
   $("mdUpdated").innerHTML="Covers "+ym(m.since)+" to "+ym(LAST)+" · "+D.length.toLocaleString()+" deals in total. "+ym(LAST)+" is still in progress.";
   bars();
   const first=[...new Set(TOT.map(x=>x[0]).concat(D.map(d=>d[0])))].sort()[0];MONTHS=[];for(let k=first;k<=LAST;k=addM(k,1))MONTHS.push(k);
@@ -277,7 +270,24 @@ function drawMap(){
   $("mdMap").innerHTML=h;
   $("mdMapTitle").textContent="Where they sold · "+rangeLabel()+(f?" · "+FT[f]:"");
 }
+function kpis(){
+  const [a,b]=range(), L=rangeLabel(), r=D.filter(d=>inR(d[0])), n=r.length;
+  // same period a year earlier (only if fully inside the data)
+  const a0=addM(a,-12), b0=addM(b,-12), prevOk=a0>=MONTHS[0], n0=prevOk?D.filter(d=>d[0]>=a0&&d[0]<=b0).length:0;
+  // when the period ends in the month still in progress, compare finished months only
+  const cb=b===LAST?prevMonth(LAST):b, nf=D.filter(d=>d[0]>=a&&d[0]<=cb).length, nf0=prevOk?D.filter(d=>d[0]>=a0&&d[0]<=addM(cb,-12)).length:0;
+  const months=MONTHS.filter(k=>k>=a&&k<=cb).length||1;
+  let vs="No earlier period to compare";
+  if(prevOk&&cb>=a&&nf0)vs=(b===LAST?(a===cb?ym(a):MON[+a.slice(5,7)-1]+"–"+ym(cb))+": ":"")+nf.toLocaleString()+" vs "+nf0.toLocaleString()+" a year earlier ("+(nf>=nf0?"+":"")+Math.round((nf/nf0-1)*100)+"%)";
+  const top=r.slice().sort((x,y)=>y[9]-x[9])[0], towns={};r.forEach(d=>towns[d[1]]=(towns[d[1]]||0)+1);
+  const tt=Object.entries(towns).sort((x,y)=>y[1]-x[1])[0];
+  $("mdKpis").innerHTML=tile("$1M+ resales · "+L,n.toLocaleString(),vs)
+    +tile("Average per month",a===b?n.toLocaleString():Math.round(nf/months).toLocaleString(),a===b?"Single month":"Over "+months+" full month"+(months>1?"s":"")+(b===LAST?" ("+ym(LAST)+" left out, still in progress)":""))
+    +tile("Highest price",top?fmt$(top[9]):"–",top?"Blk "+esc(top[2])+" "+esc(title(top[3]))+" · "+FT[top[4]]+" · "+ym(top[0]):"")
+    +tile("Most in",tt?esc(title(tt[0])):"–",tt?tt[1].toLocaleString()+" deals":"");
+}
 function list(){
+  kpis();
   drawMap();
   const t=$("mdTown").value,f=$("mdFt").value,s=$("mdSort").value,q=$("mdQ").value.trim().toUpperCase();
   let r=D.filter(d=>inR(d[0])&&(!t||d[1]===t)&&(!f||d[4]===f)&&(!q||(d[2]+" "+d[3]).includes(q)));
