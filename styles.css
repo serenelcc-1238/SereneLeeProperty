@@ -640,3 +640,32 @@ footer .container{display:flex;gap:44px;flex-wrap:wrap;}
 .referral-consent input{width:16px;height:16px;margin-top:2px;flex-shrink:0;accent-color:var(--navy);}
 .referral-form .btn{justify-self:start;}
 .referral-wa{font-size:.85rem;font-weight:600;color:var(--navy-900);}
+
+/* ---------- Homepage: Market Map teaser ---------- */
+.home-mm-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:22px;align-items:stretch;}
+@media(max-width:860px){.home-mm-grid{grid-template-columns:1fr;}}
+.home-mm-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;min-width:0;}
+a.home-mm-card{display:flex;flex-direction:column;gap:18px;text-decoration:none;color:inherit;transition:border-color .15s,box-shadow .15s;}
+a.home-mm-card:hover{border-color:var(--gold-dark);box-shadow:var(--shadow);}
+.home-mm-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+@media(max-width:600px){.home-mm-tiles{grid-template-columns:1fr;}}
+.home-mm-tile{background:var(--cream);border-radius:12px;padding:12px 14px;min-width:0;}
+.home-mm-tile .k{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);}
+.home-mm-tile .v{font:600 1.35rem/1.25 'Fraunces',Georgia,serif;color:var(--navy-900);margin:5px 0 2px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;}
+.home-mm-tile .s{font-size:.78rem;color:var(--muted);}
+.home-mm-spark .k{font-size:.78rem;color:var(--muted);margin-bottom:6px;}
+.home-mm-spark svg{width:100%;height:auto;display:block;}
+.home-mm-more{font-weight:700;color:var(--navy-900);font-size:.88rem;margin-top:auto;}
+.home-mm-check{display:flex;flex-direction:column;gap:12px;background:var(--navy-900);border-color:var(--navy-900);color:#fff;}
+.home-mm-check h3{color:#fff;font-size:1.2rem;margin:0;}
+.home-mm-check p{margin:0;color:#c9d4df;font-size:.9rem;}
+.home-mm-check .row{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;}
+.home-mm-check label{display:block;font-size:.78rem;font-weight:600;color:#c9d4df;margin-bottom:4px;}
+.home-mm-check input{width:100%;padding:11px 12px;border-radius:9px;border:1.5px solid #2c4f70;background:#12385c;color:#fff;font:inherit;font-size:.95rem;}
+.home-mm-check input::placeholder{color:#93a7b8;}
+.home-mm-check input:focus{outline:none;border-color:var(--gold);}
+.home-mm-check .btn{width:100%;}
+.home-mm-check .alt{font-size:.84rem;color:#c9d4df;}
+.home-mm-check .alt a{color:var(--gold);font-weight:600;}
+.home-mm-src{color:var(--muted);font-size:.74rem;margin-top:14px;}
+.home-mm-src a{color:inherit;}

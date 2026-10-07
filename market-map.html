@@ -122,6 +122,10 @@
 .mm-tag.grey{background:var(--line);color:var(--muted)}
 .mm-res-cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;background:var(--navy-900);color:#fff;border-radius:12px;padding:14px 18px}
 .mm-res-cta p{margin:0;font-size:.92rem;max-width:520px}
+.mm-sync{margin:0;font-size:.88rem;color:var(--navy-900);background:var(--mm-hl);border-radius:10px;padding:9px 14px}
+.mm-tile[data-ft]{cursor:pointer;transition:box-shadow .15s}
+.mm-tile[data-ft]:hover{box-shadow:0 0 0 1px var(--gold-dark)}
+.mm-tile.on{box-shadow:0 0 0 2px var(--gold)}
 .mm-linkbtn{background:none;border:0;padding:0;color:var(--navy);font-weight:600;text-decoration:underline;cursor:pointer;font-size:.86rem}
 
 /* Map controls */
@@ -468,6 +472,7 @@ function render(){
   }
   bars();
   setSources();
+  writeParams();
 }
 function rank(rows,ttl,fmt,colored){
   const mx=rows[0]?rows[0].v:1;$("mmRankTitle").textContent=ttl;
@@ -475,19 +480,29 @@ function rank(rows,ttl,fmt,colored){
 }
 function bars(){
   const pte=layer==="pte", idx=[];for(let i=pte?pteFirst:0;i<=(pte?pteLast:hdbLast);i++)idx.push(i);
-  const val=i=>pte?(sel?pv(sel,i):ptot(i)):(sel?hn(sel,i):htot(i));
+  const px=!pte&&metric==="px", fv=v=>px?fmtK(v):v.toLocaleString();
+  const val=i=>pte?(sel?pv(sel,i):ptot(i)):px?(sel?hp(sel,i):havg(i)):(sel?hn(sel,i):htot(i));
   const s=idx.map(val), who=sel?(pte?"D"+sel+" "+(DNAME[sel]||""):title(sel)+(hFt==="all"?"":" · "+FT[hFt])):scopeLabel();
-  $("mmTrendTitle").textContent=who+(pte?" · private units sold per quarter":" · HDB resale flats sold per quarter");
+  $("mmTrendTitle").textContent=who+(pte?" · private units sold per quarter":px?" · average HDB resale price per quarter":" · HDB resale flats sold per quarter");
   const L=48,R=8,Tp=12,B=26,W=1000-L-R,H=200-Tp-B,bw=W/idx.length,max=Math.max(1,...s)*1.08;
   const p=Math.pow(10,Math.floor(Math.log10(max))),top=Math.ceil(max/p)*p;
-  let h=[0,top/2,top].map(v=>{const y=Tp+H-v/top*H;return `<line x1="${L}" x2="${1000-R}" y1="${y}" y2="${y}" stroke="var(--line)"/><text x="${L-6}" y="${y+3}" text-anchor="end">${v.toLocaleString()}</text>`}).join("");
+  let h=[0,top/2,top].map(v=>{const y=Tp+H-v/top*H;return `<line x1="${L}" x2="${1000-R}" y1="${y}" y2="${y}" stroke="var(--line)"/><text x="${L-6}" y="${y+3}" text-anchor="end">${fv(v)}</text>`}).join("");
   idx.forEach((i,j)=>{const v=s[j],bh=v/top*H,x=L+j*bw+1.5,late=pte?i===pteLast:hdbPartial(i);
     const fill=i===qi?"var(--gold)":(late?"var(--mm-partial)":"var(--mm-r3)");
-    h+=`<rect x="${x}" y="${Tp+H-bh}" width="${Math.max(1,bw-3)}" height="${Math.max(bh,.5)}" fill="${fill}" data-i="${i}"><title>${Q[i]}: ${v.toLocaleString()}${late?" (still filling in)":""}</title></rect>`;
+    h+=`<rect x="${x}" y="${Tp+H-bh}" width="${Math.max(1,bw-3)}" height="${Math.max(bh,.5)}" fill="${fill}" data-i="${i}"><title>${Q[i]}: ${v?fv(v):"no deals"}${late?" (still filling in)":""}</title></rect>`;
     if(Q[i].endsWith("Q1")||j===0)h+=`<text x="${x}" y="192">${pte?Q[i]:Q[i].slice(0,4)}</text>`;});
   $("mmBars").innerHTML=h;
 }
 function fmtDate(iso){try{return new Date(iso).toLocaleDateString("en-SG",{day:"numeric",month:"short",year:"numeric"});}catch(e){return iso;}}
+function syncMap(l,key,o){setLayer(l);sel=key;o=o||{};
+  if(l==="hdb"){if(o.ft&&hasFt){hFt=o.ft;$("mmFt").value=hFt;}if(!inReg(key))setChip("[data-hreg]","all",()=>hReg="all");qi=defaultHdbQ();}
+  else{if(hasX){pPt=o.pt||"all";$("mmPt").value=pPt;}setChip("[data-seg]","all",()=>pSeg="all");qi=pteLast;}
+  render();}
+function syncNote(){const lab=layer==="hdb"?title(sel)+(hFt==="all"?"":" · "+FT[hFt]):"D"+sel+" "+(DNAME[sel]||"")+(pPt==="all"?"":" · "+PT[pPt]);
+  return `<p class="mm-sync">The map, ranking and chart below now show <b>${esc(lab)}</b>. <button type="button" class="mm-linkbtn" data-jump>Jump to the map &darr;</button></p>`;}
+document.addEventListener("click",e=>{if(e.target.closest("[data-jump]"))document.querySelector(".mm-bar").scrollIntoView({behavior:"smooth",block:"start"});
+  const t=e.target.closest(".mm-tile[data-ft]");if(t&&hasFt){hFt=t.dataset.ft;$("mmFt").value=hFt;render();
+    document.querySelectorAll(".mm-tile[data-ft]").forEach(x=>x.classList.toggle("on",x===t));const n=document.querySelector(".mm-sync");if(n)n.outerHTML=syncNote();track("market_map_filter",{flat_type:hFt,via:"lookup_tile"});}});
 function showOnMap(l,key){setLayer(l);sel=key;qi=l==="pte"?pteLast:defaultHdbQ();
   if(l==="hdb"&&!inReg(key))setChip("[data-hreg]","all",()=>hReg="all");
   render();document.querySelector(".mm-bar").scrollIntoView({behavior:"smooth",block:"start"});}
@@ -566,23 +581,25 @@ async function showHdb(street,blk,unit){
   const tiles=Object.entries(byFt).sort((a,b)=>b[1].length-a[1].length).slice(0,3).map(([ft,rs])=>{
     const recent=rs.filter(r=>r[0]>=last12), base=recent.length?recent:rs, med=median(base.map(r=>r[6]));
     const tp=(T(town).ft&&T(town).ft[ft])?T(town).ft[ft].p[hq[Q[latestQ]]]:0;
-    return `<div class="mm-tile"><div class="k">${FT[ft]||ft} · ${base.length} deal${base.length>1?"s":""} ${recent.length?"in last 12 months":"in 3 years"}</div><div class="v">${fmt$(med)}</div><div class="s">Median in this block${tp?` · ${title(town)} ${FT[ft]} average ${fmtK(tp)} (${Q[latestQ]})`:""}</div></div>`;});
+    return `<div class="mm-tile" data-ft="${ft}" title="Show ${FT[ft]||ft} on the map and chart"><div class="k">${FT[ft]||ft} · ${base.length} deal${base.length>1?"s":""} ${recent.length?"in last 12 months":"in 3 years"}</div><div class="v">${fmt$(med)}</div><div class="s">Median in this block${tp?` · ${title(town)} ${FT[ft]} average ${fmtK(tp)} (${Q[latestQ]})`:""}</div></div>`;});
   let you="";
   if(band){const m=rows.filter(r=>r[2]===band);
     you=m.length?`<div class="mm-tile you"><div class="k">Your floor band · ${bandTxt(band)}</div><div class="v">${fmt$(m[0][6])}</div><div class="s">Last sold ${ym(m[0][0])} · ${FT[m[0][1]]}, ${m[0][3]} sqm · ${m.length} deal${m.length>1?"s":""} on these floors</div></div>`
       :`<div class="mm-tile you"><div class="k">Your floor band · ${bandTxt(band)}</div><div class="v">No deals yet</div><div class="s">No resale on floors ${bandTxt(band)} in this block in the last 3 years</div></div>`;}
+  const mFt=band&&rows.find(r=>r[2]===band), focusFt=mFt?mFt[1]:Object.entries(byFt).sort((a,b)=>b[1].length-a[1].length)[0][0];
+  syncMap("hdb",town,{ft:focusFt});
   const table=rows.map((r,ix)=>{const isYou=band&&r[2]===band, sqft=r[3]*SQFT;
     return `<tr class="${isYou?"you":""}"${ix>=CAP?" hidden":""}><td>${ym(r[0])}</td><td>${FT[r[1]]||r[1]}</td><td>${bandTxt(r[2])}${isYou?'<span class="mm-tag">Your floor</span>':""}</td><td class="r">${r[3]} sqm<br><span style="color:var(--muted)">${Math.round(sqft).toLocaleString()} sqft</span></td><td>${esc(f.models[r[4]]||"")}</td><td class="r"><b>${fmt$(r[6])}</b></td><td class="r">${fmt$(r[6]/sqft)}</td></tr>`;}).join("");
   const unitTxt=unit?" "+(unit.startsWith("#")?unit:"#"+unit):"";
   out.innerHTML=`<div class="mm-res">
-    <div class="mm-res-head"><h3>Blk ${esc(blk)} ${esc(title(street))}</h3><span class="meta">${esc(title(town))}${info.region?" · "+info.region+" region":""} · Lease from ${lease}, about ${left} years left · <button type="button" class="mm-linkbtn" id="lkMap">Show ${esc(title(town))} on the map</button></span></div>
-    <div class="mm-tiles">${you}${tiles.join("")}</div>
+    <div class="mm-res-head"><h3>Blk ${esc(blk)} ${esc(title(street))}</h3><span class="meta">${esc(title(town))}${info.region?" · "+info.region+" region":""} · Lease from ${lease}, about ${left} years left · </span></div>
+    ${syncNote()}
+    <div class="mm-tiles">${you}${tiles.join("").replace(`class="mm-tile" data-ft="${focusFt}"`,`class="mm-tile on" data-ft="${focusFt}"`)}</div>
     <div class="mm-tablewrap"><table class="mm-table"><thead><tr><th>Month</th><th>Flat type</th><th>Floors</th><th class="r">Size</th><th>Model</th><th class="r">Price</th><th class="r">$psf</th></tr></thead><tbody>${table}</tbody></table></div>
     ${moreBtn(rows.length,"in this block since "+ym(f.since))}
     ${srcLine("hdb","Block deals cover the last 3 years; town averages come from the same dataset.")}
     <div class="mm-res-cta"><p>Want to know what <b>Blk ${esc(blk)}${esc(unitTxt)}</b> could sell for today, after your unit's condition and facing? I'll send you a free valuation.</p>
       <a class="btn btn-gold" target="_blank" rel="noopener" id="lkWa" href="${WA(`Hi Serene, I checked Blk ${blk} ${title(street)}${unitTxt} on your market map. Could you give me a valuation?`)}">Get my free valuation</a></div></div>`;
-  $("lkMap").onclick=()=>showOnMap("hdb",town);
   $("lkWa").onclick=()=>track("whatsapp_clicked",{button_text:"Get my free valuation",button_location:"market map lookup",page_path:location.pathname});
   track("market_map_lookup",{kind:"hdb",town,found:true,with_unit:!!band});
 }
@@ -628,21 +645,47 @@ async function showPte(p,unit){
   if(band){const m=rows.filter(r=>bandOf(r[3])===band), hiB=band+4;const bt=String(band).padStart(2,"0")+" to "+String(hiB).padStart(2,"0");
     you=m.length?`<div class="mm-tile you"><div class="k">Your floor band · ${bt}</div><div class="v">${fmt$(m[0][4])}</div><div class="s">${SALE[m[0][1]-1]} ${ym(m[0][0])} · ${Math.round(m[0][2]*SQFT).toLocaleString()} sqft${psf(m[0])?" · "+fmt$(psf(m[0]))+" psf":""} · ${m.length} deal${m.length>1?"s":""} on these floors</div></div>`
       :`<div class="mm-tile you"><div class="k">Your floor band · ${bt}</div><div class="v">No deals yet</div><div class="s">No deals on floors ${bt} in the last 5 years</div></div>`;}
+  syncMap("pte",d,{pt:mainPt});
   const table=rows.map((r,ix)=>{const isYou=band&&bandOf(r[3])===band, ps=psf(r);
     return `<tr class="${isYou?"you":""}"${ix>=CAP?" hidden":""}><td>${ym(r[0])}</td><td>${SALE[r[1]-1]}</td><td>${r[3]==="-"?"Landed":esc(r[3])}${isYou?'<span class="mm-tag">Your floor</span>':""}</td><td class="r">${Math.round(r[2]*SQFT).toLocaleString()} sqft</td><td class="r"><b>${fmt$(r[4])}</b>${r[5]>1?`<span class="mm-tag grey">${r[5]} units</span>`:""}</td><td class="r">${ps?fmt$(ps):"–"}</td></tr>`;}).join("");
   const unitTxt=unit?" "+(unit.startsWith("#")?unit:"#"+unit):"";
   out.innerHTML=`<div class="mm-res">
-    <div class="mm-res-head"><h3>${esc(title(name))}</h3><span class="meta">${esc(title(street))} · D${d} ${esc(DNAME[d]||"")} · ${seg} · ${PT[mainPt]||""} · ${esc(ten)} · <button type="button" class="mm-linkbtn" id="lkMap">Show D${d} on the map</button></span></div>
+    <div class="mm-res-head"><h3>${esc(title(name))}</h3><span class="meta">${esc(title(street))} · D${d} ${esc(DNAME[d]||"")} · ${seg} · ${PT[mainPt]||""} · ${esc(ten)} · </span></div>
+    ${syncNote()}
     <div class="mm-tiles">${you}${tiles.join("")}</div>
     <div class="mm-tablewrap"><table class="mm-table"><thead><tr><th>Month</th><th>Sale</th><th>Floors</th><th class="r">Size</th><th class="r">Price</th><th class="r">$psf</th></tr></thead><tbody>${table}</tbody></table></div>
     ${moreBtn(rows.length,"in the last 5 years")}
     ${srcLine("ura","$psf is price divided by the recorded floor area.")}
     <div class="mm-res-cta"><p>Want to know what <b>${esc(title(name))}${esc(unitTxt)}</b> could fetch today, or how it compares with new launches nearby? I'll send you a free analysis.</p>
       <a class="btn btn-gold" target="_blank" rel="noopener" id="lkWa" href="${WA(`Hi Serene, I checked ${title(name)}${unitTxt} on your market map. Could you give me a valuation?`)}">Get my free valuation</a></div></div>`;
-  $("lkMap").onclick=()=>showOnMap("pte",d);
   $("lkWa").onclick=()=>track("whatsapp_clicked",{button_text:"Get my free valuation",button_location:"market map lookup",page_path:location.pathname});
   track("market_map_lookup",{kind:"private",district:d,segment:seg,found:true,with_unit:!!band});
 }
+
+/* ---------------- shareable links ----------------
+   market-map.html?town=yishun&ft=4            HDB, Yishun, 4-room
+   market-map.html?layer=private&dist=19&pt=E  Private, D19, executive condos
+   market-map.html?blk=411B&street=Fernvale%20Rd&unit=09-321   runs the block check */
+let ready=false;
+function applyParams(){const q=new URLSearchParams(location.search),g=k=>(q.get(k)||"").trim();
+  if(g("show")==="price"){metric="px";setChip("[data-metric]","px",()=>{});}
+  if(/^(private|pte)$/i.test(g("layer"))||g("dist")){setLayer("pte");qi=pteLast;
+    const d=g("dist").padStart(2,"0");if(DATA.ura.districts[d])sel=d;
+    const sg=g("seg").toUpperCase();if(hasX&&["CCR","RCR","OCR"].includes(sg)){pSeg=sg;setChip("[data-seg]",sg,()=>{});}
+    const pt=g("pt").toUpperCase();if(hasX&&PT[pt]){pPt=pt;$("mmPt").value=pt;}}
+  else{const t=g("town").toUpperCase().replace(/-/g," ");const hit=towns.find(x=>x===t||x.replace("/"," ")===t||x.split("/")[0]===t);if(hit)sel=hit;
+    const r=towns.map(x=>T(x).region).find(x=>x&&x.toLowerCase()===g("region").toLowerCase());if(r){hReg=r;setChip("[data-hreg]",r,()=>{});}
+    const ft=g("ft").toUpperCase().replace(/[^0-9EM]/g,"").slice(0,1);if(hasFt&&FT[ft]){hFt=ft;$("mmFt").value=ft;}}
+  if(g("blk")||g("street")){$("lkBlk").value=g("blk");$("lkStreet").value=g("street");$("lkUnit").value=g("unit");
+    return()=>{$("mmLook").scrollIntoView({block:"start"});runHdb();};}
+  if(g("proj")||g("look")==="condo"){document.querySelector('[data-look="pte"]').click();$("lkProj").value=g("proj");$("lkPUnit").value=g("unit");
+    return g("proj")?()=>{$("mmLook").scrollIntoView({block:"start"});runPte();}:()=>$("mmLook").scrollIntoView({block:"start"});}
+  return null;}
+function writeParams(){if(!ready)return;try{const u=new URL(location.href),q=u.searchParams;
+  ["layer","town","ft","region","dist","seg","pt","show"].forEach(k=>q.delete(k));
+  if(layer==="pte"){q.set("layer","private");if(sel)q.set("dist",sel);if(pSeg!=="all")q.set("seg",pSeg);if(pPt!=="all")q.set("pt",pPt);}
+  else{if(sel)q.set("town",sel.split("/")[0].toLowerCase().replace(/ /g,"-"));if(hFt!=="all")q.set("ft",hFt);if(hReg!=="all")q.set("region",hReg);if(metric==="px")q.set("show","price");}
+  history.replaceState(null,"",u.pathname+(q.toString()?"?"+q.toString():"")+u.hash);}catch(e){}}
 
 /* ---------------- start ---------------- */
 fetch("data/market-data.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}).then(d=>{
@@ -658,7 +701,7 @@ fetch("data/market-data.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Er
   $("mmUpdated").innerHTML=`Data last refreshed <b>${fmtDate(d.generated)}</b> · HDB to ${d.hdb.quarters.at(-1)} · Private to ${d.ura.quarters.at(-1)}${stale?'<span class="mm-stale">One source is behind this week</span>':""}`;
   qi=defaultHdbQ();
   if(location.hash==="#private"){setLayer("pte");qi=pteLast;}
-  build();render();
+  build();const run=applyParams();render();ready=true;if(run)run();
 }).catch(()=>{$("mmUpdated").textContent="The market data could not be loaded right now. Please refresh the page in a moment.";$("mmRank").innerHTML="";});
 })();
 </script>
