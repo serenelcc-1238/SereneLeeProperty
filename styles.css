@@ -750,3 +750,45 @@ a.home-mm-more{text-decoration:none;}
 
 /* Data pages (Market Map, Million-Dollar HDB): heading and intro use the full content width */
 .page-hero-wide p{max-width:none;}
+
+/* Homepage top: light hero with photo + million-dollar HDB tracker card */
+.hm2{background:radial-gradient(circle at 88% 0%,rgba(201,162,39,.16),transparent 45%),var(--cream);padding:30px 0 26px;border-bottom:1px solid var(--line);}
+.hm2-grid{display:grid;grid-template-columns:140px minmax(0,1fr);gap:24px;align-items:center;}
+.hm2-photo img{width:140px;height:172px;object-fit:cover;border-radius:16px;display:block;box-shadow:0 12px 30px rgba(11,42,74,.18);border:4px solid #fff;}
+.hm2-card{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;align-items:center;background:#fff;border:1px solid var(--line);border-left:5px solid var(--gold);border-radius:18px;padding:20px 24px;box-shadow:0 10px 30px rgba(11,42,74,.08);min-width:0;}
+.hm2-badge{display:inline-block;background:rgba(201,162,39,.16);color:#8a6d12;font-weight:800;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;padding:5px 10px;border-radius:999px;}
+.hm2-hook{font:600 1.32rem/1.35 'Fraunces',Georgia,serif;color:var(--navy-900);margin:10px 0 6px;}
+.hm2-hook b{font-size:2.3rem;color:var(--gold-dark,#a9841a);margin-right:4px;vertical-align:-3px;}
+.hm2-hl{background:linear-gradient(transparent 62%,rgba(201,162,39,.35) 62%);}
+.hm2-sub{font-size:.9rem;color:var(--muted);margin:0 0 10px;}
+.hm2-towns{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;margin-bottom:14px;}
+.hm2-towns-k{font-size:.76rem;color:var(--muted);font-weight:600;}
+.hm2-chip{font-size:.8rem;text-decoration:none;color:var(--navy-900);background:var(--cream);border:1px solid var(--line);padding:4px 10px;border-radius:999px;}
+.hm2-chip b{color:var(--gold-dark,#a9841a);}
+.hm2-chip:hover{border-color:var(--gold);}
+.hm2-btn{display:inline-block;}
+.hm2-chart{display:flex;flex-direction:column;gap:4px;text-decoration:none;color:inherit;background:var(--cream);border-radius:14px;padding:12px 14px;}
+.hm2-chart:hover{box-shadow:0 0 0 1px var(--gold);}
+.hm2-chart-k{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);}
+.hm2-chart svg{width:100%;height:auto;display:block;}
+.hm2-chart-s{font-size:.78rem;color:var(--navy-900);font-weight:600;}
+@media(max-width:900px){.hm2-card{grid-template-columns:1fr;}}
+@media(max-width:640px){
+  .hm2{padding:18px 0;}
+  .hm2-grid{grid-template-columns:72px minmax(0,1fr);gap:12px;align-items:start;}
+  .hm2-photo img{width:72px;height:90px;border-width:3px;border-radius:12px;}
+  .hm2-card{padding:14px;border-left-width:4px;}
+  .hm2-hook{font-size:1.05rem;}
+  .hm2-hook b{font-size:1.7rem;}
+  .hm2-sub{font-size:.8rem;}
+}
+@media(max-width:640px){
+  .hm2-sub{display:none;}
+  .hm2-towns-k{display:none;}
+  .hm2-towns{margin-bottom:10px;}
+  .hm2-chip{font-size:.74rem;padding:3px 8px;}
+  .hm2-btn{padding:10px 14px;font-size:.88rem;}
+  .hm2-chart{padding:8px 10px;}
+  .hm2-chart svg{max-height:90px;}
+  .hm2-badge{font-size:.64rem;}
+}

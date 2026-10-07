@@ -217,7 +217,8 @@ def build_hdb(rows, now=None):
     for d in mill:
         by_month[d[0]] = by_month.get(d[0], 0) + 1
     files["million-summary"] = {"since": since, "last_month": last, "year": yr, "year_count": len(this_year),
-                                "by_month": by_month, "top": sorted(this_year, key=lambda x: -x[9])[:5]}
+                                "by_month": by_month, "top": sorted(this_year, key=lambda x: -x[9])[:5],
+                                "towns": sorted(((t, sum(1 for d in this_year if d[1] == t)) for t in {d[1] for d in this_year}), key=lambda x: -x[1])[:5]}
 
     summary = {
         "status": "ok",

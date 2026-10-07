@@ -79,16 +79,24 @@
 </header>
 
 <!-- HERO: photo + million-dollar HDB teaser (figures from data/hdb/million-summary.json, refreshed weekly) -->
-<section class="hero hero-compact hero-md">
-  <div class="container">
+<section class="hm2">
+  <div class="container hm2-grid">
     <h1 class="sr-only">Serene Lee, ERA Realty: HDB Resale, Condo &amp; New Launch Specialist in Singapore</h1>
-    <a href="about.html" class="hero-md-photo" aria-label="About Serene Lee"><img src="assets/serene-photo.jpg" alt="Serene Lee, ERA Realty, CEA Reg. R027578Z"></a>
-    <a class="hero-md-card" href="million-dollar-hdb.html" data-hm="million" id="hmMd">
-      <span class="home-md-badge">$1M+ HDB</span>
-      <span class="hero-md-n" id="hmMdHook">Is your HDB block on the million-dollar list?</span>
-      <span class="hero-md-sub" id="hmMdTop">&nbsp;</span>
-      <span class="hero-md-go">See which blocks made the list &rarr;</span>
-    </a>
+    <a href="about.html" class="hm2-photo" aria-label="About Serene Lee"><img src="assets/serene-photo.jpg" alt="Serene Lee, ERA Realty, CEA Reg. R027578Z"></a>
+    <div class="hm2-card" id="hmMd">
+      <div class="hm2-text">
+        <span class="hm2-badge">&#128176; Million-dollar HDB tracker</span>
+        <p class="hm2-hook" id="hmMdHook">Is your HDB block on the million-dollar list?</p>
+        <p class="hm2-sub" id="hmMdTop">&nbsp;</p>
+        <div class="hm2-towns" id="hmMdTowns"></div>
+        <a class="btn btn-gold hm2-btn" href="million-dollar-hdb.html" data-hm="million">See which blocks made the list &rarr;</a>
+      </div>
+      <a class="hm2-chart" href="million-dollar-hdb.html?period=12m" data-hm="million_chart" aria-label="Million-dollar HDB resales per month">
+        <span class="hm2-chart-k" id="hmMdChartK">$1M+ resales per month</span>
+        <svg id="hmMdBars" viewBox="0 0 300 150" aria-hidden="true"></svg>
+        <span class="hm2-chart-s" id="hmMdChartS">&nbsp;</span>
+      </a>
+    </div>
   </div>
 </section>
 
@@ -183,9 +191,17 @@
       var cut=(mo<10?"0":"")+mo, ty=0, ly=0;
       Object.keys(m.by_month).forEach(function(k){if(k.slice(5)<=cut){if(k.slice(0,4)===String(y))ty+=m.by_month[k];if(k.slice(0,4)===String(y-1))ly+=m.by_month[k];}});
       var up=ly?Math.round((ty/ly-1)*100):0;
-      $("hmMdHook").innerHTML='<b>'+m.year_count.toLocaleString()+'</b> HDB flats have sold for $1 million or more this year. Is your block next?';
+      $("hmMdHook").innerHTML='<b>'+m.year_count.toLocaleString()+'</b> HDB flats have sold for <span class="hm2-hl">$1 million or more</span> this year. Is your block next?';
       var t=m.top[0];
-      $("hmMdTop").textContent="That's about "+perDay+" a day in "+MON[mo-1]+(up>0?", and "+up+"% more than last year":"")+"."+(t?" Record so far: $"+t[9].toLocaleString()+" for a "+(FT[t[4]]||t[4])+" at Blk "+t[2]+" "+title(t[3])+".":"");
+      $("hmMdTop").textContent="That's about "+perDay+" a day in "+MON[mo-1]+(up>0?", "+up+"% more than last year":"")+"."+(t?" Record so far: $"+t[9].toLocaleString()+" for a "+(FT[t[4]]||t[4])+" at Blk "+t[2]+" "+title(t[3])+".":"");
+      if(m.towns){$("hmMdTowns").innerHTML='<span class="hm2-towns-k">Most this year:</span>'+m.towns.slice(0,3).map(function(x){return '<a class="hm2-chip" href="million-dollar-hdb.html?town='+x[0].split("/")[0].toLowerCase().replace(/ /g,"-")+'" data-hm="million_town">'+title(x[0])+' <b>'+x[1]+'</b></a>';}).join("");}
+      var ks=Object.keys(m.by_month).sort().filter(function(k){return k<=prev;}).slice(-12), vs=ks.map(function(k){return m.by_month[k];}), mx=Math.max.apply(null,vs)||1, bw=300/ks.length, svg="";
+      ks.forEach(function(k,j){var v=vs[j],bh=Math.max(3,v/mx*100),x=j*bw+3,last=j===ks.length-1;
+        svg+='<rect x="'+x+'" y="'+(122-bh)+'" width="'+(bw-6)+'" height="'+bh+'" rx="4" fill="'+(last?"#c9a227":"#2f5880")+'" opacity="'+(last?1:0.35+0.65*j/ks.length)+'"><title>'+MON[+k.slice(5)-1]+" "+k.slice(0,4)+": "+v+'</title></rect>';
+        if(j===0||last) svg+='<text x="'+(j===0?x:x+bw-6)+'" y="140" text-anchor="'+(j===0?"start":"end")+'" font-size="11" fill="#5c6b78" font-family="Inter,sans-serif">'+MON[+k.slice(5)-1]+" "+k.slice(2,4)+'</text>';
+        if(last) svg+='<text x="'+(x+(bw-6)/2)+'" y="'+(116-bh)+'" text-anchor="middle" font-size="13" font-weight="700" fill="#0b2a4a" font-family="Inter,sans-serif">'+v+'</text>';});
+      $("hmMdBars").innerHTML=svg;
+      $("hmMdChartS").textContent=vs[0]+" in "+MON[+ks[0].slice(5)-1]+" "+ks[0].slice(0,4)+" → "+vs[vs.length-1]+" in "+MON[+ks[ks.length-1].slice(5)-1]+" "+ks[ks.length-1].slice(0,4);
     }).catch(function(){});
     var dt=new Date(d.generated); $("hmSrc").innerHTML=$("hmSrc").innerHTML.replace("Refreshed weekly.","Refreshed weekly; retrieved "+dt.toLocaleDateString("en-SG",{day:"numeric",month:"short",year:"numeric"})+".");
   }).catch(function(){$("hmS1").textContent="Open the Market Map for the latest figures.";});
