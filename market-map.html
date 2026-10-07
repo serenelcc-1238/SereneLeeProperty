@@ -82,7 +82,7 @@
 <style>
 /* Market map page. Uses the site tokens from styles.css (navy / gold / cream). */
 :root{--mm-r0:#e3e9ef;--mm-r1:#bccbda;--mm-r2:#8ea8c1;--mm-r3:#5e81a3;--mm-r4:#2f5880;--mm-r5:#0b2a4a;--mm-none:#ece9e1;--mm-partial:#c77c12;--mm-hl:rgba(201,162,39,.18)}
-.filter-group[hidden],.mm-row[hidden],.mm-form[hidden],.mm-bar2[hidden]{display:none}
+.mm-ctrl[hidden],.filter-group[hidden],.mm-row[hidden],.mm-form[hidden],.mm-bar2[hidden]{display:none}
 .mm-updated{font-size:.82rem;color:var(--muted);margin-top:6px}
 .mm-updated b{color:var(--navy-900);font-weight:600}
 .mm-stale{color:var(--amber-ink);background:var(--amber-bg);padding:2px 8px;border-radius:999px;font-weight:600;margin-left:6px}
@@ -183,6 +183,19 @@
 .mm-notes{margin-top:24px;font-size:.82rem;color:var(--muted);display:grid;gap:8px;max-width:860px}
 .mm-notes a{color:var(--navy)}
 .mm-loading{padding:60px 0;text-align:center;color:var(--muted)}
+.mm-panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-bottom:28px}
+@media(max-width:640px){.mm-panel{padding:16px 14px}}
+.mm-panel .mm-card{border-color:var(--line);background:#fff}
+.mm-panel-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px}
+.mm-panel-head h2{font-size:1.3rem;margin:0 0 4px}
+.mm-panel-head p{color:var(--muted);font-size:.88rem;margin:0;max-width:640px}
+.mm-step{flex-shrink:0;width:30px;height:30px;border-radius:999px;background:var(--navy-900);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:.9rem;margin-top:2px}
+.mm-ctrl{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;margin-bottom:12px}
+.mm-ctrl2{padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.mm-ctrl .filter-group{min-width:0;max-width:100%}
+.mm-ctrl .sort-select{min-width:0;max-width:100%}
+@media(max-width:520px){.mm-ctrl .filter-group:has(select){flex:1 1 100%;flex-wrap:nowrap}.mm-ctrl .sort-select{flex:1}}
+.mm-hint{font-size:.78rem;color:var(--muted);margin:10px 0 0 6px}
 .mm-explore-head{margin:8px 0 14px}
 .mm-explore-head h2{font-size:1.35rem;margin:0 0 4px}
 .mm-explore-head p{color:var(--muted);font-size:.9rem;margin:0}
@@ -191,7 +204,7 @@
 .mm-seg .filter-chip.active{background:var(--navy-900);color:#fff}
 .mm-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 16px}
 @media(max-width:640px){.mm-kpis{grid-template-columns:1fr 1fr}.mm-kpis .mm-tile:first-child{grid-column:1/-1}}
-.mm-kpis .mm-tile{background:#fff;border:1px solid var(--line)}
+.mm-kpis .mm-tile{background:var(--cream);border:0}
 .mm-kpis .mm-flag{display:inline-block;margin-top:4px}
 .mm-key{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.76rem;color:var(--muted);margin-top:8px;align-items:center}
 .mm-key i{display:inline-block;width:12px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
@@ -233,101 +246,122 @@
       <div id="lkOut" aria-live="polite"></div>
     </div>
 
-    <div class="mm-explore-head">
-      <h2>Explore the market</h2>
-      <p>Pick a market and a quarter. The figures, map, ranking and chart below all follow the same filters.</p>
-    </div>
-    <div class="filter-bar mm-bar">
-      <div class="mm-seg" role="tablist" aria-label="Market">
-        <button type="button" class="filter-chip active" data-layer="hdb">HDB resale</button>
-        <button type="button" class="filter-chip" data-layer="pte">Private (URA)</button>
+    <!-- PANEL 1: island-wide map (not affected by the block / area search) -->
+    <div class="mm-panel" id="mmMapPanel">
+      <div class="mm-panel-head"><span class="mm-step">1</span><div>
+        <h2>Singapore at a glance</h2>
+        <p>Every HDB town or private district for one quarter, island-wide. This map is not filtered by your block or area search.</p>
+      </div></div>
+      <div class="mm-ctrl">
+        <div class="mm-seg" aria-label="Map market">
+          <button type="button" class="filter-chip active" data-mlayer="hdb">HDB resale</button>
+          <button type="button" class="filter-chip" data-mlayer="pte">Private (URA)</button>
+        </div>
+        <div class="mm-quarter">
+          <button type="button" class="mm-nav" id="mmPrev" aria-label="Previous quarter">&lsaquo;</button>
+          <span class="mm-qlabel" id="mmQ">&nbsp;</span>
+          <button type="button" class="mm-nav" id="mmNext" aria-label="Next quarter">&rsaquo;</button>
+          <input type="range" id="mmRange" min="0" max="0" value="0" aria-label="Quarter">
+        </div>
       </div>
-      <div class="mm-quarter">
-        <button type="button" class="mm-nav" id="mmPrev" aria-label="Previous quarter">&lsaquo;</button>
-        <span class="mm-qlabel" id="mmQ">&nbsp;</span>
-        <button type="button" class="mm-nav" id="mmNext" aria-label="Next quarter">&rsaquo;</button>
-        <input type="range" id="mmRange" min="0" max="0" value="0" aria-label="Quarter">
-      </div>
-    </div>
-
-    <div class="mm-bar2" id="mmHdbOpts">
-      <div class="filter-group">
-        <span class="filter-group-label">Region:</span>
+      <div class="mm-ctrl mm-ctrl2">
+        <div class="filter-group" id="mmRegGroup">
+          <span class="filter-group-label">Region:</span>
         <button type="button" class="filter-chip active" data-hreg="all">All</button>
         <button type="button" class="filter-chip" data-hreg="Central">Central</button>
         <button type="button" class="filter-chip" data-hreg="East">East</button>
         <button type="button" class="filter-chip" data-hreg="North">North</button>
         <button type="button" class="filter-chip" data-hreg="North-East">North-East</button>
         <button type="button" class="filter-chip" data-hreg="West">West</button>
+        </div>
+        <div class="filter-group" id="mmSegGroup" hidden>
+          <span class="filter-group-label">Region:</span>
+        <button type="button" class="filter-chip active" data-seg="all">All</button>
+        <button type="button" class="filter-chip" data-seg="CCR">CCR</button>
+        <button type="button" class="filter-chip" data-seg="RCR">RCR</button>
+        <button type="button" class="filter-chip" data-seg="OCR">OCR</button>
+        </div>
+        <div class="filter-group" id="mmMetricGroup">
+          <span class="filter-group-label">Shade by:</span>
+          <button type="button" class="filter-chip active" data-metric="vol">Flats sold</button>
+          <button type="button" class="filter-chip" data-metric="px">Avg price</button>
+        </div>
       </div>
-      <div class="filter-group">
-        <label class="filter-group-label" for="mmTown">Estate:</label>
-        <select id="mmTown" class="sort-select"><option value="">All estates</option></select>
+      <div class="mm-main">
+        <div class="mm-card mm-mapcard" id="mmMapCard">
+        <svg class="mm-map hdb" id="mmMap" viewBox="0 0 1000 560" role="img" aria-label="Map of Singapore shaded by property transactions"></svg>
+          <div class="mm-legend" id="mmLegend"></div>
+          <div class="mm-tip" id="mmTip"></div>
+        </div>
+        <aside class="mm-card mm-side">
+          <h3 id="mmRankTitle">Ranking</h3>
+          <ol class="mm-rank" id="mmRank"><li class="mm-loading">Loading…</li></ol>
+          <button type="button" class="mm-linkbtn" id="mmRankMore" hidden></button>
+          <p class="mm-hint">Tap a town or district to see its own figures and trend in section 2.</p>
+        </aside>
       </div>
-      <div class="filter-group" id="mmFtGroup">
-        <label class="filter-group-label" for="mmFt">Flat type:</label>
+      <p class="mm-src" data-src="map"></p>
+    </div>
+
+    <!-- PANEL 2: data and chart for the visitor's own choice -->
+    <div class="mm-panel" id="mmDataPanel">
+      <div class="mm-panel-head"><span class="mm-step">2</span><div>
+        <h2>Your area: data &amp; chart</h2>
+        <p>Pick an estate or district, or check your block above. The figures and chart here follow only these choices.</p>
+      </div></div>
+      <div class="mm-ctrl">
+        <div class="mm-seg" aria-label="Data market">
+          <button type="button" class="filter-chip active" data-dlayer="hdb">HDB resale</button>
+          <button type="button" class="filter-chip" data-dlayer="pte">Private (URA)</button>
+        </div>
+      </div>
+      <div class="mm-ctrl mm-ctrl2" id="mmHdbOpts">
+        <div class="filter-group">
+          <label class="filter-group-label" for="mmTown">Estate:</label>
+          <select id="mmTown" class="sort-select"><option value="">All Singapore</option></select>
+        </div>
+        <div class="filter-group" id="mmFtGroup">
+          <label class="filter-group-label" for="mmFt">Flat type:</label>
         <select id="mmFt" class="sort-select">
           <option value="all">All types</option><option value="2">2-room</option><option value="3">3-room</option>
           <option value="4">4-room</option><option value="5">5-room</option><option value="E">Executive</option>
           <option value="M">Multi-gen</option><option value="1">1-room</option>
         </select>
+        </div>
+        <div class="filter-group">
+          <span class="filter-group-label">Chart:</span>
+          <button type="button" class="filter-chip active" data-dmetric="vol">Flats sold</button>
+          <button type="button" class="filter-chip" data-dmetric="px">Avg price</button>
+        </div>
       </div>
-      <div class="filter-group">
-        <span class="filter-group-label">Show:</span>
-        <button type="button" class="filter-chip active" data-metric="vol">Transactions</button>
-        <button type="button" class="filter-chip" data-metric="px">Avg price</button>
-      </div>
-    </div>
-
-    <div class="mm-bar2" id="mmPteOpts" hidden>
-      <div class="filter-group" id="mmSegGroup">
-        <span class="filter-group-label">Region:</span>
-        <button type="button" class="filter-chip active" data-seg="all">All</button>
-        <button type="button" class="filter-chip" data-seg="CCR">CCR</button>
-        <button type="button" class="filter-chip" data-seg="RCR">RCR</button>
-        <button type="button" class="filter-chip" data-seg="OCR">OCR</button>
-      </div>
-      <div class="filter-group">
-        <label class="filter-group-label" for="mmDist">District:</label>
-        <select id="mmDist" class="sort-select"><option value="">All districts</option></select>
-      </div>
-      <div class="filter-group" id="mmPtGroup">
-        <label class="filter-group-label" for="mmPt">Property:</label>
+      <div class="mm-ctrl mm-ctrl2" id="mmPteOpts" hidden>
+        <div class="filter-group">
+          <label class="filter-group-label" for="mmDist">District:</label>
+          <select id="mmDist" class="sort-select"><option value="">All districts</option></select>
+        </div>
+        <div class="filter-group" id="mmPtGroup">
+          <label class="filter-group-label" for="mmPt">Property:</label>
         <select id="mmPt" class="sort-select">
           <option value="all">All private</option><option value="C">Condo &amp; apartment</option>
           <option value="E">Executive condo (EC)</option><option value="L">Landed</option>
         </select>
+        </div>
+        <div class="filter-group">
+          <span class="filter-group-label">Sale type:</span>
+          <button type="button" class="filter-chip active" data-sale="all">All</button>
+          <button type="button" class="filter-chip" data-sale="0">New launch</button>
+          <button type="button" class="filter-chip" data-sale="1">Sub sale</button>
+          <button type="button" class="filter-chip" data-sale="2">Resale</button>
+        </div>
       </div>
-      <div class="filter-group">
-        <span class="filter-group-label">Sale type:</span>
-        <button type="button" class="filter-chip active" data-sale="all">All</button>
-        <button type="button" class="filter-chip" data-sale="0">New launch</button>
-        <button type="button" class="filter-chip" data-sale="1">Sub sale</button>
-        <button type="button" class="filter-chip" data-sale="2">Resale</button>
+      <div class="mm-kpis" id="mmStats"></div>
+      <div class="mm-card mm-trend">
+        <h3 id="mmTrendTitle">Transactions per quarter</h3>
+        <div class="mm-scroll"><svg class="mm-bars" id="mmBars" viewBox="0 0 1000 200"></svg></div>
+        <div class="mm-key"><span><i style="background:var(--gold)"></i>Quarter shown in the figures above</span><span><i style="background:var(--mm-r3)"></i>Other quarters</span><span><i style="background:var(--mm-partial)"></i><span id="mmKeyPartial">Quarter in progress (incomplete)</span></span><span class="mm-key-tip">Tap a bar to change the quarter.</span></div>
       </div>
+      <p class="mm-src" data-src="data"></p>
     </div>
-
-    <div class="mm-kpis" id="mmStats"></div>
-
-    <div class="mm-main">
-      <div class="mm-card mm-mapcard" id="mmMapCard">
-        <svg class="mm-map hdb" id="mmMap" viewBox="0 0 1000 560" role="img" aria-label="Map of Singapore shaded by property transactions"></svg>
-        <div class="mm-legend" id="mmLegend"></div>
-        <div class="mm-tip" id="mmTip"></div>
-      </div>
-      <aside class="mm-card mm-side">
-        <h3 id="mmRankTitle">Ranking</h3>
-        <ol class="mm-rank" id="mmRank"><li class="mm-loading">Loading…</li></ol>
-        <button type="button" class="mm-linkbtn" id="mmRankMore" hidden></button>
-      </aside>
-    </div>
-
-    <div class="mm-card mm-trend">
-      <h3 id="mmTrendTitle">Transactions per quarter</h3>
-      <div class="mm-scroll"><svg class="mm-bars" id="mmBars" viewBox="0 0 1000 200"></svg></div>
-      <div class="mm-key"><span><i style="background:var(--gold)"></i>Selected quarter</span><span><i style="background:var(--mm-r3)"></i>Other quarters</span><span><i style="background:var(--mm-partial)"></i><span id="mmKeyPartial">Quarter in progress (incomplete)</span></span><span class="mm-key-tip">Tap a bar to jump to that quarter.</span></div>
-    </div>
-    <p class="mm-src" data-src="all"></p>
 
     <div class="mm-notes">
       <p><strong>How to read it.</strong> Tap a town or district for its figures and its own quarterly trend. Tap a bar to jump to that quarter. Average price is a simple mean, so choose a flat type for a like-for-like comparison.</p>
@@ -408,6 +442,17 @@ function breaks(){
 const ramp=v=>{const b=breaks();let k=0;while(k<b.length&&v>=b[k])k++;return "var(--mm-r"+k+")";};
 
 /* ---------------- map ---------------- */
+/* Two independent panels:
+   M  = section 1, the island-wide map + ranking (market, quarter, region, shading)
+   Dd = section 2, the visitor's own area: KPI figures + trend chart (estate/district, flat/property type, sale type)
+   The data helpers above read shared globals, so each panel loads its own state with useMap()/useData() first. */
+const M={layer:"hdb",qi:0,metric:"vol",hReg:"all",pSeg:"all"};
+const Dd={layer:"hdb",qi:0,sel:null,hFt:"all",pPt:"all",sale:"all",metric:"vol"};
+function useMap(){layer=M.layer;qi=M.qi;metric=M.metric;hReg=M.hReg;pSeg=M.pSeg;hFt="all";pPt="all";sale="all";sel=Dd.layer===M.layer?Dd.sel:null;}
+function useData(){layer=Dd.layer;qi=Dd.qi;metric=Dd.metric;hReg="all";pSeg="all";hFt=Dd.hFt;pPt=Dd.pPt;sale=Dd.sale;sel=Dd.sel;}
+function defQ(l){return l==="pte"?pteLast:defaultHdbQ();}
+function defaultHdbQ(){return hdbPartial(hdbLast)?hdbLast-1:hdbLast;}
+
 function build(){
   const svg=$("mmMap");
   for(const [pa,v] of Object.entries(P)){const [d]=v.split("|");const p=document.createElementNS(NS,"path");p.setAttribute("d",d);const t=townOf(pa);if(t){p.dataset.town=t;p.classList.add("town");p.tabIndex=0;}svg.appendChild(p);}
@@ -416,71 +461,64 @@ function build(){
     const tx=document.createElementNS(NS,"text");tx.setAttribute("class","lbl-dist");tx.setAttribute("text-anchor","middle");tx.setAttribute("x",x);tx.dataset.d=d;tx.textContent="D"+d;svg.appendChild(tx);}
   const ts=$("mmTown"); [...towns].sort().forEach(t=>ts.add(new Option(title(t),t)));
   const ds=$("mmDist"); dists.forEach(d=>ds.add(new Option("D"+d+" "+(DNAME[d]||""),d)));
-  $("mmFtGroup").hidden=!hasFt; $("mmSegGroup").hidden=!hasX; $("mmPtGroup").hidden=!hasX;
+  $("mmFtGroup").hidden=!hasFt; $("mmPtGroup").hidden=!hasX;
 
   const tip=$("mmTip"), card=$("mmMapCard");
-  const keyOf=el=>{if(!el.dataset)return null;if(layer==="hdb"){const t=el.dataset.town;return t&&inReg(t)?t:null;}return el.dataset.dist;};
-  const html=k=>layer==="hdb"?tipTown(k):tipDist(k);
-  const show=(k,e)=>{tip.innerHTML=html(k);const r=card.getBoundingClientRect();let x=e.clientX-r.left+14,y=e.clientY-r.top+14;if(x>r.width-260)x-=280;tip.style.left=x+"px";tip.style.top=y+"px";tip.style.opacity=1;};
+  const keyOf=el=>{if(!el.dataset)return null;if(M.layer==="hdb"){const t=el.dataset.town;return t&&(M.hReg==="all"||T(t).region===M.hReg)?t:null;}return el.dataset.dist||null;};
+  const show=(k,e)=>{useMap();tip.innerHTML=M.layer==="hdb"?tipTown(k):tipDist(k);const r=card.getBoundingClientRect();let x=e.clientX-r.left+14,y=e.clientY-r.top+14;if(x>r.width-260)x-=280;tip.style.left=x+"px";tip.style.top=y+"px";tip.style.opacity=1;};
   svg.addEventListener("mousemove",e=>{const k=keyOf(e.target);if(k)show(k,e);else tip.style.opacity=0;});
   svg.addEventListener("mouseleave",()=>tip.style.opacity=0);
-  svg.addEventListener("click",e=>{const k=keyOf(e.target);if(k){select(k);show(k,e);}});
-  svg.addEventListener("keydown",e=>{const k=keyOf(e.target);if(e.key==="Enter"&&k)select(k);});
-  $("mmRankMore").addEventListener("click",()=>{rankAll=!rankAll;render();});
-  $("mmRank").addEventListener("click",e=>{const li=e.target.closest("li");if(li&&li.dataset.k)select(li.dataset.k);});
-  $("mmBars").addEventListener("click",e=>{const i=e.target.dataset&&e.target.dataset.i;if(i!==undefined){qi=+i;render();}});
-  $("mmRange").addEventListener("input",e=>{qi=+e.target.value;render();});
-  $("mmPrev").onclick=()=>{qi--;render();};
-  $("mmNext").onclick=()=>{qi++;render();};
-  ts.onchange=()=>{sel=ts.value||null;if(sel&&!inReg(sel))setChip("[data-hreg]","all",()=>hReg="all");if(sel)track("market_map_area",{layer,area:sel,via:"filter"});render();};
-  ds.onchange=()=>{sel=ds.value||null;if(sel)track("market_map_area",{layer,area:sel,via:"filter"});render();};
-  $("mmFt").onchange=e=>{hFt=e.target.value;track("market_map_filter",{flat_type:hFt});render();};
-  $("mmPt").onchange=e=>{pPt=e.target.value;track("market_map_filter",{property:pPt});render();};
-  group("[data-layer]",b=>{layer=b.dataset.layer;sel=null;qi=layer==="pte"?pteLast:defaultHdbQ();track("market_map_layer",{layer});});
-  group("[data-metric]",b=>{metric=b.dataset.metric;});
-  group("[data-sale]",b=>{sale=b.dataset.sale;track("market_map_sale_type",{sale:b.textContent});});
-  group("[data-hreg]",b=>{hReg=b.dataset.hreg;if(sel&&!inReg(sel))sel=null;track("market_map_filter",{region:hReg});});
-  group("[data-seg]",b=>{pSeg=b.dataset.seg;track("market_map_filter",{segment:pSeg});});
+  svg.addEventListener("click",e=>{const k=keyOf(e.target);if(k){pickFromMap(k);show(k,e);}});
+  svg.addEventListener("keydown",e=>{const k=keyOf(e.target);if(e.key==="Enter"&&k)pickFromMap(k);});
+  $("mmRankMore").addEventListener("click",()=>{rankAll=!rankAll;renderAll();});
+  $("mmRank").addEventListener("click",e=>{const li=e.target.closest("li");if(li&&li.dataset.k)pickFromMap(li.dataset.k);});
+  $("mmBars").addEventListener("click",e=>{const i=e.target.dataset&&e.target.dataset.i;if(i!==undefined){Dd.qi=+i;renderAll();}});
+  $("mmRange").addEventListener("input",e=>{M.qi=+e.target.value;renderAll();});
+  $("mmPrev").onclick=()=>{M.qi--;renderAll();};
+  $("mmNext").onclick=()=>{M.qi++;renderAll();};
+  ts.onchange=()=>{Dd.sel=ts.value||null;if(Dd.sel)track("market_map_area",{layer:"hdb",area:Dd.sel,via:"filter"});renderAll();};
+  ds.onchange=()=>{Dd.sel=ds.value||null;if(Dd.sel)track("market_map_area",{layer:"pte",area:Dd.sel,via:"filter"});renderAll();};
+  $("mmFt").onchange=e=>{Dd.hFt=e.target.value;track("market_map_filter",{flat_type:Dd.hFt});renderAll();};
+  $("mmPt").onchange=e=>{Dd.pPt=e.target.value;track("market_map_filter",{property:Dd.pPt});renderAll();};
+  group("[data-mlayer]",b=>{M.layer=b.dataset.mlayer;M.qi=defQ(M.layer);track("market_map_layer",{layer:M.layer,panel:"map"});});
+  group("[data-metric]",b=>{M.metric=b.dataset.metric;});
+  group("[data-hreg]",b=>{M.hReg=b.dataset.hreg;track("market_map_filter",{region:M.hReg});});
+  group("[data-seg]",b=>{M.pSeg=b.dataset.seg;track("market_map_filter",{segment:M.pSeg});});
+  group("[data-dlayer]",b=>{Dd.layer=b.dataset.dlayer;Dd.sel=null;Dd.qi=defQ(Dd.layer);track("market_map_layer",{layer:Dd.layer,panel:"data"});});
+  group("[data-dmetric]",b=>{Dd.metric=b.dataset.dmetric;});
+  group("[data-sale]",b=>{Dd.sale=b.dataset.sale;track("market_map_sale_type",{sale:b.textContent});});
 }
-function group(selector,fn){const bs=[...document.querySelectorAll(selector)];bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.toggle("active",x===b));fn(b);render();});}
-function setChip(selector,val,fn){document.querySelectorAll(selector).forEach(b=>b.classList.toggle("active",Object.values(b.dataset)[0]===val));fn();}
-function select(k){sel=sel===k?null:k;if(sel)track("market_map_area",{layer,area:k});render();}
-function defaultHdbQ(){return hdbPartial(hdbLast)?hdbLast-1:hdbLast;}
-function setLayer(l){layer=l;document.querySelectorAll("[data-layer]").forEach(b=>b.classList.toggle("active",b.dataset.layer===l));}
+function group(selector,fn){const bs=[...document.querySelectorAll(selector)];bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.toggle("active",x===b));fn(b);renderAll();});}
+function setChip(selector,val){document.querySelectorAll(selector).forEach(b=>b.classList.toggle("active",Object.values(b.dataset)[0]===val));}
+/* Tapping the map or ranking loads that town/district into section 2 (same market, same quarter). */
+function pickFromMap(k){
+  if(Dd.layer===M.layer&&Dd.sel===k){Dd.sel=null;}
+  else{Dd.layer=M.layer;Dd.sel=k;Dd.qi=M.qi;setChip("[data-dlayer]",M.layer);track("market_map_area",{layer:M.layer,area:k,via:"map"});}
+  renderAll();}
 
 function tipTown(t){const n=hn(t,qi),px=hp(t,qi);const yoy=qi>=4&&!hdbPartial(qi)&&hn(t,qi-4)?"<br>"+pct(n,hn(t,qi-4))+" vs "+Q[qi-4]:"";
-  return `<b>${title(t)}</b><br>${n.toLocaleString()} ${hFt==="all"?"":FT[hFt]+" "}resale flats sold<br>Average ${n?fmtK(px):"–"}${yoy}`;}
+  return `<b>${title(t)}</b><br>${n.toLocaleString()} resale flats sold<br>Average ${n?fmtK(px):"–"}${yoy}<br><span style="opacity:.75">Tap for its trend in section 2</span>`;}
 function tipDist(d){const tot=pv(d,qi),prev=uq[Q[qi-4]]!==undefined?pv(d,qi-4):0;
-  let mix="";if(sale==="all"){const s0=sale;mix="<br>"+[0,1,2].map(s=>{sale=String(s);const v=pv(d,qi);sale=s0;return SALE[s]+" "+v;}).join(" · ");}
-  return `<b>D${d} ${DNAME[d]||""}</b><br>${tot.toLocaleString()} units${sale==="all"?"":" ("+SALE[+sale].toLowerCase()+")"}${mix}${prev&&qi!==pteLast?"<br>"+pct(tot,prev)+" vs "+Q[qi-4]:""}`;}
-
+  const s0=sale;const mix="<br>"+[0,1,2].map(s=>{sale=String(s);const v=pv(d,qi);sale=s0;return SALE[s]+" "+v;}).join(" · ");
+  return `<b>D${d} ${DNAME[d]||""}</b><br>${tot.toLocaleString()} units${mix}${prev&&qi!==pteLast?"<br>"+pct(tot,prev)+" vs "+Q[qi-4]:""}<br><span style="opacity:.75">Tap for its trend in section 2</span>`;}
 function scopeLabel(){
   if(layer==="hdb"){const a=hReg==="all"?"All towns":hReg+" region";return a+(hFt==="all"?"":" · "+FT[hFt]);}
   const a=pSeg==="all"?"All districts":pSeg;return a+(pPt==="all"?"":" · "+PT[pPt]);
 }
 
-function render(){
+function renderMap(){
+  useMap();
   const pte=layer==="pte", lo=pte?pteFirst:0, hi=pte?pteLast:hdbLast;
-  qi=Math.min(hi,Math.max(lo,qi));
+  M.qi=qi=Math.min(hi,Math.max(lo,qi));
   const r=$("mmRange");r.min=lo;r.max=hi;r.value=qi;
   $("mmQ").textContent=Q[qi];
+  $("mmRegGroup").hidden=pte||!towns.some(t=>T(t).region); $("mmSegGroup").hidden=!pte||!hasX; $("mmMetricGroup").hidden=pte;
   const svg=$("mmMap");svg.classList.toggle("pte",pte);svg.classList.toggle("hdb",!pte);
-  $("mmHdbOpts").hidden=pte;$("mmPteOpts").hidden=!pte;
-  $("mmTown").value=!pte&&sel?sel:""; $("mmDist").value=pte&&sel?sel:"";
   if(!pte){
     svg.querySelectorAll("path.town").forEach(p=>{const t=p.dataset.town,ok=inReg(t);p.classList.toggle("out",!ok);p.style.fill=ok?ramp(metric==="vol"?hn(t,qi):hp(t,qi)):"var(--mm-none)";p.classList.toggle("sel",t===sel);});
     svg.querySelectorAll("text.lbl-town").forEach(x=>x.classList.toggle("out",!inReg(x.dataset.t)));
-    const tot=htot(qi), yoy=qi>=4&&!hdbPartial(qi)&&htot(qi-4)?`<span>Year on year <b>${pct(tot,htot(qi-4))}</b></span>`:"";
-    const flag=hdbPartial(qi)?'<span class="mm-flag">Quarter in progress</span>':"";
-    if(sel){const n=hn(sel,qi),n0=qi>=4?hn(sel,qi-4):0,px=hp(sel,qi),ft=hFt==="all"?"All flat types":FT[hFt]+" flats";
-      const all=towns.filter(inReg).map(t=>[t,hn(t,qi)]).sort((a,b)=>b[1]-a[1]),pos=all.findIndex(x=>x[0]===sel)+1;
-      $("mmStats").innerHTML=kpi(esc(title(sel))+" · flats sold · "+Q[qi],n.toLocaleString(),ft+(pos?" · #"+pos+" of "+all.length+" towns":"")+flag)
-        +kpi(esc(title(sel))+" · average price",n?fmtK(px):"–",ft+", simple average")
-        +kpi("Flats sold vs a year ago",!hdbPartial(qi)&&n0?pct(n,n0):"–",hdbPartial(qi)?"Not compared: quarter still in progress":n0?"Compared with "+Q[qi-4]:"No deals a year earlier");}
-    else{const yv=qi>=4&&!hdbPartial(qi)&&htot(qi-4)?pct(tot,htot(qi-4)):"–";
-      $("mmStats").innerHTML=kpi("HDB flats sold · "+Q[qi],tot.toLocaleString(),esc(scopeLabel())+(hFt==="all"?"":" · "+FT[hFt])+flag)+kpi("Average price · "+Q[qi],tot?fmtK(havg(qi)):"–",hFt==="all"?"All flat types, simple average":FT[hFt]+" flats")+kpi("Flats sold vs a year ago",yv,hdbPartial(qi)?"Not compared: quarter still in progress":qi>=4?"Compared with "+Q[qi-4]:"No earlier year on record");}
     const b=breaks(), f=v=>metric==="vol"?v.toLocaleString():fmtK(v);
-    $("mmLegend").innerHTML=`<span>${metric==="vol"?"Flats sold in the quarter":"Average resale price"}${hFt==="all"?"":" ("+FT[hFt]+")"}</span><span class="mm-swatches">${[0,1,2,3,4,5].map(i=>`<span style="background:var(--mm-r${i})"></span>`).join("")}</span><span>under ${f(b[0])} to ${f(b.at(-1))}+</span><span><i class="mm-na"></i>No HDB resale town${hReg==="all"?"":" / outside region"}</span>`;
+    $("mmLegend").innerHTML=`<span>${metric==="vol"?"HDB flats sold, all flat types":"Average resale price, all flat types"}</span><span class="mm-swatches">${[0,1,2,3,4,5].map(i=>`<span style="background:var(--mm-r${i})"></span>`).join("")}</span><span>under ${f(b[0])} to ${f(b.at(-1))}+</span><span><i class="mm-na"></i>No HDB resale town${hReg==="all"?"":" / outside region"}</span>${hdbPartial(qi)?'<span class="mm-flag">Quarter in progress</span>':""}`;
     const rows=towns.filter(inReg).map(t=>({k:t,name:title(t),v:metric==="vol"?hn(t,qi):hp(t,qi)})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
     rank(rows,(metric==="vol"?"Most flats sold":"Highest average price")+" · "+Q[qi],v=>metric==="vol"?v.toLocaleString():fmtK(v),true);
   } else {
@@ -489,26 +527,47 @@ function render(){
     svg.querySelectorAll("path.town").forEach(p=>{p.style.fill="";p.classList.remove("sel","out");});
     svg.querySelectorAll("circle").forEach(c=>{const d=c.dataset.dist,v=pv(d,qi),rr=rad(v);c.setAttribute("r",rr);c.classList.toggle("sel",d===sel);
       const t=svg.querySelector(`text.lbl-dist[data-d="${d}"]`);t.setAttribute("y",+c.getAttribute("cy")+(rr>11?3:-rr-3));t.style.display=v?"":"none";});
-    const all=ptot(qi), prev=qi!==pteLast&&uq[Q[qi-4]]!==undefined?ptot(qi-4):0;
-    const filling=qi===pteLast, saleTxt=sale==="all"?"all sale types":SALE[+sale].toLowerCase();
+    const nice=v=>{const p=Math.pow(10,Math.floor(Math.log10(Math.max(1,v))));return Math.max(1,Math.round(v/p)*p);};
+    const lv=[nice(maxv/12),nice(maxv/3),nice(maxv)];
+    $("mmLegend").innerHTML=`<span>Bubble size = private units sold, all sale types${pSeg==="all"?"":" ("+pSeg+")"}</span><svg width="118" height="40" aria-hidden="true">${lv.map((v,i)=>{const rr=rad(v)*.55;return `<circle cx="${[12,42,90][i]}" cy="${38-rr}" r="${rr}" fill="var(--gold)" fill-opacity=".62" stroke="var(--navy)"/>`}).join("")}</svg><span>${lv.map(v=>v.toLocaleString()).join(" · ")} units</span>${qi===pteLast?'<span class="mm-flag">Latest quarter, still filling in</span>':""}`;
+    const rows=dists.map(d=>({k:d,name:"D"+d+" "+(DNAME[d]||""),v:pv(d,qi)})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
+    rank(rows,"Most units sold · "+Q[qi],v=>v.toLocaleString(),false);
+  }
+}
+
+function renderData(){
+  useData();
+  const pte=layer==="pte", lo=pte?pteFirst:0, hi=pte?pteLast:hdbLast;
+  Dd.qi=qi=Math.min(hi,Math.max(lo,qi));
+  $("mmHdbOpts").hidden=pte;$("mmPteOpts").hidden=!pte;
+  $("mmTown").value=!pte&&sel?sel:""; $("mmDist").value=pte&&sel?sel:"";
+  $("mmFt").value=Dd.hFt; $("mmPt").value=Dd.pPt;
+  if(!pte){
+    const tot=htot(qi), flag=hdbPartial(qi)?'<span class="mm-flag">Quarter in progress</span>':"", ft=hFt==="all"?"All flat types":FT[hFt]+" flats";
+    if(sel){const n=hn(sel,qi),n0=qi>=4?hn(sel,qi-4):0,px=hp(sel,qi);
+      const all=towns.map(t=>[t,hn(t,qi)]).sort((a,b)=>b[1]-a[1]),pos=all.findIndex(x=>x[0]===sel)+1;
+      $("mmStats").innerHTML=kpi(esc(title(sel))+" · flats sold · "+Q[qi],n.toLocaleString(),ft+(pos&&n?" · #"+pos+" of "+all.length+" towns":"")+flag)
+        +kpi(esc(title(sel))+" · average price · "+Q[qi],n?fmtK(px):"–",ft+", simple average")
+        +kpi("Flats sold vs a year ago",!hdbPartial(qi)&&n0?pct(n,n0):"–",hdbPartial(qi)?"Not compared: quarter still in progress":n0?"Compared with "+Q[qi-4]:"No deals a year earlier");}
+    else{const yv=qi>=4&&!hdbPartial(qi)&&htot(qi-4)?pct(tot,htot(qi-4)):"–";
+      $("mmStats").innerHTML=kpi("All Singapore · flats sold · "+Q[qi],tot.toLocaleString(),ft+flag)+kpi("All Singapore · average price · "+Q[qi],tot?fmtK(havg(qi)):"–",ft+", simple average")+kpi("Flats sold vs a year ago",yv,hdbPartial(qi)?"Not compared: quarter still in progress":qi>=4?"Compared with "+Q[qi-4]:"No earlier year on record");}
+  } else {
+    const all=ptot(qi), filling=qi===pteLast, saleTxt=sale==="all"?"all sale types":SALE[+sale].toLowerCase(), ptTxt=pPt==="all"?"All private":PT[pPt];
+    const prev=!filling&&uq[Q[qi-4]]!==undefined?ptot(qi-4):0;
     const ranked=dists.map(d=>[d,pv(d,qi)]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]), topD=ranked[0]||["",0];
     const fillTag=filling?'<br><span class="mm-flag">Latest quarter, still filling in</span>':"";
     const vsTxt=filling?"Not compared: latest quarter still filling in":prev?"Compared with "+Q[qi-4]:"No earlier year on record";
     if(sel){const v=pv(sel,qi),v0=!filling&&uq[Q[qi-4]]!==undefined?pv(sel,qi-4):0,pos=ranked.findIndex(x=>x[0]===sel)+1;
-      $("mmStats").innerHTML=kpi("D"+sel+" · private units sold · "+Q[qi],v.toLocaleString(),esc(DNAME[sel]||"")+" · "+saleTxt+fillTag)
+      $("mmStats").innerHTML=kpi("D"+sel+" · units sold · "+Q[qi],v.toLocaleString(),esc(DNAME[sel]||"")+" · "+ptTxt+", "+saleTxt+fillTag)
         +kpi("Units sold vs a year ago",v0?pct(v,v0):"–",filling?vsTxt:v0?"Compared with "+Q[qi-4]:"No deals a year earlier")
-        +kpi("District rank",pos?"#"+pos:"–",pos?"of "+ranked.length+" districts with deals":"No deals this quarter");}
-    else $("mmStats").innerHTML=kpi("Private units sold · "+Q[qi],all.toLocaleString(),esc(scopeLabel())+" · "+saleTxt+fillTag)+kpi("Units sold vs a year ago",prev?pct(all,prev):"–",vsTxt)+kpi("Busiest district",topD[1]?"D"+topD[0]:"–",topD[1]?esc(DNAME[topD[0]]||"")+" · "+topD[1].toLocaleString()+" units":"");
-    const nice=v=>{const p=Math.pow(10,Math.floor(Math.log10(Math.max(1,v))));return Math.max(1,Math.round(v/p)*p);};
-    const lv=[nice(maxv/12),nice(maxv/3),nice(maxv)];
-    $("mmLegend").innerHTML=`<span>Bubble size = units sold</span><svg width="118" height="40" aria-hidden="true">${lv.map((v,i)=>{const rr=rad(v)*.55;return `<circle cx="${[12,42,90][i]}" cy="${38-rr}" r="${rr}" fill="var(--gold)" fill-opacity=".62" stroke="var(--navy)"/>`}).join("")}</svg><span>${lv.map(v=>v.toLocaleString()).join(" · ")} units</span>`;
-    const rows=dists.map(d=>({k:d,name:"D"+d+" "+(DNAME[d]||""),v:pv(d,qi)})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
-    rank(rows,"Most units sold · "+Q[qi],v=>v.toLocaleString(),false);
+        +kpi("District rank · "+Q[qi],pos?"#"+pos:"–",pos?"of "+ranked.length+" districts with deals":"No deals this quarter");}
+    else $("mmStats").innerHTML=kpi("All Singapore · units sold · "+Q[qi],all.toLocaleString(),ptTxt+", "+saleTxt+fillTag)+kpi("Units sold vs a year ago",prev?pct(all,prev):"–",vsTxt)+kpi("Busiest district · "+Q[qi],topD[1]?"D"+topD[0]:"–",topD[1]?esc(DNAME[topD[0]]||"")+" · "+topD[1].toLocaleString()+" units":"");
   }
   bars();
-  setSources();
-  writeParams();
 }
+function renderAll(){renderMap();renderData();setSources();writeParams();}
+function render(){renderAll();}
+
 function kpi(k,v,sub){return `<div class="mm-tile"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${sub||""}</div></div>`;}
 let rankAll=false;
 function rank(rows,ttl,fmt,colored){
@@ -520,7 +579,9 @@ function bars(){
   const pte=layer==="pte", idx=[];for(let i=pte?pteFirst:0;i<=(pte?pteLast:hdbLast);i++)idx.push(i);
   const px=!pte&&metric==="px", fv=v=>px?fmtK(v):v.toLocaleString();
   const val=i=>pte?(sel?pv(sel,i):ptot(i)):px?(sel?hp(sel,i):havg(i)):(sel?hn(sel,i):htot(i));
-  const s=idx.map(val), who=sel?(pte?"D"+sel+" "+(DNAME[sel]||""):title(sel)+(hFt==="all"?"":" · "+FT[hFt])):scopeLabel();
+  const s=idx.map(val);
+  const who=pte?(sel?"D"+sel+" "+(DNAME[sel]||""):"All Singapore")+(pPt==="all"?"":" · "+PT[pPt])+(sale==="all"?"":" · "+SALE[+sale].toLowerCase())
+                :(sel?title(sel):"All Singapore")+(hFt==="all"?"":" · "+FT[hFt]);
   $("mmTrendTitle").textContent=who+(pte?" · private units sold per quarter":px?" · average HDB resale price per quarter":" · HDB resale flats sold per quarter");
   const L=48,R=8,Tp=12,B=26,W=1000-L-R,H=200-Tp-B,bw=W/idx.length,max=Math.max(1,...s)*1.08;
   const p=Math.pow(10,Math.floor(Math.log10(max))),top=Math.ceil(max/p)*p;
@@ -532,18 +593,18 @@ function bars(){
   $("mmBars").innerHTML=h;
 }
 function fmtDate(iso){try{return new Date(iso).toLocaleDateString("en-SG",{day:"numeric",month:"short",year:"numeric"});}catch(e){return iso;}}
-function syncMap(l,key,o){setLayer(l);sel=key;o=o||{};
-  if(l==="hdb"){if(o.ft&&hasFt){hFt=o.ft;$("mmFt").value=hFt;}if(!inReg(key))setChip("[data-hreg]","all",()=>hReg="all");qi=defaultHdbQ();}
-  else{if(hasX){pPt=o.pt||"all";$("mmPt").value=pPt;}setChip("[data-seg]","all",()=>pSeg="all");qi=pteLast;}
-  render();}
-function syncNote(){const lab=layer==="hdb"?title(sel)+(hFt==="all"?"":" · "+FT[hFt]):"D"+sel+" "+(DNAME[sel]||"")+(pPt==="all"?"":" · "+PT[pPt]);
-  return `<p class="mm-sync">The map, ranking and chart below now show <b>${esc(lab)}</b>. <button type="button" class="mm-linkbtn" data-jump>Jump to the map &darr;</button></p>`;}
-document.addEventListener("click",e=>{if(e.target.closest("[data-jump]"))document.querySelector(".mm-explore-head").scrollIntoView({behavior:"smooth",block:"start"});
-  const t=e.target.closest(".mm-tile[data-ft]");if(t&&hasFt){hFt=t.dataset.ft;$("mmFt").value=hFt;render();
-    document.querySelectorAll(".mm-tile[data-ft]").forEach(x=>x.classList.toggle("on",x===t));const n=document.querySelector(".mm-sync");if(n)n.outerHTML=syncNote();track("market_map_filter",{flat_type:hFt,via:"lookup_tile"});}});
-function showOnMap(l,key){setLayer(l);sel=key;qi=l==="pte"?pteLast:defaultHdbQ();
-  if(l==="hdb"&&!inReg(key))setChip("[data-hreg]","all",()=>hReg="all");
-  render();document.querySelector(".mm-explore-head").scrollIntoView({behavior:"smooth",block:"start"});}
+/* Block / condo lookup loads the result into section 2; the map keeps its island-wide view
+   (it only switches market so the visitor's town or district is outlined). */
+function syncMap(l,key,o){o=o||{};
+  Dd.layer=l;Dd.sel=key;Dd.qi=defQ(l);setChip("[data-dlayer]",l);
+  if(l==="hdb"){if(o.ft&&hasFt)Dd.hFt=o.ft;}else{Dd.pPt=hasX?(o.pt||"all"):"all";Dd.sale="all";setChip("[data-sale]","all");}
+  if(M.layer!==l){M.layer=l;M.qi=defQ(l);setChip("[data-mlayer]",l);}
+  renderAll();}
+function syncNote(){useData();const lab=layer==="hdb"?title(sel)+(hFt==="all"?"":" · "+FT[hFt]):"D"+sel+" "+(DNAME[sel]||"")+(pPt==="all"?"":" · "+PT[pPt]);
+  return `<p class="mm-sync">Section 2 (data &amp; chart) now shows <b>${esc(lab)}</b>. The map in section 1 stays island-wide. <button type="button" class="mm-linkbtn" data-jump>See the trend &darr;</button></p>`;}
+document.addEventListener("click",e=>{if(e.target.closest("[data-jump]"))$("mmDataPanel").scrollIntoView({behavior:"smooth",block:"start"});
+  const t=e.target.closest(".mm-tile[data-ft]");if(t&&hasFt){Dd.hFt=t.dataset.ft;renderAll();
+    document.querySelectorAll(".mm-tile[data-ft]").forEach(x=>x.classList.toggle("on",x===t));const n=document.querySelector(".mm-sync");if(n)n.outerHTML=syncNote();track("market_map_filter",{flat_type:Dd.hFt,via:"lookup_tile"});}});
 
 /* ---------------- Check my block / condo ---------------- */
 const cache={}, CAP=12;
@@ -552,11 +613,12 @@ const SRC_URA='<a href="https://eservice.ura.gov.sg/maps/api/" target="_blank" r
 const SRC_MAP='Map boundaries: URA Master Plan 2019 planning areas (data.gov.sg).';
 function srcLine(kind,extra){const d=DATA?(kind==="hdb"?DATA.hdb.fetched:DATA.ura.fetched)||DATA.generated:"";
   return `<p class="mm-src">Source: ${kind==="hdb"?SRC_HDB:SRC_URA}${d?", retrieved "+fmtDate(d):""}.${extra?" "+extra:""}</p>`;}
-function setSources(){const pte=layer==="pte",k=pte?"ura":"hdb";
-  const note={all:(pte?"Bubbles sit at the average location of each district's projects. ":"")+SRC_MAP};
-  const kp=$("mmKeyPartial"); if(kp)kp.textContent=pte?"Latest quarter, still filling in":"Quarter in progress (incomplete)";
-  document.querySelectorAll("[data-src]").forEach(el=>{const w=el.dataset.src;
-    el.outerHTML=srcLine(k,note[w]).replace('<p class="mm-src">',`<p class="mm-src" data-src="${w}">`);});}
+function setSources(){
+  const note={map:[M.layer==="pte"?"ura":"hdb",(M.layer==="pte"?"Bubbles sit at the average location of each district's projects. ":"")+SRC_MAP],
+    data:[Dd.layer==="pte"?"ura":"hdb",Dd.layer==="pte"?"Counts are units; the latest quarter keeps filling in as caveats are lodged.":"Average price is a simple mean of the flats sold."]};
+  const kp=$("mmKeyPartial"); if(kp)kp.textContent=Dd.layer==="pte"?"Latest quarter, still filling in":"Quarter in progress (incomplete)";
+  document.querySelectorAll("[data-src]").forEach(el=>{const w=el.dataset.src;if(!note[w])return;
+    el.outerHTML=srcLine(note[w][0],note[w][1]).replace('<p class="mm-src">',`<p class="mm-src" data-src="${w}">`);});}
 function moreBtn(n,txt){return `<p class="mm-msg" style="margin:0">${n} deal${n>1?"s":""} ${txt}, newest first${n>CAP?`. Showing the latest ${CAP}. <button type="button" class="mm-linkbtn" data-more>Show all ${n}</button>`:"."}</p>`;}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-more]");if(!b)return;const t=b.closest(".mm-res").querySelector(".mm-table");const hid=t.querySelectorAll("tr[hidden]");if(hid.length){hid.forEach(r=>{r.hidden=false;r.dataset.x=1;});b.textContent="Show fewer";}else{t.querySelectorAll("tr[data-x]").forEach(r=>r.hidden=true);b.textContent="Show all "+t.querySelectorAll("tbody tr").length;}});
 function getJSON(path){if(!cache[path])cache[path]=fetch(path,{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();});return cache[path];}
@@ -707,23 +769,26 @@ async function showPte(p,unit){
    market-map.html?blk=411B&street=Fernvale%20Rd&unit=09-321   runs the block check */
 let ready=false;
 function applyParams(){const q=new URLSearchParams(location.search),g=k=>(q.get(k)||"").trim();
-  if(g("show")==="price"){metric="px";setChip("[data-metric]","px",()=>{});}
-  if(/^(private|pte)$/i.test(g("layer"))||g("dist")){setLayer("pte");qi=pteLast;
-    const d=g("dist").padStart(2,"0");if(DATA.ura.districts[d])sel=d;
-    const sg=g("seg").toUpperCase();if(hasX&&["CCR","RCR","OCR"].includes(sg)){pSeg=sg;setChip("[data-seg]",sg,()=>{});}
-    const pt=g("pt").toUpperCase();if(hasX&&PT[pt]){pPt=pt;$("mmPt").value=pt;}}
-  else{const t=g("town").toUpperCase().replace(/-/g," ");const hit=towns.find(x=>x===t||x.replace("/"," ")===t||x.split("/")[0]===t);if(hit)sel=hit;
-    const r=towns.map(x=>T(x).region).find(x=>x&&x.toLowerCase()===g("region").toLowerCase());if(r){hReg=r;setChip("[data-hreg]",r,()=>{});}
-    const ft=g("ft").toUpperCase().replace(/[^0-9EM]/g,"").slice(0,1);if(hasFt&&FT[ft]){hFt=ft;$("mmFt").value=ft;}}
+  if(g("show")==="price"){M.metric="px";Dd.metric="px";setChip("[data-metric]","px");setChip("[data-dmetric]","px");}
+  if(/^(private|pte)$/i.test(g("layer"))||g("dist")){M.layer=Dd.layer="pte";M.qi=Dd.qi=pteLast;setChip("[data-mlayer]","pte");setChip("[data-dlayer]","pte");
+    const d=g("dist").padStart(2,"0");if(DATA.ura.districts[d])Dd.sel=d;
+    const sg=g("seg").toUpperCase();if(hasX&&["CCR","RCR","OCR"].includes(sg)){M.pSeg=sg;setChip("[data-seg]",sg);}
+    const pt=g("pt").toUpperCase();if(hasX&&PT[pt])Dd.pPt=pt;}
+  else{const t=g("town").toUpperCase().replace(/-/g," ");const hit=towns.find(x=>x===t||x.replace("/"," ")===t||x.split("/")[0]===t);if(hit)Dd.sel=hit;
+    const r=towns.map(x=>T(x).region).find(x=>x&&x.toLowerCase()===g("region").toLowerCase());if(r){M.hReg=r;setChip("[data-hreg]",r);}
+    const ft=g("ft").toUpperCase().replace(/[^0-9EM]/g,"").slice(0,1);if(hasFt&&FT[ft])Dd.hFt=ft;}
   if(g("blk")||g("street")){$("lkBlk").value=g("blk");$("lkStreet").value=g("street");$("lkUnit").value=g("unit");
     return()=>{$("mmLook").scrollIntoView({block:"start"});runHdb();};}
   if(g("proj")||g("look")==="condo"){document.querySelector('[data-look="pte"]').click();$("lkProj").value=g("proj");$("lkPUnit").value=g("unit");
     return g("proj")?()=>{$("mmLook").scrollIntoView({block:"start"});runPte();}:()=>$("mmLook").scrollIntoView({block:"start"});}
+  if(Dd.sel||g("ft"))return()=>$("mmDataPanel").scrollIntoView({block:"start"});
   return null;}
 function writeParams(){if(!ready)return;try{const u=new URL(location.href),q=u.searchParams;
   ["layer","town","ft","region","dist","seg","pt","show"].forEach(k=>q.delete(k));
-  if(layer==="pte"){q.set("layer","private");if(sel)q.set("dist",sel);if(pSeg!=="all")q.set("seg",pSeg);if(pPt!=="all")q.set("pt",pPt);}
-  else{if(sel)q.set("town",sel.split("/")[0].toLowerCase().replace(/ /g,"-"));if(hFt!=="all")q.set("ft",hFt);if(hReg!=="all")q.set("region",hReg);if(metric==="px")q.set("show","price");}
+  if(Dd.layer==="pte"||M.layer==="pte")q.set("layer","private");
+  if(Dd.layer==="pte"){if(Dd.sel)q.set("dist",Dd.sel);if(Dd.pPt!=="all")q.set("pt",Dd.pPt);}
+  else{if(Dd.sel)q.set("town",Dd.sel.split("/")[0].toLowerCase().replace(/ /g,"-"));if(Dd.hFt!=="all")q.set("ft",Dd.hFt);if(Dd.metric==="px")q.set("show","price");}
+  if(M.layer==="pte"){if(M.pSeg!=="all")q.set("seg",M.pSeg);}else if(M.hReg!=="all")q.set("region",M.hReg);
   history.replaceState(null,"",u.pathname+(q.toString()?"?"+q.toString():"")+u.hash);}catch(e){}}
 
 /* ---------------- start ---------------- */
@@ -734,13 +799,12 @@ fetch("data/market-data.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Er
   (d.hdb.quarters||[]).forEach((q,i)=>hq[q]=i);(d.ura.quarters||[]).forEach((q,i)=>uq[q]=i);
   towns=Object.keys(d.hdb.towns);dists=Object.keys(d.ura.districts);
   hasFt=towns.some(t=>d.hdb.towns[t].ft); hasX=dists.some(x=>d.ura.districts[x].x);
-  if(!towns.some(t=>d.hdb.towns[t].region)){$("mmHdbOpts").querySelector(".filter-group").hidden=true;}
   hdbLast=Q.indexOf(d.hdb.quarters.at(-1));pteFirst=Q.indexOf(d.ura.quarters[0]);pteLast=Q.indexOf(d.ura.quarters.at(-1));
   const stale=d.hdb.status!=="ok"||d.ura.status!=="ok";
   $("mmUpdated").innerHTML=`Data last refreshed <b>${fmtDate(d.generated)}</b> · HDB to ${d.hdb.quarters.at(-1)} · Private to ${d.ura.quarters.at(-1)}${stale?'<span class="mm-stale">One source is behind this week</span>':""}`;
-  qi=defaultHdbQ();
-  if(location.hash==="#private"){setLayer("pte");qi=pteLast;}
-  build();const run=applyParams();render();ready=true;if(run)run();
+  M.qi=Dd.qi=defaultHdbQ();
+  if(location.hash==="#private"){M.layer=Dd.layer="pte";M.qi=Dd.qi=pteLast;setChip("[data-mlayer]","pte");setChip("[data-dlayer]","pte");}
+  build();const run=applyParams();ready=true;renderAll();if(run)run();
 }).catch(()=>{$("mmUpdated").textContent="The market data could not be loaded right now. Please refresh the page in a moment.";$("mmRank").innerHTML="";});
 })();
 </script>
