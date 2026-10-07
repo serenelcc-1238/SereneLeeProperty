@@ -631,6 +631,15 @@ async function runPte(){
     else{out.innerHTML=`<p class="mm-msg err">No private deals found for "${esc(q)}" in the last 5 years. Try the name as it appears on URA, e.g. "The Interlace", or pick from the list as you type.</p>`;track("market_map_lookup",{kind:"private",found:false});return;}}
   showPte(p,unit);
 }
+/* URA records size but not bedrooms: estimate from sqft. Projects with leases
+   starting before 2005 had larger units, so their bands are wider. */
+function estBeds(r,ten){
+  if(r[3]==="-"||r[6]==="L")return "Landed";
+  const ft=r[2]*SQFT, y=parseInt((String(ten).match(/from (\d{4})/)||[])[1]||"2010",10);
+  const b=y<2005?[650,950,1350,1800]:[500,750,1100,1500];
+  if(r[5]>1)return "–";
+  return ft<b[0]?"1-bed":ft<b[1]?"2-bed":ft<b[2]?"3-bed":ft<b[3]?"4-bed":"5-bed / PH";
+}
 async function showPte(p,unit){
   const out=$("lkOut"), [name,street,d,seg,mainPt,ten]=p;
   let f; try{f=await getJSON("data/ura/d"+d+".json");}catch(err){out.innerHTML=NOTREADY;return;}
@@ -646,16 +655,18 @@ async function showPte(p,unit){
     you=m.length?`<div class="mm-tile you"><div class="k">Your floor band · ${bt}</div><div class="v">${fmt$(m[0][4])}</div><div class="s">${SALE[m[0][1]-1]} ${ym(m[0][0])} · ${Math.round(m[0][2]*SQFT).toLocaleString()} sqft${psf(m[0])?" · "+fmt$(psf(m[0]))+" psf":""} · ${m.length} deal${m.length>1?"s":""} on these floors</div></div>`
       :`<div class="mm-tile you"><div class="k">Your floor band · ${bt}</div><div class="v">No deals yet</div><div class="s">No deals on floors ${bt} in the last 5 years</div></div>`;}
   syncMap("pte",d,{pt:mainPt});
-  const table=rows.map((r,ix)=>{const isYou=band&&bandOf(r[3])===band, ps=psf(r);
-    return `<tr class="${isYou?"you":""}"${ix>=CAP?" hidden":""}><td>${ym(r[0])}</td><td>${SALE[r[1]-1]}</td><td>${r[3]==="-"?"Landed":esc(r[3])}${isYou?'<span class="mm-tag">Your floor</span>':""}</td><td class="r">${Math.round(r[2]*SQFT).toLocaleString()} sqft</td><td class="r"><b>${fmt$(r[4])}</b>${r[5]>1?`<span class="mm-tag grey">${r[5]} units</span>`:""}</td><td class="r">${ps?fmt$(ps):"–"}</td></tr>`;}).join("");
+  const oneBand=new Set(rows.map(r=>r[3])).size===1; // e.g. low-rise projects: every deal is 01-05, so no highlight
+  const table=rows.map((r,ix)=>{const isYou=band&&!oneBand&&bandOf(r[3])===band, ps=psf(r);
+    const fl=r[3]==="-"?"":`<br><span style="color:var(--muted);font-size:.8em">Floor ${esc(r[3].replace("-","–"))}</span>${isYou?'<span class="mm-tag">Your floor</span>':""}`;
+    return `<tr class="${isYou?"you":""}"${ix>=CAP?" hidden":""}><td>${ym(r[0])}</td><td>${SALE[r[1]-1]}</td><td>${estBeds(r,ten)}</td><td class="r">${Math.round(r[2]*SQFT).toLocaleString()} sqft${fl}</td><td class="r"><b>${fmt$(r[4])}</b>${r[5]>1?`<span class="mm-tag grey">${r[5]} units</span>`:""}</td><td class="r">${ps?fmt$(ps):"–"}</td></tr>`;}).join("");
   const unitTxt=unit?" "+(unit.startsWith("#")?unit:"#"+unit):"";
   out.innerHTML=`<div class="mm-res">
     <div class="mm-res-head"><h3>${esc(title(name))}</h3><span class="meta">${esc(title(street))} · D${d} ${esc(DNAME[d]||"")} · ${seg} · ${PT[mainPt]||""} · ${esc(ten)} · </span></div>
     ${syncNote()}
     <div class="mm-tiles">${you}${tiles.join("")}</div>
-    <div class="mm-tablewrap"><table class="mm-table"><thead><tr><th>Month</th><th>Sale</th><th>Floors</th><th class="r">Size</th><th class="r">Price</th><th class="r">$psf</th></tr></thead><tbody>${table}</tbody></table></div>
+    <div class="mm-tablewrap"><table class="mm-table"><thead><tr><th>Month</th><th>Sale</th><th>Bedrooms*</th><th class="r">Size</th><th class="r">Price</th><th class="r">$psf</th></tr></thead><tbody>${table}</tbody></table></div>
     ${moreBtn(rows.length,"in the last 5 years")}
-    ${srcLine("ura","$psf is price divided by the recorded floor area.")}
+    ${srcLine("ura","$psf is price divided by the recorded floor area. *Bedrooms are estimated from unit size, as URA does not record bedroom count; large units may include a roof terrace, PES or penthouse. Floor is URA's 5-storey band (URA does not publish exact floors).")}
     <div class="mm-res-cta"><p>Want to know what <b>${esc(title(name))}${esc(unitTxt)}</b> could fetch today, or how it compares with new launches nearby? I'll send you a free analysis.</p>
       <a class="btn btn-gold" target="_blank" rel="noopener" id="lkWa" href="${WA(`Hi Serene, I checked ${title(name)}${unitTxt} on your market map. Could you give me a valuation?`)}">Get my free valuation</a></div></div>`;
   $("lkWa").onclick=()=>track("whatsapp_clicked",{button_text:"Get my free valuation",button_location:"market map lookup",page_path:location.pathname});
