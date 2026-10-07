@@ -111,6 +111,10 @@
 .md-sum>div{background:var(--cream);border-radius:10px;padding:7px 12px;min-width:0;display:flex;flex-direction:column;justify-content:space-between;gap:2px}
 .md-sum .k{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
 .md-sum .v{font:600 1.05rem/1.25 'Fraunces',Georgia,serif;color:var(--navy-900);font-variant-numeric:tabular-nums}
+.md-periodbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 14px}
+.md-period{margin-bottom:0;flex:1 1 600px;min-width:0}
+.md-period .filter-chip{font-size:.8rem;padding:6px 12px}
+.md-filters .filter-group[hidden]{display:none}
 .md-count{font-size:.86rem;color:var(--muted);margin:0 0 10px}
 .md-tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
 .md-table{width:100%;border-collapse:collapse;font-size:.78rem}
@@ -133,6 +137,21 @@
 <section style="padding-top:12px;">
   <div class="container">
     <div class="md-kpis" id="mdKpis"></div>
+    <div class="md-periodbar"><span class="filter-group-label">Period:</span>
+      <div class="md-filters md-period" style="margin:0">
+        <div class="filter-group">
+          <button type="button" class="filter-chip" data-per="month">Latest month</button>
+          <button type="button" class="filter-chip active" data-per="ytd">Year to date</button>
+          <button type="button" class="filter-chip" data-per="12m">Last 12 months</button>
+          <button type="button" class="filter-chip" data-per="all">All 3 years</button>
+          <button type="button" class="filter-chip" data-per="custom">Custom</button>
+        </div>
+        <div class="filter-group" id="mdCustom" hidden>
+          <label class="filter-group-label" for="mdFrom">From</label><select id="mdFrom" class="sort-select"></select>
+          <label class="filter-group-label" for="mdTo">to</label><select id="mdTo" class="sort-select"></select>
+        </div>
+      </div>
+    </div>
     <div class="md-two">
       <div class="md-card">
         <h2>Million-dollar resales per month</h2>
@@ -143,13 +162,12 @@
         <h2 id="mdMapTitle">Where they sold</h2>
         <svg class="md-map" id="mdMap" viewBox="10 10 980 450" role="img" aria-label="Map of Singapore shaded by million-dollar HDB resales per town"></svg>
         <div class="md-legend"><span>Fewer</span><span class="sw"><i style="background:#e3e9ef"></i><i style="background:#bccbda"></i><i style="background:#8ea8c1"></i><i style="background:#5e81a3"></i><i style="background:#2f5880"></i><i style="background:#0b2a4a"></i></span><span>More</span><span class="md-maptip" id="mdMapTip">Tap a town to filter the list</span></div>
-        <p class="md-src">Follows the year and flat type chosen in the list below. Grey: no million-dollar resale. Map: URA Master Plan 2019 planning areas (data.gov.sg).</p>
+        <p class="md-src">Follows the period above and the flat type chosen for the list below. Grey: no million-dollar resale. Map: URA Master Plan 2019 planning areas (data.gov.sg).</p>
       </div>
     </div>
     <div class="md-card">
       <h2>The full list</h2>
       <div class="md-filters">
-        <div class="filter-group"><label class="filter-group-label" for="mdYear">Year:</label><select id="mdYear" class="sort-select"></select></div>
         <div class="filter-group"><label class="filter-group-label" for="mdTown">Town:</label><select id="mdTown" class="sort-select"><option value="">All towns</option></select></div>
         <div class="filter-group"><label class="filter-group-label" for="mdFt">Flat type:</label><select id="mdFt" class="sort-select"><option value="">All types</option></select></div>
         <div class="filter-group"><label class="filter-group-label" for="mdSort">Sort:</label><select id="mdSort" class="sort-select"><option value="new">Newest first</option><option value="high">Highest price</option><option value="psf">Highest $psf</option></select></div>
@@ -185,7 +203,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 const fmt$=v=>"$"+Math.round(v).toLocaleString();
 const SQFT=10.7639, PAGE=50;
 const track=(ev,props)=>{try{window.posthog&&posthog.capture(ev,props)}catch(e){}};
-let D=[], TOT=[], shown=PAGE, LAST="";
+let D=[], TOT=[], shown=PAGE, LAST="", PER="ytd", RF="", RT="", MONTHS=[];
 fetch("data/hdb/million.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw 0;return r.json();}).then(m=>{
   D=m.deals; TOT=m.totals||[]; LAST=m.last_month;
   const yr=LAST.slice(0,4), ty=D.filter(d=>d[0].startsWith(yr)), lastFull=prevMonth(LAST), lm=D.filter(d=>d[0]===lastFull);
@@ -198,21 +216,34 @@ fetch("data/hdb/million.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw 0;retu
     +tile("Most in · "+yr,tt?esc(title(tt[0])):"–",tt?tt[1].toLocaleString()+" deals":"");
   $("mdUpdated").innerHTML="Covers "+ym(m.since)+" to "+ym(LAST)+" · "+D.length.toLocaleString()+" deals in total. "+ym(LAST)+" is still in progress.";
   bars();
-  const years=[...new Set(D.map(d=>d[0].slice(0,4)))].sort().reverse();
-  $("mdYear").innerHTML='<option value="">All years</option>'+years.map(y=>`<option value="${y}">${y}</option>`).join("");
+  const first=[...new Set(TOT.map(x=>x[0]).concat(D.map(d=>d[0])))].sort()[0];MONTHS=[];for(let k=first;k<=LAST;k=addM(k,1))MONTHS.push(k);
+  const opts=MONTHS.slice().reverse().map(k=>`<option value="${k}">${ym(k)}${k===LAST?" (in progress)":""}</option>`).join("");$("mdFrom").innerHTML=$("mdTo").innerHTML=opts;
   [...new Set(D.map(d=>d[1]))].sort().forEach(t=>$("mdTown").add(new Option(title(t),t)));
   Object.keys(FT).filter(k=>D.some(d=>d[4]===k)).forEach(k=>$("mdFt").add(new Option(FT[k],k)));
   const q=new URLSearchParams(location.search);
-  if(q.get("year"))$("mdYear").value=q.get("year"); else $("mdYear").value=yr;
+  const setPer=p=>{PER=p;document.querySelectorAll("[data-per]").forEach(b=>b.classList.toggle("active",b.dataset.per===p));$("mdCustom").hidden=p!=="custom";};
+  if(q.get("year")&&/^\d{4}$/.test(q.get("year"))){const y=q.get("year");RF=MONTHS.find(k=>k.startsWith(y))||MONTHS[0];RT=MONTHS.filter(k=>k.startsWith(y)).pop()||LAST;setPer("custom");$("mdFrom").value=RF;$("mdTo").value=RT;}
+  else if(q.get("period")&&["month","ytd","12m","all"].includes(q.get("period")))setPer(q.get("period"));
+  document.querySelectorAll("[data-per]").forEach(b=>b.onclick=()=>{const cur=range();setPer(b.dataset.per);if(PER==="custom"){RF=cur[0];RT=cur[1];$("mdFrom").value=RF;$("mdTo").value=RT;}shown=PAGE;list();track("million_filter",{period:PER});});
+  $("mdFrom").onchange=e=>{RF=e.target.value;if(RF>RT){RT=RF;$("mdTo").value=RT;}shown=PAGE;list();};
+  $("mdTo").onchange=e=>{RT=e.target.value;if(RT<RF){RF=RT;$("mdFrom").value=RF;}shown=PAGE;list();};
   if(q.get("town")){const t=q.get("town").toUpperCase().replace(/-/g," ");const hit=[...$("mdTown").options].find(o=>o.value===t||o.value.split("/")[0]===t);if(hit)$("mdTown").value=hit.value;}
   if(q.get("ft")&&FT[q.get("ft").toUpperCase()])$("mdFt").value=q.get("ft").toUpperCase();
-  ["mdYear","mdTown","mdFt","mdSort"].forEach(id=>$(id).onchange=()=>{shown=PAGE;list();track("million_filter",{[id]:$(id).value});});
+  ["mdTown","mdFt","mdSort"].forEach(id=>$(id).onchange=()=>{shown=PAGE;list();track("million_filter",{[id]:$(id).value});});
   $("mdQ").oninput=()=>{shown=PAGE;list();};
   $("mdMore").onclick=()=>{shown+=PAGE;list();};
   $("mdMap").addEventListener("click",e=>{const p=e.target.closest("path[data-t]");if(!p)return;const t=p.dataset.t;$("mdTown").value=$("mdTown").value===t?"":t;shown=PAGE;list();track("million_filter",{map_town:t});document.querySelector(".md-filters").scrollIntoView({behavior:"smooth",block:"start"});});
   $("mdMap").addEventListener("mouseover",e=>{const p=e.target.closest("path[data-t]");if(p)$("mdMapTip").textContent=p.querySelector("title").textContent+" · tap to filter";});
   list();
 }).catch(()=>{$("mdUpdated").textContent="The data could not be loaded right now. Please refresh in a moment.";});
+function addM(s,k){let y=+s.slice(0,4),m=+s.slice(5,7)+k;while(m<1){m+=12;y--;}while(m>12){m-=12;y++;}return y+"-"+String(m).padStart(2,"0");}
+function range(){const lf=prevMonth(LAST);
+  if(PER==="month")return [lf,lf];if(PER==="ytd")return [LAST.slice(0,4)+"-01",LAST];if(PER==="12m")return [addM(lf,-11),lf];if(PER==="all")return [MONTHS[0],LAST];
+  return RF<=RT?[RF,RT]:[RT,RF];}
+function rangeLabel(){const [a,b]=range();if(PER==="all")return "all 3 years ("+ym(a)+" – "+ym(b)+")";if(a===b)return ym(a);
+  if(a.endsWith("-01")&&b.endsWith("-12")&&a.slice(0,4)===b.slice(0,4))return a.slice(0,4)+" full year";
+  return a.slice(0,4)===b.slice(0,4)?MON[+a.slice(5,7)-1]+"–"+ym(b):ym(a)+" – "+ym(b);}
+const inR=m=>{const [a,b]=range();return m>=a&&m<=b;};
 function prevMonth(s){let y=+s.slice(0,4),m=+s.slice(5,7)-1;if(m<1){m=12;y--;}return y+"-"+String(m).padStart(2,"0");}
 function tile(k,v,s){return `<div class="md-tile"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`;}
 function bars(){
@@ -232,9 +263,9 @@ let G=null;
 fetch("data/sg-map.json").then(r=>r.json()).then(g=>{G=g;drawMap();}).catch(()=>{});
 function drawMap(){
   if(!G||!D.length)return;
-  const y=$("mdYear").value,f=$("mdFt").value,sel=$("mdTown").value;
+  const f=$("mdFt").value,sel=$("mdTown").value;
   const towns=[...new Set(D.map(d=>d[1]))], by={};
-  D.forEach(d=>{if((!y||d[0].startsWith(y))&&(!f||d[4]===f))by[d[1]]=(by[d[1]]||0)+1;});
+  D.forEach(d=>{if(inR(d[0])&&(!f||d[4]===f))by[d[1]]=(by[d[1]]||0)+1;});
   const vals=Object.values(by).filter(v=>v>0).sort((a,b)=>a-b), cut=[1,2,3,4,5].map(j=>vals[Math.floor(vals.length*j/6)]||Infinity);
   const C=["#e3e9ef","#bccbda","#8ea8c1","#5e81a3","#2f5880","#0b2a4a"], col=v=>{let k=0;while(k<5&&v>=cut[k])k++;return C[k];};
   const ALL=G.towns||null;
@@ -244,19 +275,19 @@ function drawMap(){
     if(!v){h+=`<path d="${G.paths[pa]}" fill="#ece9e1" stroke="#fff" stroke-width="1"${towns.includes(t)?` class="town" data-t="${t}"`:""}><title>${title(t)}: no million-dollar resale</title></path>`;return;}
     h+=`<path class="town${t===sel?" on":""}" data-t="${t}" d="${G.paths[pa]}" fill="${col(v)}" stroke="${t===sel?"#c9a227":"#fff"}" stroke-width="${t===sel?3:1}"><title>${title(t)}: ${v.toLocaleString()} million-dollar resale${v>1?"s":""}</title></path>`;});
   $("mdMap").innerHTML=h;
-  $("mdMapTitle").textContent="Where they sold · "+(y||"all years")+(f?" · "+FT[f]:"");
+  $("mdMapTitle").textContent="Where they sold · "+rangeLabel()+(f?" · "+FT[f]:"");
 }
 function list(){
   drawMap();
-  const y=$("mdYear").value,t=$("mdTown").value,f=$("mdFt").value,s=$("mdSort").value,q=$("mdQ").value.trim().toUpperCase();
-  let r=D.filter(d=>(!y||d[0].startsWith(y))&&(!t||d[1]===t)&&(!f||d[4]===f)&&(!q||(d[2]+" "+d[3]).includes(q)));
+  const t=$("mdTown").value,f=$("mdFt").value,s=$("mdSort").value,q=$("mdQ").value.trim().toUpperCase();
+  let r=D.filter(d=>inR(d[0])&&(!t||d[1]===t)&&(!f||d[4]===f)&&(!q||(d[2]+" "+d[3]).includes(q)));
   const psf=d=>d[9]/(d[6]*SQFT);
   if(s==="high")r=r.slice().sort((a,b)=>b[9]-a[9]);else if(s==="psf")r=r.slice().sort((a,b)=>psf(b)-psf(a));
-  const all=TOT.reduce((a,x)=>a+((!y||x[0].startsWith(y))&&(!t||x[1]===t)&&(!f||x[2]===f)?x[3]:0),0);
-  const mill=D.filter(d=>(!y||d[0].startsWith(y))&&(!t||d[1]===t)&&(!f||d[4]===f)).length;
-  const scope=(t?title(t):"All towns")+(f?" · "+FT[f]:"")+" · "+(y||"all years");
-  $("mdSum").innerHTML=`<div><div class="k" title="Total number of HDB resale transactions">Total transactions</div><div class="v">${all.toLocaleString()}</div></div><div><div class="k">$1M and above</div><div class="v">${mill.toLocaleString()}</div></div><div><div class="k">Share at $1M+</div><div class="v">${all?(mill/all*100).toFixed(1)+"%":"–"}</div></div><div><div class="k">Highest price</div><div class="v">${mill?fmt$(Math.max(...D.filter(d=>(!y||d[0].startsWith(y))&&(!t||d[1]===t)&&(!f||d[4]===f)).map(d=>d[9]))):"–"}</div></div>`;
-  $("mdCount").textContent="All HDB resales and million-dollar resales for: "+scope+(q?" · showing "+r.length.toLocaleString()+" matching \""+$("mdQ").value.trim()+"\"":"")+(y===LAST.slice(0,4)||!y?" ("+ym(LAST)+" still in progress)":"")+".";
+  const all=TOT.reduce((a,x)=>a+(inR(x[0])&&(!t||x[1]===t)&&(!f||x[2]===f)?x[3]:0),0);
+  const mill=D.filter(d=>inR(d[0])&&(!t||d[1]===t)&&(!f||d[4]===f)).length;
+  const scope=(t?title(t):"All towns")+(f?" · "+FT[f]:"")+" · "+rangeLabel();
+  $("mdSum").innerHTML=`<div><div class="k" title="Total number of HDB resale transactions">Total transactions</div><div class="v">${all.toLocaleString()}</div></div><div><div class="k">$1M and above</div><div class="v">${mill.toLocaleString()}</div></div><div><div class="k">Share at $1M+</div><div class="v">${all?(mill/all*100).toFixed(1)+"%":"–"}</div></div><div><div class="k">Highest price</div><div class="v">${mill?fmt$(Math.max(...D.filter(d=>inR(d[0])&&(!t||d[1]===t)&&(!f||d[4]===f)).map(d=>d[9]))):"–"}</div></div>`;
+  $("mdCount").textContent="All HDB resales and million-dollar resales for: "+scope+(q?" · showing "+r.length.toLocaleString()+" matching \""+$("mdQ").value.trim()+"\"":"")+(range()[1]===LAST?" ("+ym(LAST)+" still in progress)":"")+".";
   $("mdBody").innerHTML=r.slice(0,shown).map(d=>{const band=String(d[5]).padStart(2,"0")+"–"+String(d[5]+2).padStart(2,"0");
     const link="market-map.html?blk="+encodeURIComponent(d[2])+"&street="+encodeURIComponent(title(d[3]));
     return `<tr><td>${ym(d[0])}</td><td class="wrap" style="min-width:0">${esc(title(d[1]))}</td><td class="wrap"><a href="${link}" title="See every resale in this block">Blk ${esc(d[2])} ${esc(title(d[3]))}</a></td><td>${FT[d[4]]||d[4]}</td><td>${band}</td><td class="r">${Math.round(d[6]*SQFT).toLocaleString()}</td><td class="wrap" style="min-width:0">${esc(d[7])}</td><td>${d[8]}</td><td class="r"><b>${fmt$(d[9])}</b></td><td class="r">${fmt$(psf(d))}</td></tr>`;}).join("")||'<tr><td colspan="10">No million-dollar resales for this filter.</td></tr>';
