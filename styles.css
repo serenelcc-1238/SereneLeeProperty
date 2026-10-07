@@ -677,3 +677,29 @@ a.home-mm-card:hover{border-color:var(--gold-dark);box-shadow:var(--shadow);}
 .blog-tag-pr{background:#e8eef5;}
 .blog-tag-research{background:var(--navy-900);color:#fff;}
 .era-take{font-size:.72rem;font-weight:700;color:var(--gold-dark);margin-right:4px;}
+
+/* Homepage: compact hero */
+.hero.hero-compact{padding:36px 0 32px;}
+.hero-compact .container{gap:32px;}
+.hero-compact h1{font-size:1.75rem;margin-bottom:10px;}
+.hero-compact p.lead{font-size:.98rem;margin-bottom:18px;}
+.hero-compact .cta-row{margin-bottom:0;}
+.hero-compact .hero-photo{width:150px;height:190px;}
+@media(max-width:640px){
+  .hero.hero-compact{padding:26px 0 24px;}
+  .hero-compact h1{font-size:1.45rem;}
+  .hero-compact .hero-photo{display:none;}
+}
+
+/* Homepage: slim "Latest from ERA Research" list (scripts/update_era_articles.py) */
+.era-strip{margin-top:24px;border-top:1px solid var(--line);padding-top:14px;}
+.era-strip-head{display:flex;justify-content:space-between;align-items:baseline;font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.era-strip-head a{text-transform:none;letter-spacing:0;color:var(--navy-900);font-size:.85rem;}
+.era-strip ul{list-style:none;margin:0;padding:0;}
+.era-strip li{display:flex;gap:10px;align-items:baseline;padding:7px 0;font-size:.92rem;min-width:0;}
+.era-strip li + li{border-top:1px dashed var(--line);}
+.era-strip .era-k{flex-shrink:0;font-size:.72rem;font-weight:700;color:var(--gold-dark);width:96px;}
+.era-strip a.era-t{flex:1;min-width:0;color:var(--navy-900);font-weight:600;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.era-strip a.era-t:hover{text-decoration:underline;}
+.era-strip .era-d{flex-shrink:0;font-size:.75rem;color:var(--muted);}
+@media(max-width:600px){.era-strip .era-d{display:none;}.era-strip .era-k{width:auto;}}

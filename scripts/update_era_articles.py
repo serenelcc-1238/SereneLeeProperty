@@ -9,7 +9,8 @@ Reads the same feed that powers these ERA pages:
 and rewrites the "ERA Research & Insights" list on blog.html between the
 ERA-ARTICLES markers: the newest PER_CAT items of each category, each with
 title, date, ERA's image, a short summary and a link to the full article
-on era.com.sg. Full article text is never copied.
+on era.com.sg. Full article text is never copied. The 3 newest also go
+on the homepage (index.html, ERA-HOME markers) as one-line links.
 
 Summary = Serene's own note from scripts/era-notes.json when there is one
 for that slug, otherwise ERA's own description, trimmed.
@@ -115,6 +116,22 @@ def main():
     stamp = datetime.now(SGT).strftime("%-d %b %Y")
     page = re.sub(r"(<!-- ERA-ART-DATE:START -->).*?(<!-- ERA-ART-DATE:END -->)", rf"\g<1>{stamp}\g<2>", page)
     open(path, "w").write(page)
+
+    # Homepage: the 3 newest as one-line links (slim strip under "Guides Worth Your Time")
+    ipath = os.path.join(ROOT, "index.html")
+    ix = open(ipath).read()
+    hs, he = "<!-- ERA-HOME:START -->", "<!-- ERA-HOME:END -->"
+    a1, b1 = ix.find(hs), ix.find(he)
+    if a1 >= 0 and b1 > a1:
+        lines = []
+        for a in items[:3]:
+            label, p2, _ = CATS[a["category"]]
+            shown, _k = nice_date(a.get("publishedAt") or a.get("entryDate"))
+            url = f"https://www.era.com.sg/{p2}/{urllib.parse.quote(a['slug'])}"
+            t = html.escape(re.sub(r"\s+", " ", a["title"]).strip())
+            lines.append(f'      <li><span class="era-k">{label}</span><a class="era-t" href="{url}" target="_blank" rel="noopener" title="{t}">{t}</a><span class="era-d">{shown}</span></li>\n')
+        ix = ix[:a1 + len(hs)] + "\n" + "".join(lines) + "      " + ix[b1:]
+        open(ipath, "w").write(ix)
 
     os.makedirs(os.path.join(ROOT, "data"), exist_ok=True)
     json.dump({"retrieved": datetime.now(SGT).isoformat(timespec="minutes"),
