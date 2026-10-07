@@ -7,8 +7,10 @@ https://propertyportal.era.com.sg/new-launches) and rewrites:
   - new-launches.html  : every Singapore residential project now selling
                          (still under construction) or launching within
                          12 months, between the ERA:START / ERA:END markers
-  - index.html         : the 3 most recently launched projects in
-                         "Featured Property Launches", between the same markers
+  - index.html         : "Latest Property Launches" = the 3 newest projects on
+                         sale, between the same markers. Serene's own write-up
+                         cards (scripts/home-pinned/*.html) compete by ERA launch
+                         date, so they move down and drop off as newer launches arrive
   - both pages' "as of" dates (ERA-DATE markers)
   - data/new-launches.json : the cleaned list, for the record
 
@@ -262,6 +264,35 @@ def replace_between(text, start, end, new, label):
     return text[:i + len(start)] + new + text[j:]
 
 
+HOME_PINNED_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "home-pinned")
+PIN_LEAD_DAYS = 30  # a write-up card may show up to 30 days before its launch (VIP preview period)
+
+
+def home_pinned(items, today):
+    """Serene's own homepage cards, each with the launch date ERA reports for it."""
+    by_name = {norm(x.get("name") or ""): x for x in items}
+    out = []
+    if not os.path.isdir(HOME_PINNED_DIR):
+        return out
+    for f in sorted(os.listdir(HOME_PINNED_DIR)):
+        if not f.endswith(".html"):
+            continue
+        raw = open(os.path.join(HOME_PINNED_DIR, f)).read()
+        raw = re.sub(r"<!--.*?-->\s*", "", raw, flags=re.S)
+        attr = lambda k: (re.search(rf'{k}="([^"]*)"', raw) or [None, ""])[1]
+        x = by_name.get(norm(html.unescape(attr("data-era-name"))))
+        if x is not None and x.get("isSoldOut"):
+            continue
+        ld = (x or {}).get("launchDate") or attr("data-launch")
+        if not ld or ld > (today + timedelta(days=PIN_LEAD_DAYS)).isoformat():
+            continue
+        status = "Now Selling" if ld <= today.isoformat() else attr("data-prelaunch") or "Launching soon"
+        html_card = raw.replace("{STATUS}", status)
+        html_card = re.sub(r'data-launch="[^"]*"', f'data-launch="{ld}"', html_card)
+        out.append({"launchDate": ld, "html": html_card.rstrip() + "\n", "name": attr("data-era-name")})
+    return out
+
+
 def pinned_names(page):
     names = set()
     for m in re.finditer(r'<div class="launch-card"[^>]*data-pinned="true"[^>]*>.*?<div class="launch-name">(.*?)</div>', page, re.S):
@@ -298,9 +329,12 @@ def main(items=None, today=None):
     nl = re.sub(r"(<!-- ERA-COUNT:START -->).*?(<!-- ERA-COUNT:END -->)",
                 rf"\g<1>{len(sell)} projects now selling and {len(up)} coming soon\g<2>", nl)
 
-    featured = sell[:3]
+    # Homepage: 3 newest on sale; Serene's write-up cards compete by launch date.
+    pool = [{"launchDate": x["launchDate"], "html": card(x, region, today, compact=True), "name": x["name"]} for x in sell]
+    pool += home_pinned(items, today)
+    featured = sorted(pool, key=lambda c: c["launchDate"], reverse=True)[:3]
     ix = replace_between(ix, "<!-- ERA:START -->", "<!-- ERA:END -->",
-                         "\n" + "".join(card(x, region, today, compact=True) for x in featured) + "      ", "index.html")
+                         "\n" + "".join(c["html"] for c in featured) + "      ", "index.html")
     ix = re.sub(r"(<!-- ERA-DATE:START -->).*?(<!-- ERA-DATE:END -->)", rf"\g<1>{stamp}\g<2>", ix)
 
     open(nl_path, "w").write(nl)
