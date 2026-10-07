@@ -109,15 +109,23 @@ document.addEventListener('DOMContentLoaded', function () {
      needed for new projects. Add data-pinned="true" to Serene's own
      new-launch spotlight write-ups (as opposed to the regular ERA
      listings) to always keep them first, ahead of the TOP-date sort,
-     regardless of what the visitor picks in the Sort by TOP dropdown. */
+     regardless of what the visitor picks in the Sort by TOP dropdown.
+     Cards between the ERA:START / ERA:END markers in new-launches.html are
+     rewritten every week by scripts/update_new_launches.py and also carry
+     data-launch (YYYY-MM-DD), data-status ("selling"/"upcoming") and
+     data-ptype ("condo"/"ec"/"landed") for the Status / Type filters. */
   var launchGrid = document.getElementById('launchGrid');
   if (launchGrid) {
     var regionButtons = Array.prototype.slice.call(document.querySelectorAll('[data-filter-region]'));
     var tenureButtons = Array.prototype.slice.call(document.querySelectorAll('[data-filter-tenure]'));
+    var statusButtons = Array.prototype.slice.call(document.querySelectorAll('[data-filter-status]'));
+    var ptypeButtons = Array.prototype.slice.call(document.querySelectorAll('[data-filter-ptype]'));
     var topSort = document.getElementById('topSort');
     var noResults = document.getElementById('noLaunchResults');
     var activeRegion = 'all';
     var activeTenure = 'all';
+    var activeStatus = 'all';
+    var activePtype = 'all';
 
     function applyLaunchFilters() {
       var cards = Array.prototype.slice.call(launchGrid.querySelectorAll('.launch-card'));
@@ -126,10 +134,15 @@ document.addEventListener('DOMContentLoaded', function () {
       var pinned = cards.filter(function (card) { return card.getAttribute('data-pinned') === 'true'; });
       var rest = cards.filter(function (card) { return card.getAttribute('data-pinned') !== 'true'; });
 
+      var sortBy = topSort ? topSort.value : 'asc';
       rest.sort(function (a, b) {
+        if (sortBy === 'launch') {
+          /* newest launch first; cards without a launch date go last */
+          return (b.getAttribute('data-launch') || '').localeCompare(a.getAttribute('data-launch') || '');
+        }
         var topA = parseFloat(a.getAttribute('data-top')) || 0;
         var topB = parseFloat(b.getAttribute('data-top')) || 0;
-        return (topSort && topSort.value === 'desc') ? topB - topA : topA - topB;
+        return sortBy === 'desc' ? topB - topA : topA - topB;
       });
 
       var ordered = pinned.concat(rest);
@@ -138,7 +151,9 @@ document.addEventListener('DOMContentLoaded', function () {
       ordered.forEach(function (card) {
         var regionMatch = activeRegion === 'all' || card.getAttribute('data-region') === activeRegion;
         var tenureMatch = activeTenure === 'all' || card.getAttribute('data-tenure') === activeTenure;
-        var show = regionMatch && tenureMatch;
+        var statusMatch = activeStatus === 'all' || card.getAttribute('data-status') === activeStatus || card.getAttribute('data-pinned') === 'true';
+        var ptypeMatch = activePtype === 'all' || (card.getAttribute('data-ptype') || 'condo') === activePtype;
+        var show = regionMatch && tenureMatch && statusMatch && ptypeMatch;
         card.style.display = show ? '' : 'none';
         if (show) visibleCount++;
       });
@@ -163,6 +178,19 @@ document.addEventListener('DOMContentLoaded', function () {
         applyLaunchFilters();
       });
     });
+
+    function bindChips(buttons, attr, set) {
+      buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          buttons.forEach(function (b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          set(btn.getAttribute(attr));
+          applyLaunchFilters();
+        });
+      });
+    }
+    bindChips(statusButtons, 'data-filter-status', function (v) { activeStatus = v; });
+    bindChips(ptypeButtons, 'data-filter-ptype', function (v) { activePtype = v; });
 
     if (topSort) topSort.addEventListener('change', applyLaunchFilters);
 

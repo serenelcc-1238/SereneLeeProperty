@@ -81,7 +81,7 @@
 <div class="page-hero container">
   <span class="eyebrow">New Launches</span>
   <h1 style="font-size:2.1rem;max-width:700px;">Current new launch condo projects</h1>
-  <p>A snapshot of new launch projects currently on the market, pulled from ERA's official listings. Pricing and availability change quickly — WhatsApp Serene to confirm the latest before making any decision.</p>
+  <p>Every new launch condo, EC and landed project on sale in Singapore, plus those launching in the next 12 months: <strong><!-- ERA-COUNT:START -->projects updating<!-- ERA-COUNT:END --></strong>. Refreshed every week from ERA's official listings — last updated <!-- ERA-DATE:START -->30 Aug 2026<!-- ERA-DATE:END -->. Prices and availability change quickly, so WhatsApp Serene to confirm before making any decision.</p>
 </div>
 
 <section style="padding-top:20px;">
@@ -101,10 +101,24 @@
         <button type="button" class="filter-chip" data-filter-tenure="freehold">Freehold / 999-Yr</button>
       </div>
       <div class="filter-group">
-        <label for="topSort" class="filter-group-label">Sort by TOP:</label>
+        <span class="filter-group-label">Status:</span>
+        <button type="button" class="filter-chip active" data-filter-status="all">All</button>
+        <button type="button" class="filter-chip" data-filter-status="selling">Now selling</button>
+        <button type="button" class="filter-chip" data-filter-status="upcoming">Coming soon</button>
+      </div>
+      <div class="filter-group">
+        <span class="filter-group-label">Type:</span>
+        <button type="button" class="filter-chip active" data-filter-ptype="all">All</button>
+        <button type="button" class="filter-chip" data-filter-ptype="condo">Condo</button>
+        <button type="button" class="filter-chip" data-filter-ptype="ec">EC</button>
+        <button type="button" class="filter-chip" data-filter-ptype="landed">Landed</button>
+      </div>
+      <div class="filter-group">
+        <label for="topSort" class="filter-group-label">Sort by:</label>
         <select id="topSort" class="sort-select">
-          <option value="asc">Earliest first</option>
-          <option value="desc">Latest first</option>
+          <option value="launch">Newest launch first</option>
+          <option value="asc">TOP: earliest first</option>
+          <option value="desc">TOP: latest first</option>
         </select>
       </div>
     </div>
@@ -121,6 +135,7 @@
           <a href="https://wa.me/6580868568?text=Hi%20Serene%2C%20I%27d%20like%20to%20register%20for%20the%20VIP%20preview%20of%20The%20Serra%20Residences." target="_blank" rel="noopener" class="btn btn-gold btn-block">Register for VIP Preview</a>
         </div>
       </div>
+      <!-- ERA:START -->
       <div class="launch-card" data-region="OCR" data-tenure="leasehold" data-top="2031.4">
         <div class="launch-thumb"><img src="https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/vela_bay/media/6cce68e67e7d78e6b5f5842c16cff6d6d1ff8bc8.jpg" alt="Vela Bay artist's impression" loading="lazy"><span class="launch-status">Now Selling</span></div>
         <div class="launch-body">
@@ -209,9 +224,10 @@
           <a href="https://wa.me/6580868568?text=Hi%20Serene%2C%20I%27d%20like%20to%20find%20out%20more%20about%20One%20Marina%20Gardens." target="_blank" rel="noopener" class="btn btn-gold btn-block">Enquire via WhatsApp</a>
         </div>
       </div>
+      <!-- ERA:END -->
     </div>
     <p id="noLaunchResults" class="no-results" style="display:none;">No launches match these filters right now — WhatsApp Serene to ask about upcoming projects that might fit.</p>
-    <p style="color:var(--muted);font-size:.8rem;margin-top:26px;">Images are developer-provided artist's impressions; prices shown are the lowest published starting prices per project as of 30 Aug 2026 — both sourced from ERA's official New Launch listings at <a href="https://propertyportal.era.com.sg/new-launches" target="_blank" rel="noopener" style="color:var(--navy-900);font-weight:600;">propertyportal.era.com.sg</a>. Figures are subject to change and do not include the full range of unit types available — contact Serene for a current price list, floor plans, and to arrange a viewing.</p>
+    <p style="color:var(--muted);font-size:.8rem;margin-top:26px;">Images are developer-provided artist's impressions; prices shown are the lowest published starting prices and units still available per project as of <!-- ERA-DATE:START -->30 Aug 2026<!-- ERA-DATE:END --> — both sourced from ERA's official New Launch listings at <a href="https://propertyportal.era.com.sg/new-launches" target="_blank" rel="noopener" style="color:var(--navy-900);font-weight:600;">propertyportal.era.com.sg</a>. CCR / RCR / OCR follows URA's market segment for each project; for projects not yet launched it is estimated from the district. Figures are subject to change and do not include the full range of unit types available — contact Serene for a current price list, floor plans, and to arrange a viewing.</p>
   </div>
 </section>
 

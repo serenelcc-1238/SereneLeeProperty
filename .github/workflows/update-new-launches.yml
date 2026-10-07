@@ -1,10 +1,10 @@
-name: Update market data
+name: Update new launches
 
-# Every Monday 6:13am Singapore time (Sunday 22:13 UTC).
+# Every Monday 6:43am Singapore time (Sunday 22:43 UTC), after the market data refresh.
 # Also runs on demand from the Actions tab ("Run workflow").
 on:
   schedule:
-    - cron: "13 22 * * 0"
+    - cron: "43 22 * * 0"
   workflow_dispatch:
 
 permissions:
@@ -24,29 +24,20 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Fetch HDB and URA data
-        id: fetch
-        env:
-          URA_ACCESS_KEY: ${{ secrets.URA_ACCESS_KEY }}
-        run: |
-          set +e
-          python scripts/update_market_data.py
-          code=$?
-          echo "code=$code" >> "$GITHUB_OUTPUT"
-          if [ "$code" = "1" ]; then exit 1; fi
-          exit 0
+      - name: Pull ERA new launch listings and rewrite the pages
+        run: python scripts/update_new_launches.py
 
-      - name: Save data to the repo
+      - name: Save to the repo
         id: commit
         run: |
-          git config user.name "market-data-bot"
+          git config user.name "new-launches-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add -A data
+          git add new-launches.html index.html data/new-launches.json
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "No change in data."
+            echo "No change in listings."
           else
-            git commit -m "Weekly market data refresh"
+            git commit -m "Weekly new launches refresh (ERA listings)"
             git pull --rebase origin main
             git push
             echo "changed=true" >> "$GITHUB_OUTPUT"
@@ -65,9 +56,3 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-
-      - name: Flag a partial refresh
-        if: steps.fetch.outputs.code == '2'
-        run: |
-          echo "One data source did not refresh. The site kept last week's figures for it. Check the 'Fetch HDB and URA data' step log."
-          exit 1
