@@ -101,6 +101,22 @@ document.addEventListener('DOMContentLoaded', function () {
     rows.forEach(function (row) { blogList.appendChild(row); });
   }
 
+  /* Blog page: ERA Research & Insights category chips (All / Research /
+     Market Insights / Press Releases). Rows carry data-era-cat. */
+  var eraChips = document.querySelectorAll('button[data-era-cat]');
+  var eraList = document.querySelector('.era-list');
+  if (eraChips.length && eraList) {
+    eraChips.forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        var cat = chip.getAttribute('data-era-cat');
+        eraChips.forEach(function (c) { c.classList.toggle('active', c === chip); });
+        eraList.querySelectorAll('.blog-row').forEach(function (row) {
+          row.hidden = !(cat === 'all' || row.getAttribute('data-era-cat') === cat);
+        });
+      });
+    });
+  }
+
   /* New Launches page only: region/tenure filter chips + TOP-date sort.
      No-op on every other page (no #launchGrid there). Add data-region
      ("CCR"/"RCR"/"OCR"), data-tenure ("leasehold"/"freehold") and

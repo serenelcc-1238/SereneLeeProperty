@@ -669,3 +669,11 @@ a.home-mm-card:hover{border-color:var(--gold-dark);box-shadow:var(--shadow);}
 .home-mm-check .alt a{color:var(--gold);font-weight:600;}
 .home-mm-src{color:var(--muted);font-size:.74rem;margin-top:14px;}
 .home-mm-src a{color:inherit;}
+
+/* ERA Research & Insights list on blog.html (written weekly by scripts/update_era_articles.py) */
+.era-list .blog-row-thumb{overflow:hidden;background:var(--cream-2);}
+.era-list .blog-row-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.era-list .blog-row[hidden]{display:none;}
+.blog-tag-pr{background:#e8eef5;}
+.blog-tag-research{background:var(--navy-900);color:#fff;}
+.era-take{font-size:.72rem;font-weight:700;color:var(--gold-dark);margin-right:4px;}
