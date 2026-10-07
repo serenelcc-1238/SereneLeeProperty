@@ -195,6 +195,8 @@
 .mm-ctrl .filter-group{min-width:0;max-width:100%}
 .mm-ctrl .sort-select{min-width:0;max-width:100%}
 @media(max-width:520px){.mm-ctrl .filter-group:has(select){flex:1 1 100%;flex-wrap:nowrap}.mm-ctrl .sort-select{flex:1}}
+.mm-quick .filter-chip{font-size:.8rem;padding:6px 12px}
+.mm-qlabel.span{font-size:1.15rem;min-width:0}
 .mm-hint{font-size:.78rem;color:var(--muted);margin:10px 0 0 6px}
 .mm-explore-head{margin:8px 0 14px}
 .mm-explore-head h2{font-size:1.35rem;margin:0 0 4px}
@@ -250,7 +252,7 @@
     <div class="mm-panel" id="mmMapPanel">
       <div class="mm-panel-head"><span class="mm-step">1</span><div>
         <h2>Singapore at a glance</h2>
-        <p>Every HDB town or private district for one quarter, island-wide. This map is not filtered by your block or area search.</p>
+        <p>Every HDB town or private district for a quarter or period, island-wide. This map is not filtered by your block or area search.</p>
       </div></div>
       <div class="mm-ctrl">
         <div class="mm-seg" aria-label="Map market">
@@ -262,6 +264,11 @@
           <span class="mm-qlabel" id="mmQ">&nbsp;</span>
           <button type="button" class="mm-nav" id="mmNext" aria-label="Next quarter">&rsaquo;</button>
           <input type="range" id="mmRange" min="0" max="0" value="0" aria-label="Quarter">
+        </div>
+        <div class="filter-group mm-quick" aria-label="Period">
+          <button type="button" class="filter-chip active" data-span="q">Latest quarter</button>
+          <button type="button" class="filter-chip" data-span="ytd">Year to date</button>
+          <button type="button" class="filter-chip" data-span="12m">Last 12 months</button>
         </div>
       </div>
       <div class="mm-ctrl mm-ctrl2">
@@ -446,10 +453,19 @@ const ramp=v=>{const b=breaks();let k=0;while(k<b.length&&v>=b[k])k++;return "va
    M  = section 1, the island-wide map + ranking (market, quarter, region, shading)
    Dd = section 2, the visitor's own area: KPI figures + trend chart (estate/district, flat/property type, sale type)
    The data helpers above read shared globals, so each panel loads its own state with useMap()/useData() first. */
-const M={layer:"hdb",qi:0,metric:"vol",hReg:"all",pSeg:"all"};
+const M={layer:"hdb",qi:0,metric:"vol",hReg:"all",pSeg:"all",span:"q"};
 const Dd={layer:"hdb",qi:0,sel:null,hFt:"all",pPt:"all",sale:"all",metric:"vol"};
 function useMap(){layer=M.layer;qi=M.qi;metric=M.metric;hReg=M.hReg;pSeg=M.pSeg;hFt="all";pPt="all";sale="all";sel=Dd.layer===M.layer?Dd.sel:null;}
 function useData(){layer=Dd.layer;qi=Dd.qi;metric=Dd.metric;hReg="all";pSeg="all";hFt=Dd.hFt;pPt=Dd.pPt;sale=Dd.sale;sel=Dd.sel;}
+/* Map period: one quarter, or a span ending at the map quarter (Year to date / Last 12 months). */
+function mSpan(){const b=M.qi,lo=M.layer==="pte"?pteFirst:0;let a=b;
+  if(M.span==="12m")a=b-3;else if(M.span==="ytd"){const y=Q[b].slice(0,4);while(a-1>=lo&&Q[a-1].slice(0,4)===y)a--;}
+  return [Math.max(lo,a),b];}
+function spanLabel(a,b){return a===b?Q[b]:Q[a].slice(0,4)===Q[b].slice(0,4)?Q[a]+"–"+Q[b].slice(5):Q[a]+" – "+Q[b];}
+function mN(t,a,b){let n=0;for(let i=a;i<=b;i++)n+=hn(t,i);return n;}
+function mP(t,a,b){let n=0,s=0;for(let i=a;i<=b;i++){const k=hn(t,i);n+=k;s+=k*hp(t,i);}return n?s/n:0;}
+function mV(d,a,b){let n=0;for(let i=a;i<=b;i++)n+=pv(d,i);return n;}
+function quantBreaks(vals,step){vals=vals.filter(v=>v>0).sort((x,y)=>x-y);const b=[1,2,3,4,5].map(j=>{const v=vals[Math.floor(vals.length*j/6)]||0;return Math.max(step,Math.round(v/step)*step);});for(let j=1;j<b.length;j++)if(b[j]<=b[j-1])b[j]=b[j-1]+step;return b;}
 function defQ(l){return l==="pte"?pteLast:defaultHdbQ();}
 function defaultHdbQ(){return hdbPartial(hdbLast)?hdbLast-1:hdbLast;}
 
@@ -473,14 +489,16 @@ function build(){
   $("mmRankMore").addEventListener("click",()=>{rankAll=!rankAll;renderAll();});
   $("mmRank").addEventListener("click",e=>{const li=e.target.closest("li");if(li&&li.dataset.k)pickFromMap(li.dataset.k);});
   $("mmBars").addEventListener("click",e=>{const i=e.target.dataset&&e.target.dataset.i;if(i!==undefined){Dd.qi=+i;renderAll();}});
-  $("mmRange").addEventListener("input",e=>{M.qi=+e.target.value;renderAll();});
-  $("mmPrev").onclick=()=>{M.qi--;renderAll();};
-  $("mmNext").onclick=()=>{M.qi++;renderAll();};
+  const single=q=>{M.qi=q;M.span="q";renderAll();setChip("[data-span]",M.qi===defQ(M.layer)?"q":"none");};
+  $("mmRange").addEventListener("input",e=>single(+e.target.value));
+  $("mmPrev").onclick=()=>single(M.qi-1);
+  $("mmNext").onclick=()=>single(M.qi+1);
+  group("[data-span]",b=>{M.span=b.dataset.span;M.qi=defQ(M.layer);track("market_map_filter",{period:M.span});});
   ts.onchange=()=>{Dd.sel=ts.value||null;if(Dd.sel)track("market_map_area",{layer:"hdb",area:Dd.sel,via:"filter"});renderAll();};
   ds.onchange=()=>{Dd.sel=ds.value||null;if(Dd.sel)track("market_map_area",{layer:"pte",area:Dd.sel,via:"filter"});renderAll();};
   $("mmFt").onchange=e=>{Dd.hFt=e.target.value;track("market_map_filter",{flat_type:Dd.hFt});renderAll();};
   $("mmPt").onchange=e=>{Dd.pPt=e.target.value;track("market_map_filter",{property:Dd.pPt});renderAll();};
-  group("[data-mlayer]",b=>{M.layer=b.dataset.mlayer;M.qi=defQ(M.layer);track("market_map_layer",{layer:M.layer,panel:"map"});});
+  group("[data-mlayer]",b=>{M.layer=b.dataset.mlayer;M.qi=defQ(M.layer);M.span="q";setChip("[data-span]","q");track("market_map_layer",{layer:M.layer,panel:"map"});});
   group("[data-metric]",b=>{M.metric=b.dataset.metric;});
   group("[data-hreg]",b=>{M.hReg=b.dataset.hreg;track("market_map_filter",{region:M.hReg});});
   group("[data-seg]",b=>{M.pSeg=b.dataset.seg;track("market_map_filter",{segment:M.pSeg});});
@@ -496,11 +514,12 @@ function pickFromMap(k){
   else{Dd.layer=M.layer;Dd.sel=k;Dd.qi=M.qi;setChip("[data-dlayer]",M.layer);track("market_map_area",{layer:M.layer,area:k,via:"map"});}
   renderAll();}
 
-function tipTown(t){const n=hn(t,qi),px=hp(t,qi);const yoy=qi>=4&&!hdbPartial(qi)&&hn(t,qi-4)?"<br>"+pct(n,hn(t,qi-4))+" vs "+Q[qi-4]:"";
-  return `<b>${title(t)}</b><br>${n.toLocaleString()} resale flats sold<br>Average ${n?fmtK(px):"–"}${yoy}<br><span style="opacity:.75">Tap for its trend in section 2</span>`;}
-function tipDist(d){const tot=pv(d,qi),prev=uq[Q[qi-4]]!==undefined?pv(d,qi-4):0;
-  const s0=sale;const mix="<br>"+[0,1,2].map(s=>{sale=String(s);const v=pv(d,qi);sale=s0;return SALE[s]+" "+v;}).join(" · ");
-  return `<b>D${d} ${DNAME[d]||""}</b><br>${tot.toLocaleString()} units${mix}${prev&&qi!==pteLast?"<br>"+pct(tot,prev)+" vs "+Q[qi-4]:""}<br><span style="opacity:.75">Tap for its trend in section 2</span>`;}
+function tipTown(t){const [a,b]=mSpan(),n=mN(t,a,b),px=mP(t,a,b),L=b-a;
+  const n0=a-4>=0&&!hdbPartial(b)?mN(t,a-4,b-4):0, yoy=n0?"<br>"+pct(n,n0)+" vs "+spanLabel(a-4,b-4):"";
+  return `<b>${title(t)}</b> · ${spanLabel(a,b)}<br>${n.toLocaleString()} resale flats sold<br>Average ${n?fmtK(px):"–"}${yoy}<br><span style="opacity:.75">Tap for its trend in section 2</span>`;}
+function tipDist(d){const [a,b]=mSpan(),tot=mV(d,a,b),prev=b!==pteLast&&a-4>=pteFirst?mV(d,a-4,b-4):0;
+  const s0=sale;const mix="<br>"+[0,1,2].map(s=>{sale=String(s);const v=mV(d,a,b);sale=s0;return SALE[s]+" "+v;}).join(" · ");
+  return `<b>D${d} ${DNAME[d]||""}</b> · ${spanLabel(a,b)}<br>${tot.toLocaleString()} units${mix}${prev?"<br>"+pct(tot,prev)+" vs "+spanLabel(a-4,b-4):""}<br><span style="opacity:.75">Tap for its trend in section 2</span>`;}
 function scopeLabel(){
   if(layer==="hdb"){const a=hReg==="all"?"All towns":hReg+" region";return a+(hFt==="all"?"":" · "+FT[hFt]);}
   const a=pSeg==="all"?"All districts":pSeg;return a+(pPt==="all"?"":" · "+PT[pPt]);
@@ -511,27 +530,31 @@ function renderMap(){
   const pte=layer==="pte", lo=pte?pteFirst:0, hi=pte?pteLast:hdbLast;
   M.qi=qi=Math.min(hi,Math.max(lo,qi));
   const r=$("mmRange");r.min=lo;r.max=hi;r.value=qi;
-  $("mmQ").textContent=Q[qi];
+  const [qa,qb]=mSpan(), SL=spanLabel(qa,qb), multi=qa!==qb;
+  $("mmQ").textContent=SL; $("mmQ").classList.toggle("span",multi);
+  const N=t=>mN(t,qa,qb), PX=t=>mP(t,qa,qb), V=d=>mV(d,qa,qb);
   $("mmRegGroup").hidden=pte||!towns.some(t=>T(t).region); $("mmSegGroup").hidden=!pte||!hasX; $("mmMetricGroup").hidden=pte;
   const svg=$("mmMap");svg.classList.toggle("pte",pte);svg.classList.toggle("hdb",!pte);
   if(!pte){
-    svg.querySelectorAll("path.town").forEach(p=>{const t=p.dataset.town,ok=inReg(t);p.classList.toggle("out",!ok);p.style.fill=ok?ramp(metric==="vol"?hn(t,qi):hp(t,qi)):"var(--mm-none)";p.classList.toggle("sel",t===sel);});
+    const bk=multi?quantBreaks(towns.map(t=>metric==="vol"?N(t):PX(t)),metric==="vol"?10:10):breaks();
+    const shade=v=>{let k=0;while(k<bk.length&&v>=bk[k])k++;return "var(--mm-r"+k+")";};
+    svg.querySelectorAll("path.town").forEach(p=>{const t=p.dataset.town,ok=inReg(t);p.classList.toggle("out",!ok);p.style.fill=ok?shade(metric==="vol"?N(t):PX(t)):"var(--mm-none)";p.classList.toggle("sel",t===sel);});
     svg.querySelectorAll("text.lbl-town").forEach(x=>x.classList.toggle("out",!inReg(x.dataset.t)));
-    const b=breaks(), f=v=>metric==="vol"?v.toLocaleString():fmtK(v);
-    $("mmLegend").innerHTML=`<span>${metric==="vol"?"HDB flats sold, all flat types":"Average resale price, all flat types"}</span><span class="mm-swatches">${[0,1,2,3,4,5].map(i=>`<span style="background:var(--mm-r${i})"></span>`).join("")}</span><span>under ${f(b[0])} to ${f(b.at(-1))}+</span><span><i class="mm-na"></i>No HDB resale town${hReg==="all"?"":" / outside region"}</span>${hdbPartial(qi)?'<span class="mm-flag">Quarter in progress</span>':""}`;
-    const rows=towns.filter(inReg).map(t=>({k:t,name:title(t),v:metric==="vol"?hn(t,qi):hp(t,qi)})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
-    rank(rows,(metric==="vol"?"Most flats sold":"Highest average price")+" · "+Q[qi],v=>metric==="vol"?v.toLocaleString():fmtK(v),true);
+    const b=bk, f=v=>metric==="vol"?v.toLocaleString():fmtK(v);
+    $("mmLegend").innerHTML=`<span>${metric==="vol"?"HDB flats sold, all flat types, "+SL:"Average resale price, all flat types, "+SL}</span><span class="mm-swatches">${[0,1,2,3,4,5].map(i=>`<span style="background:var(--mm-r${i})"></span>`).join("")}</span><span>under ${f(b[0])} to ${f(b.at(-1))}+</span><span><i class="mm-na"></i>No HDB resale town${hReg==="all"?"":" / outside region"}</span>${hdbPartial(qb)?'<span class="mm-flag">Quarter in progress</span>':""}`;
+    const rows=towns.filter(inReg).map(t=>({k:t,name:title(t),v:metric==="vol"?N(t):PX(t)})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
+    rank(rows,(metric==="vol"?"Most flats sold":"Highest average price")+" · "+SL,v=>metric==="vol"?v.toLocaleString():fmtK(v),true,shade);
   } else {
-    let maxv=1; for(const d of dists)for(let i=pteFirst;i<=pteLast;i++)maxv=Math.max(maxv,pv(d,i));
+    let maxv=1; if(multi){for(const d of dists)maxv=Math.max(maxv,V(d));}else for(const d of dists)for(let i=pteFirst;i<=pteLast;i++)maxv=Math.max(maxv,pv(d,i));
     const MAXR=40, rad=v=>v?Math.max(3,Math.sqrt(v/maxv)*MAXR):0;
     svg.querySelectorAll("path.town").forEach(p=>{p.style.fill="";p.classList.remove("sel","out");});
-    svg.querySelectorAll("circle").forEach(c=>{const d=c.dataset.dist,v=pv(d,qi),rr=rad(v);c.setAttribute("r",rr);c.classList.toggle("sel",d===sel);
+    svg.querySelectorAll("circle").forEach(c=>{const d=c.dataset.dist,v=V(d),rr=rad(v);c.setAttribute("r",rr);c.classList.toggle("sel",d===sel);
       const t=svg.querySelector(`text.lbl-dist[data-d="${d}"]`);t.setAttribute("y",+c.getAttribute("cy")+(rr>11?3:-rr-3));t.style.display=v?"":"none";});
     const nice=v=>{const p=Math.pow(10,Math.floor(Math.log10(Math.max(1,v))));return Math.max(1,Math.round(v/p)*p);};
     const lv=[nice(maxv/12),nice(maxv/3),nice(maxv)];
-    $("mmLegend").innerHTML=`<span>Bubble size = private units sold, all sale types${pSeg==="all"?"":" ("+pSeg+")"}</span><svg width="118" height="40" aria-hidden="true">${lv.map((v,i)=>{const rr=rad(v)*.55;return `<circle cx="${[12,42,90][i]}" cy="${38-rr}" r="${rr}" fill="var(--gold)" fill-opacity=".62" stroke="var(--navy)"/>`}).join("")}</svg><span>${lv.map(v=>v.toLocaleString()).join(" · ")} units</span>${qi===pteLast?'<span class="mm-flag">Latest quarter, still filling in</span>':""}`;
-    const rows=dists.map(d=>({k:d,name:"D"+d+" "+(DNAME[d]||""),v:pv(d,qi)})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
-    rank(rows,"Most units sold · "+Q[qi],v=>v.toLocaleString(),false);
+    $("mmLegend").innerHTML=`<span>Bubble size = private units sold, all sale types${pSeg==="all"?"":" ("+pSeg+")"}, ${SL}</span><svg width="118" height="40" aria-hidden="true">${lv.map((v,i)=>{const rr=rad(v)*.55;return `<circle cx="${[12,42,90][i]}" cy="${38-rr}" r="${rr}" fill="var(--gold)" fill-opacity=".62" stroke="var(--navy)"/>`}).join("")}</svg><span>${lv.map(v=>v.toLocaleString()).join(" · ")} units</span>${qb===pteLast?'<span class="mm-flag">Latest quarter, still filling in</span>':""}`;
+    const rows=dists.map(d=>({k:d,name:"D"+d+" "+(DNAME[d]||""),v:V(d)})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
+    rank(rows,"Most units sold · "+SL,v=>v.toLocaleString(),false);
   }
 }
 
@@ -570,10 +593,10 @@ function render(){renderAll();}
 
 function kpi(k,v,sub){return `<div class="mm-tile"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${sub||""}</div></div>`;}
 let rankAll=false;
-function rank(rows,ttl,fmt,colored){
+function rank(rows,ttl,fmt,colored,shadeFn){
   const mx=rows[0]?rows[0].v:1;$("mmRankTitle").textContent=ttl;
   const TOP=10, mb=$("mmRankMore"); mb.hidden=rows.length<=TOP; mb.textContent=rankAll?"Show top 10 only":"Show all "+rows.length;
-  $("mmRank").innerHTML=rows.map((r,i)=>`<li data-k="${esc(r.k)}" class="${r.k===sel?"sel":""}"${!rankAll&&i>=TOP&&r.k!==sel?" hidden":""}><span class="n">${i+1}</span><span>${esc(r.name)}</span><span class="v">${fmt(r.v)}</span><span class="bar" style="width:${Math.max(2,r.v/mx*100)}%;background:${colored?ramp(r.v):"var(--gold)"}"></span></li>`).join("")||'<li style="cursor:default">No transactions for this filter</li>';
+  $("mmRank").innerHTML=rows.map((r,i)=>`<li data-k="${esc(r.k)}" class="${r.k===sel?"sel":""}"${!rankAll&&i>=TOP&&r.k!==sel?" hidden":""}><span class="n">${i+1}</span><span>${esc(r.name)}</span><span class="v">${fmt(r.v)}</span><span class="bar" style="width:${Math.max(2,r.v/mx*100)}%;background:${colored?(shadeFn||ramp)(r.v):"var(--gold)"}"></span></li>`).join("")||'<li style="cursor:default">No transactions for this filter</li>';
 }
 function bars(){
   const pte=layer==="pte", idx=[];for(let i=pte?pteFirst:0;i<=(pte?pteLast:hdbLast);i++)idx.push(i);
