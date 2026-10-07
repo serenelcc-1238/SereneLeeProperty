@@ -313,7 +313,7 @@
   </div>
 </section>
 
-<!-- INSTAGRAM -->
+<!-- INSTAGRAM: latest posts Buffer published to @serene.leecc (data/instagram.json, refreshed daily) -->
 <section>
   <div class="container">
     <div class="section-band">
@@ -321,13 +321,24 @@
         <span class="eyebrow">Follow Along</span>
         <h2 style="font-size:1.6rem;margin:0;">On Instagram</h2>
       </div>
+      <a href="https://www.instagram.com/serene.leecc/" target="_blank" rel="noopener" class="see-all" data-hm="ig_follow">Follow @serene.leecc &rarr;</a>
     </div>
-    <div style="max-width:270px;margin:0 auto;">
-      <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DbVtgYOzl2Y/" data-instgrm-version="14" style="background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:270px; min-width:220px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);">
-      </blockquote>
-    </div>
+    <div class="ig-grid" id="igGrid"></div>
   </div>
 </section>
+<script>
+(function(){
+  var g=document.getElementById("igGrid"); if(!g) return;
+  var MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+  fetch("data/instagram.json",{cache:"no-cache"}).then(function(r){return r.json();}).then(function(d){
+    var ps=(d.posts||[]).slice(0,6); if(!ps.length) throw 0;
+    g.innerHTML=ps.map(function(p){var dt=new Date(p.sentAt);
+      return '<a class="ig-tile" href="'+esc(p.url)+'" target="_blank" rel="noopener" data-ig="'+esc(p.id)+'"><span class="ig-img"><img src="'+esc(p.img)+'" alt="'+esc(p.caption||"Instagram post by Serene Lee")+'" loading="lazy">'+(p.type==="reel"?'<span class="ig-reel">&#9654; Reel</span>':'')+'</span><span class="ig-cap">'+esc(p.caption||"")+'</span><span class="ig-date">'+dt.getDate()+" "+MON[dt.getMonth()]+" "+dt.getFullYear()+' · View on Instagram</span></a>';}).join("");
+    g.addEventListener("click",function(e){var a=e.target.closest("a[data-ig]");if(a)try{window.posthog&&posthog.capture("instagram_post_click",{post:a.getAttribute("data-ig")});}catch(x){}});
+  }).catch(function(){g.innerHTML='<p style="color:var(--muted)">See my latest posts on <a href="https://www.instagram.com/serene.leecc/" target="_blank" rel="noopener">Instagram @serene.leecc</a>.</p>';});
+})();
+</script>
 
 <!-- TESTIMONIAL SNIPPET -->
 <section class="testi-band">
@@ -373,7 +384,6 @@
   <svg width="30" height="30" viewBox="0 0 24 24" fill="white"><path d="M17.6 6.32A7.85 7.85 0 0 0 12.04 4c-4.34 0-7.87 3.53-7.87 7.87 0 1.39.36 2.74 1.05 3.93L4 20l4.32-1.13a7.86 7.86 0 0 0 3.72.95h.01c4.34 0 7.87-3.53 7.87-7.87 0-2.1-.82-4.08-2.32-5.63zm-5.56 12.1h-.01a6.5 6.5 0 0 1-3.32-.91l-.24-.14-2.47.65.66-2.41-.16-.25a6.53 6.53 0 0 1-1-3.49c0-3.61 2.94-6.55 6.56-6.55a6.5 6.5 0 0 1 4.63 1.92 6.5 6.5 0 0 1 1.92 4.63c0 3.62-2.94 6.55-6.57 6.55z"/></svg>
 </a>
 
-<script async src="//www.instagram.com/embed.js"></script>
 <script src="main.js"></script>
 <script src="chatbot.js"></script>
 </body>

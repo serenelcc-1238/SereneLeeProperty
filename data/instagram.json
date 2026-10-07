@@ -1,0 +1,39 @@
+{
+ "account": "serene.leecc",
+ "profile": "https://www.instagram.com/serene.leecc/",
+ "updated": "2026-10-07T19:00:00Z",
+ "posts": [
+  {
+   "id": "6ab3d62df912ec25ba61d9d3",
+   "url": "https://www.instagram.com/p/Dd3tqMhFgo4/",
+   "caption": "Your HDB and your condo have the same hidden expiry date. Most owners never check it.",
+   "sentAt": "2026-09-29T12:03:01.145Z",
+   "src": "https://sereneleeproperty.com/assets/lease-decay-infographic.jpg",
+   "type": "post"
+  },
+  {
+   "id": "6ab3d62e61c6feefc7eeba52",
+   "url": "https://www.instagram.com/p/DdxfOv4FcNc/",
+   "caption": "Sell first or buy first? Get the order wrong and it can cost you months — or a forced rental in between.",
+   "sentAt": "2026-09-27T02:00:58.350Z",
+   "src": "https://sereneleeproperty.com/assets/sell-buy-first-guide-infographic.jpg",
+   "type": "post"
+  },
+  {
+   "id": "6ab3d62af912ec25ba61d98f",
+   "url": "https://www.instagram.com/p/DduzmokDe2T/",
+   "caption": "5 signs you're not just tired of your flat — you're actually ready to upgrade.",
+   "sentAt": "2026-09-26T01:01:20.373Z",
+   "src": "https://buffer-media-uploads.s3.amazonaws.com/6ab3b5877214dd7a8a3a58a4/6ab3d9fc92c97e7ef1717fcd",
+   "type": "post"
+  },
+  {
+   "id": "6ab3d629c81095d33c99085c",
+   "url": "https://www.instagram.com/p/DdpjF-oFH5h/",
+   "caption": "Freehold in D11, and not the price you're picturing.",
+   "sentAt": "2026-09-24T00:00:44.077Z",
+   "src": "https://sereneleeproperty.com/assets/serra-residences-preview.jpg",
+   "type": "post"
+  }
+ ]
+}
