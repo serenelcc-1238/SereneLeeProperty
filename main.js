@@ -60,6 +60,18 @@ document.addEventListener('DOMContentLoaded', function () {
      needed for touchscreens and keyboard users, and for mobile where the
      nav is already a vertical list. */
   var navDropdowns = document.querySelectorAll('.nav-dropdown');
+
+  /* Add "Market Map" to the Tools menu on every page from here, so the
+     other HTML pages don't each need editing. Skipped where the page
+     already has the link written in (market-map.html itself). */
+  document.querySelectorAll('.nav-dropdown-menu').forEach(function (menu) {
+    if (menu.querySelector('a[href="market-map.html"]')) return;
+    var mm = document.createElement('a');
+    mm.href = 'market-map.html';
+    mm.textContent = 'Market Map';
+    menu.appendChild(mm);
+  });
+
   navDropdowns.forEach(function (dropdown) {
     var toggleBtn = dropdown.querySelector('.nav-dropdown-toggle');
     if (!toggleBtn) return;

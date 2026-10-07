@@ -1,0 +1,14 @@
+# Files in this folder that should NOT be served on the public website.
+# (Cloudflare uploads everything else in this folder as the site.)
+.git
+.github
+.wrangler
+node_modules
+.assetsignore
+worker.js
+wrangler.jsonc
+package.json
+package-lock.json
+*.md
+*.gs
+scripts
