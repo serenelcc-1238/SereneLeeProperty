@@ -106,6 +106,11 @@
 .md-filters .filter-group{min-width:0;max-width:100%}
 .md-filters .sort-select{min-width:0;max-width:100%}
 .md-filters input{border:1px solid var(--line);border-radius:10px;padding:9px 12px;font:inherit;min-width:0;width:220px;max-width:100%}
+.md-sum{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 0 12px}
+@media(max-width:700px){.md-sum{grid-template-columns:1fr 1fr}}
+.md-sum div{background:var(--cream);border-radius:10px;padding:9px 12px;min-width:0}
+.md-sum .k{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.md-sum .v{font:600 1.15rem/1.3 'Fraunces',Georgia,serif;color:var(--navy-900);font-variant-numeric:tabular-nums}
 .md-count{font-size:.86rem;color:var(--muted);margin:0 0 10px}
 .md-tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
 .md-table{width:100%;border-collapse:collapse;font-size:.78rem}
@@ -150,6 +155,7 @@
         <div class="filter-group"><label class="filter-group-label" for="mdSort">Sort:</label><select id="mdSort" class="sort-select"><option value="new">Newest first</option><option value="high">Highest price</option><option value="psf">Highest $psf</option></select></div>
         <input type="search" id="mdQ" placeholder="Search block or street" aria-label="Search block or street">
       </div>
+      <div class="md-sum" id="mdSum"></div>
       <p class="md-count" id="mdCount"></p>
       <div class="md-tablewrap"><table class="md-table"><thead><tr><th>Month</th><th>Town</th><th>Block &amp; street</th><th>Flat type</th><th>Floor</th><th class="r">Sqft</th><th>Model</th><th>Lease</th><th class="r">Price</th><th class="r">$psf</th></tr></thead><tbody id="mdBody"></tbody></table></div>
       <button type="button" class="btn btn-navy md-more" id="mdMore" hidden>Show more</button>
@@ -179,9 +185,9 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 const fmt$=v=>"$"+Math.round(v).toLocaleString();
 const SQFT=10.7639, PAGE=50;
 const track=(ev,props)=>{try{window.posthog&&posthog.capture(ev,props)}catch(e){}};
-let D=[], shown=PAGE, LAST="";
+let D=[], TOT=[], shown=PAGE, LAST="";
 fetch("data/hdb/million.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw 0;return r.json();}).then(m=>{
-  D=m.deals; LAST=m.last_month;
+  D=m.deals; TOT=m.totals||[]; LAST=m.last_month;
   const yr=LAST.slice(0,4), ty=D.filter(d=>d[0].startsWith(yr)), lastFull=prevMonth(LAST), lm=D.filter(d=>d[0]===lastFull);
   const top=ty.slice().sort((a,b)=>b[9]-a[9])[0], towns={};ty.forEach(d=>towns[d[1]]=(towns[d[1]]||0)+1);
   const tt=Object.entries(towns).sort((a,b)=>b[1]-a[1])[0];
@@ -246,7 +252,11 @@ function list(){
   let r=D.filter(d=>(!y||d[0].startsWith(y))&&(!t||d[1]===t)&&(!f||d[4]===f)&&(!q||(d[2]+" "+d[3]).includes(q)));
   const psf=d=>d[9]/(d[6]*SQFT);
   if(s==="high")r=r.slice().sort((a,b)=>b[9]-a[9]);else if(s==="psf")r=r.slice().sort((a,b)=>psf(b)-psf(a));
-  $("mdCount").textContent=r.length.toLocaleString()+" deal"+(r.length===1?"":"s")+(y?" in "+y:"")+(t?" in "+title(t):"")+(f?" · "+FT[f]:"")+(r.length?" · highest "+fmt$(Math.max(...r.map(d=>d[9]))):"");
+  const all=TOT.reduce((a,x)=>a+((!y||x[0].startsWith(y))&&(!t||x[1]===t)&&(!f||x[2]===f)?x[3]:0),0);
+  const mill=D.filter(d=>(!y||d[0].startsWith(y))&&(!t||d[1]===t)&&(!f||d[4]===f)).length;
+  const scope=(t?title(t):"All towns")+(f?" · "+FT[f]:"")+" · "+(y||"all years");
+  $("mdSum").innerHTML=`<div><div class="k">Total number of transactions</div><div class="v">${all.toLocaleString()}</div></div><div><div class="k">$1M and above</div><div class="v">${mill.toLocaleString()}</div></div><div><div class="k">Share at $1M+</div><div class="v">${all?(mill/all*100).toFixed(1)+"%":"–"}</div></div><div><div class="k">Highest price</div><div class="v">${mill?fmt$(Math.max(...D.filter(d=>(!y||d[0].startsWith(y))&&(!t||d[1]===t)&&(!f||d[4]===f)).map(d=>d[9]))):"–"}</div></div>`;
+  $("mdCount").textContent="All HDB resales and million-dollar resales for: "+scope+(q?" · showing "+r.length.toLocaleString()+" matching \""+$("mdQ").value.trim()+"\"":"")+(y===LAST.slice(0,4)||!y?" ("+ym(LAST)+" still in progress)":"")+".";
   $("mdBody").innerHTML=r.slice(0,shown).map(d=>{const band=String(d[5]).padStart(2,"0")+"–"+String(d[5]+2).padStart(2,"0");
     const link="market-map.html?blk="+encodeURIComponent(d[2])+"&street="+encodeURIComponent(title(d[3]));
     return `<tr><td>${ym(d[0])}</td><td class="wrap" style="min-width:0">${esc(title(d[1]))}</td><td class="wrap"><a href="${link}" title="See every resale in this block">Blk ${esc(d[2])} ${esc(title(d[3]))}</a></td><td>${FT[d[4]]||d[4]}</td><td>${band}</td><td class="r">${Math.round(d[6]*SQFT).toLocaleString()}</td><td class="wrap" style="min-width:0">${esc(d[7])}</td><td>${d[8]}</td><td class="r"><b>${fmt$(d[9])}</b></td><td class="r">${fmt$(psf(d))}</td></tr>`;}).join("")||'<tr><td colspan="10">No million-dollar resales for this filter.</td></tr>';

@@ -189,6 +189,15 @@ def build_hdb(rows, now=None):
             index.setdefault(st, [t, []])[1].extend(sorted(blocks))
     files = {slug(t): {"town": t, "since": since, "models": model_list, "streets": streets}
              for t, streets in detail.items()}
+    # All resale deals in the window, counted by month / town / flat type (for "x of y total" on the million page).
+    tot = {}
+    for t, streets in detail.items():
+        for blocks in streets.values():
+            for deals in blocks.values():
+                for d in deals:
+                    k = (d[0], t, d[1])
+                    tot[k] = tot.get(k, 0) + 1
+    tot_rows = [[m, t, f, n] for (m, t, f), n in sorted(tot.items())]
     # Million-dollar resale flats (price >= $1,000,000) in the same 36-month window, newest first.
     mill = []
     for t, streets in detail.items():
@@ -200,7 +209,8 @@ def build_hdb(rows, now=None):
     mill.sort(key=lambda x: (x[0], x[9]), reverse=True)
     files["million"] = {"since": since, "last_month": last, "threshold": 1_000_000,
                         "fields": ["month", "town", "block", "street", "flat_type", "storey_from", "sqm", "model", "lease_start", "price"],
-                        "deals": mill}
+                        "deals": mill,
+                        "totals": tot_rows}
     yr = last[:4]
     this_year = [d for d in mill if d[0][:4] == yr]
     by_month = {}
