@@ -178,6 +178,8 @@
 .mm-notes{margin-top:24px;font-size:.82rem;color:var(--muted);display:grid;gap:8px;max-width:860px}
 .mm-notes a{color:var(--navy)}
 .mm-loading{padding:60px 0;text-align:center;color:var(--muted)}
+.mm-src{font-size:.74rem;color:var(--muted);margin:10px 0 0;line-height:1.45}
+.mm-src a{color:inherit}
 </style>
 
 <div class="page-hero container">
@@ -288,17 +290,20 @@
       <div class="mm-card mm-mapcard" id="mmMapCard">
         <svg class="mm-map hdb" id="mmMap" viewBox="0 0 1000 560" role="img" aria-label="Map of Singapore shaded by property transactions"></svg>
         <div class="mm-legend" id="mmLegend"></div>
+        <p class="mm-src" data-src="map"></p>
         <div class="mm-tip" id="mmTip"></div>
       </div>
       <aside class="mm-card mm-side">
         <h3 id="mmRankTitle">Ranking</h3>
         <ol class="mm-rank" id="mmRank"><li class="mm-loading">Loading…</li></ol>
+        <p class="mm-src" data-src="rank"></p>
       </aside>
     </div>
 
     <div class="mm-card mm-trend">
       <h3 id="mmTrendTitle">Transactions per quarter</h3>
       <div class="mm-scroll"><svg class="mm-bars" id="mmBars" viewBox="0 0 1000 200"></svg></div>
+      <p class="mm-src" data-src="trend"></p>
     </div>
 
     <div class="mm-notes">
@@ -462,6 +467,7 @@ function render(){
     rank(rows,"Most units sold · "+Q[qi],v=>v.toLocaleString(),false);
   }
   bars();
+  setSources();
 }
 function rank(rows,ttl,fmt,colored){
   const mx=rows[0]?rows[0].v:1;$("mmRankTitle").textContent=ttl;
@@ -488,6 +494,16 @@ function showOnMap(l,key){setLayer(l);sel=key;qi=l==="pte"?pteLast:defaultHdbQ()
 
 /* ---------------- Check my block / condo ---------------- */
 const cache={}, CAP=12;
+const SRC_HDB='<a href="https://data.gov.sg/datasets/d_8b84c4ee58e3cfc0ece0d773c8ca6abc/view" target="_blank" rel="noopener">HDB, Resale flat prices based on registration date from Jan 2017 onwards (data.gov.sg)</a>';
+const SRC_URA='<a href="https://eservice.ura.gov.sg/maps/api/" target="_blank" rel="noopener">URA Data Service, private residential transactions from caveats lodged</a>';
+const SRC_MAP='Map boundaries: URA Master Plan 2019 planning areas (data.gov.sg).';
+function srcLine(kind,extra){const d=DATA?(kind==="hdb"?DATA.hdb.fetched:DATA.ura.fetched)||DATA.generated:"";
+  return `<p class="mm-src">Source: ${kind==="hdb"?SRC_HDB:SRC_URA}${d?", retrieved "+fmtDate(d):""}.${extra?" "+extra:""}</p>`;}
+function setSources(){const pte=layer==="pte",k=pte?"ura":"hdb";
+  const note={map:pte?"Bubbles placed at the average location of each district's projects. "+SRC_MAP:SRC_MAP,rank:"",
+    trend:pte?"Orange bar: latest quarter, still filling in as caveats are lodged.":"Orange bar: quarter in progress."};
+  document.querySelectorAll("[data-src]").forEach(el=>{const w=el.dataset.src;
+    el.outerHTML=srcLine(k,note[w]).replace('<p class="mm-src">',`<p class="mm-src" data-src="${w}">`);});}
 function moreBtn(n,txt){return `<p class="mm-msg" style="margin:0">${n} deal${n>1?"s":""} ${txt}, newest first${n>CAP?`. Showing the latest ${CAP}. <button type="button" class="mm-linkbtn" data-more>Show all ${n}</button>`:"."}</p>`;}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-more]");if(!b)return;const t=b.closest(".mm-res").querySelector(".mm-table");const hid=t.querySelectorAll("tr[hidden]");if(hid.length){hid.forEach(r=>{r.hidden=false;r.dataset.x=1;});b.textContent="Show fewer";}else{t.querySelectorAll("tr[data-x]").forEach(r=>r.hidden=true);b.textContent="Show all "+t.querySelectorAll("tbody tr").length;}});
 function getJSON(path){if(!cache[path])cache[path]=fetch(path,{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();});return cache[path];}
@@ -563,6 +579,7 @@ async function showHdb(street,blk,unit){
     <div class="mm-tiles">${you}${tiles.join("")}</div>
     <div class="mm-tablewrap"><table class="mm-table"><thead><tr><th>Month</th><th>Flat type</th><th>Floors</th><th class="r">Size</th><th>Model</th><th class="r">Price</th><th class="r">$psf</th></tr></thead><tbody>${table}</tbody></table></div>
     ${moreBtn(rows.length,"in this block since "+ym(f.since))}
+    ${srcLine("hdb","Block deals cover the last 3 years; town averages come from the same dataset.")}
     <div class="mm-res-cta"><p>Want to know what <b>Blk ${esc(blk)}${esc(unitTxt)}</b> could sell for today, after your unit's condition and facing? I'll send you a free valuation.</p>
       <a class="btn btn-gold" target="_blank" rel="noopener" id="lkWa" href="${WA(`Hi Serene, I checked Blk ${blk} ${title(street)}${unitTxt} on your market map. Could you give me a valuation?`)}">Get my free valuation</a></div></div>`;
   $("lkMap").onclick=()=>showOnMap("hdb",town);
@@ -575,7 +592,7 @@ async function showStreet(street){
   const blocks=f.streets[street]||{};
   const rows=Object.entries(blocks).map(([b,rs])=>`<tr><td><button type="button" class="mm-linkbtn" data-blk="${esc(b)}">Blk ${esc(b)}</button></td><td class="r">${rs.length}</td><td>${ym(rs[0][0])}</td><td>${FT[rs[0][1]]}</td><td class="r">${fmt$(rs[0][6])}</td></tr>`).join("");
   out.innerHTML=`<div class="mm-res"><div class="mm-res-head"><h3>${esc(title(street))}</h3><span class="meta">${esc(title(town))} · blocks with resale deals since ${ym(f.since)}</span></div>
-    <div class="mm-tablewrap"><table class="mm-table"><thead><tr><th>Block</th><th class="r">Deals</th><th>Latest</th><th>Flat type</th><th class="r">Price</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+    <div class="mm-tablewrap"><table class="mm-table"><thead><tr><th>Block</th><th class="r">Deals</th><th>Latest</th><th>Flat type</th><th class="r">Price</th></tr></thead><tbody>${rows}</tbody></table></div>${srcLine("hdb")}</div>`;
   out.querySelectorAll("[data-blk]").forEach(b=>b.onclick=()=>{$("lkBlk").value=b.dataset.blk;showHdb(street,b.dataset.blk,$("lkUnit").value.trim());});
   track("market_map_lookup",{kind:"hdb",town,found:false});
 }
@@ -619,6 +636,7 @@ async function showPte(p,unit){
     <div class="mm-tiles">${you}${tiles.join("")}</div>
     <div class="mm-tablewrap"><table class="mm-table"><thead><tr><th>Month</th><th>Sale</th><th>Floors</th><th class="r">Size</th><th class="r">Price</th><th class="r">$psf</th></tr></thead><tbody>${table}</tbody></table></div>
     ${moreBtn(rows.length,"in the last 5 years")}
+    ${srcLine("ura","$psf is price divided by the recorded floor area.")}
     <div class="mm-res-cta"><p>Want to know what <b>${esc(title(name))}${esc(unitTxt)}</b> could fetch today, or how it compares with new launches nearby? I'll send you a free analysis.</p>
       <a class="btn btn-gold" target="_blank" rel="noopener" id="lkWa" href="${WA(`Hi Serene, I checked ${title(name)}${unitTxt} on your market map. Could you give me a valuation?`)}">Get my free valuation</a></div></div>`;
   $("lkMap").onclick=()=>showOnMap("pte",d);
