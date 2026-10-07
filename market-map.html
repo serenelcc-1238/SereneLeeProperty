@@ -195,6 +195,7 @@
 .mm-ctrl .filter-group{min-width:0;max-width:100%}
 .mm-ctrl .sort-select{min-width:0;max-width:100%}
 @media(max-width:520px){.mm-ctrl .filter-group:has(select){flex:1 1 100%;flex-wrap:nowrap}.mm-ctrl .sort-select{flex:1}}
+.mm-custom .sort-select{padding-top:6px;padding-bottom:6px}
 .mm-quick .filter-chip{font-size:.8rem;padding:6px 12px}
 .mm-qlabel.span{font-size:1.15rem;min-width:0}
 .mm-hint{font-size:.78rem;color:var(--muted);margin:10px 0 0 6px}
@@ -269,6 +270,13 @@
           <button type="button" class="filter-chip active" data-span="q">Latest quarter</button>
           <button type="button" class="filter-chip" data-span="ytd">Year to date</button>
           <button type="button" class="filter-chip" data-span="12m">Last 12 months</button>
+          <button type="button" class="filter-chip" data-span="custom">Custom</button>
+        </div>
+        <div class="filter-group mm-custom" id="mmCustom" hidden>
+          <label class="filter-group-label" for="mmFrom">From</label>
+          <select id="mmFrom" class="sort-select"></select>
+          <label class="filter-group-label" for="mmTo">to</label>
+          <select id="mmTo" class="sort-select"></select>
         </div>
       </div>
       <div class="mm-ctrl mm-ctrl2">
@@ -453,15 +461,16 @@ const ramp=v=>{const b=breaks();let k=0;while(k<b.length&&v>=b[k])k++;return "va
    M  = section 1, the island-wide map + ranking (market, quarter, region, shading)
    Dd = section 2, the visitor's own area: KPI figures + trend chart (estate/district, flat/property type, sale type)
    The data helpers above read shared globals, so each panel loads its own state with useMap()/useData() first. */
-const M={layer:"hdb",qi:0,metric:"vol",hReg:"all",pSeg:"all",span:"q"};
+const M={layer:"hdb",qi:0,metric:"vol",hReg:"all",pSeg:"all",span:"q",from:0,to:0};
 const Dd={layer:"hdb",qi:0,sel:null,hFt:"all",pPt:"all",sale:"all",metric:"vol"};
 function useMap(){layer=M.layer;qi=M.qi;metric=M.metric;hReg=M.hReg;pSeg=M.pSeg;hFt="all";pPt="all";sale="all";sel=Dd.layer===M.layer?Dd.sel:null;}
 function useData(){layer=Dd.layer;qi=Dd.qi;metric=Dd.metric;hReg="all";pSeg="all";hFt=Dd.hFt;pPt=Dd.pPt;sale=Dd.sale;sel=Dd.sel;}
 /* Map period: one quarter, or a span ending at the map quarter (Year to date / Last 12 months). */
-function mSpan(){const b=M.qi,lo=M.layer==="pte"?pteFirst:0;let a=b;
+function mSpan(){if(M.span==="custom")return [Math.min(M.from,M.to),Math.max(M.from,M.to)];
+  const b=M.qi,lo=M.layer==="pte"?pteFirst:0;let a=b;
   if(M.span==="12m")a=b-3;else if(M.span==="ytd"){const y=Q[b].slice(0,4);while(a-1>=lo&&Q[a-1].slice(0,4)===y)a--;}
   return [Math.max(lo,a),b];}
-function spanLabel(a,b){return a===b?Q[b]:Q[a].slice(0,4)===Q[b].slice(0,4)?Q[a]+"–"+Q[b].slice(5):Q[a]+" – "+Q[b];}
+function spanLabel(a,b){if(a!==b&&Q[a].endsWith("Q1")&&Q[b].endsWith("Q4"))return Q[a].slice(0,4)===Q[b].slice(0,4)?Q[a].slice(0,4)+" full year":Q[a].slice(0,4)+"–"+Q[b].slice(0,4);return a===b?Q[b]:Q[a].slice(0,4)===Q[b].slice(0,4)?Q[a]+"–"+Q[b].slice(5):Q[a]+" – "+Q[b];}
 function mN(t,a,b){let n=0;for(let i=a;i<=b;i++)n+=hn(t,i);return n;}
 function mP(t,a,b){let n=0,s=0;for(let i=a;i<=b;i++){const k=hn(t,i);n+=k;s+=k*hp(t,i);}return n?s/n:0;}
 function mV(d,a,b){let n=0;for(let i=a;i<=b;i++)n+=pv(d,i);return n;}
@@ -493,7 +502,12 @@ function build(){
   $("mmRange").addEventListener("input",e=>single(+e.target.value));
   $("mmPrev").onclick=()=>single(M.qi-1);
   $("mmNext").onclick=()=>single(M.qi+1);
-  group("[data-span]",b=>{M.span=b.dataset.span;M.qi=defQ(M.layer);track("market_map_filter",{period:M.span});});
+  group("[data-span]",b=>{const was=mSpan();M.span=b.dataset.span;M.qi=defQ(M.layer);
+    if(M.span==="custom"){M.from=was[0];M.to=was[1];}track("market_map_filter",{period:M.span});});
+  const fillQ=()=>{const lo=M.layer==="pte"?pteFirst:0,hi=M.layer==="pte"?pteLast:hdbLast,o=[];for(let i=hi;i>=lo;i--)o.push(`<option value="${i}">${Q[i]}${(M.layer==="pte"?i===pteLast:hdbPartial(i))?" (in progress)":""}</option>`);$("mmFrom").innerHTML=$("mmTo").innerHTML=o.join("");};
+  M.fillQ=fillQ;
+  $("mmFrom").onchange=e=>{M.from=+e.target.value;if(M.from>M.to)M.to=M.from;renderAll();};
+  $("mmTo").onchange=e=>{M.to=+e.target.value;if(M.to<M.from)M.from=M.to;renderAll();};
   ts.onchange=()=>{Dd.sel=ts.value||null;if(Dd.sel)track("market_map_area",{layer:"hdb",area:Dd.sel,via:"filter"});renderAll();};
   ds.onchange=()=>{Dd.sel=ds.value||null;if(Dd.sel)track("market_map_area",{layer:"pte",area:Dd.sel,via:"filter"});renderAll();};
   $("mmFt").onchange=e=>{Dd.hFt=e.target.value;track("market_map_filter",{flat_type:Dd.hFt});renderAll();};
@@ -530,6 +544,9 @@ function renderMap(){
   const pte=layer==="pte", lo=pte?pteFirst:0, hi=pte?pteLast:hdbLast;
   M.qi=qi=Math.min(hi,Math.max(lo,qi));
   const r=$("mmRange");r.min=lo;r.max=hi;r.value=qi;
+  const cu=M.span==="custom"; $("mmCustom").hidden=!cu;
+  if(cu){if(M.fillLayer!==M.layer){M.fillQ();M.fillLayer=M.layer;}const lo2=pte?pteFirst:0,hi2=pte?pteLast:hdbLast;M.from=Math.min(hi2,Math.max(lo2,M.from));M.to=Math.min(hi2,Math.max(lo2,M.to));$("mmFrom").value=M.from;$("mmTo").value=M.to;}
+  ["mmPrev","mmNext","mmRange"].forEach(id=>$(id).style.opacity=cu?.4:"");
   const [qa,qb]=mSpan(), SL=spanLabel(qa,qb), multi=qa!==qb;
   $("mmQ").textContent=SL; $("mmQ").classList.toggle("span",multi);
   const N=t=>mN(t,qa,qb), PX=t=>mP(t,qa,qb), V=d=>mV(d,qa,qb);
