@@ -108,9 +108,9 @@
 .md-filters input{border:1px solid var(--line);border-radius:10px;padding:9px 12px;font:inherit;min-width:0;width:220px;max-width:100%}
 .md-sum{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 0 12px}
 @media(max-width:700px){.md-sum{grid-template-columns:1fr 1fr}}
-.md-sum div{background:var(--cream);border-radius:10px;padding:9px 12px;min-width:0}
-.md-sum .k{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
-.md-sum .v{font:600 1.15rem/1.3 'Fraunces',Georgia,serif;color:var(--navy-900);font-variant-numeric:tabular-nums}
+.md-sum>div{background:var(--cream);border-radius:10px;padding:7px 12px;min-width:0;display:flex;flex-direction:column;justify-content:space-between;gap:2px}
+.md-sum .k{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.md-sum .v{font:600 1.05rem/1.25 'Fraunces',Georgia,serif;color:var(--navy-900);font-variant-numeric:tabular-nums}
 .md-count{font-size:.86rem;color:var(--muted);margin:0 0 10px}
 .md-tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
 .md-table{width:100%;border-collapse:collapse;font-size:.78rem}
@@ -255,7 +255,7 @@ function list(){
   const all=TOT.reduce((a,x)=>a+((!y||x[0].startsWith(y))&&(!t||x[1]===t)&&(!f||x[2]===f)?x[3]:0),0);
   const mill=D.filter(d=>(!y||d[0].startsWith(y))&&(!t||d[1]===t)&&(!f||d[4]===f)).length;
   const scope=(t?title(t):"All towns")+(f?" · "+FT[f]:"")+" · "+(y||"all years");
-  $("mdSum").innerHTML=`<div><div class="k">Total number of transactions</div><div class="v">${all.toLocaleString()}</div></div><div><div class="k">$1M and above</div><div class="v">${mill.toLocaleString()}</div></div><div><div class="k">Share at $1M+</div><div class="v">${all?(mill/all*100).toFixed(1)+"%":"–"}</div></div><div><div class="k">Highest price</div><div class="v">${mill?fmt$(Math.max(...D.filter(d=>(!y||d[0].startsWith(y))&&(!t||d[1]===t)&&(!f||d[4]===f)).map(d=>d[9]))):"–"}</div></div>`;
+  $("mdSum").innerHTML=`<div><div class="k" title="Total number of HDB resale transactions">Total transactions</div><div class="v">${all.toLocaleString()}</div></div><div><div class="k">$1M and above</div><div class="v">${mill.toLocaleString()}</div></div><div><div class="k">Share at $1M+</div><div class="v">${all?(mill/all*100).toFixed(1)+"%":"–"}</div></div><div><div class="k">Highest price</div><div class="v">${mill?fmt$(Math.max(...D.filter(d=>(!y||d[0].startsWith(y))&&(!t||d[1]===t)&&(!f||d[4]===f)).map(d=>d[9]))):"–"}</div></div>`;
   $("mdCount").textContent="All HDB resales and million-dollar resales for: "+scope+(q?" · showing "+r.length.toLocaleString()+" matching \""+$("mdQ").value.trim()+"\"":"")+(y===LAST.slice(0,4)||!y?" ("+ym(LAST)+" still in progress)":"")+".";
   $("mdBody").innerHTML=r.slice(0,shown).map(d=>{const band=String(d[5]).padStart(2,"0")+"–"+String(d[5]+2).padStart(2,"0");
     const link="market-map.html?blk="+encodeURIComponent(d[2])+"&street="+encodeURIComponent(title(d[3]));
