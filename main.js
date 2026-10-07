@@ -80,6 +80,23 @@ document.addEventListener('DOMContentLoaded', function () {
     menu.appendChild(md);
   });
 
+  /* Social links in every page footer (Instagram, Facebook, TikTok). */
+  var SOCIAL = [
+    ['IG', 'Instagram @serene.leecc', 'https://www.instagram.com/serene.leecc/'],
+    ['FB', 'Facebook: Serene Lee Property', 'https://www.facebook.com/share/1HpnqpvJZR/'],
+    ['TT', 'TikTok @serene.lee127', 'https://www.tiktok.com/@serene.lee127']
+  ];
+  document.querySelectorAll('footer .legal-box').forEach(function (box) {
+    if (box.querySelector('.footer-social')) return;
+    var row = document.createElement('p');
+    row.className = 'footer-social';
+    row.innerHTML = '<span>Follow along:</span>' + SOCIAL.map(function (x) {
+      return '<a href="' + x[2] + '" target="_blank" rel="noopener" aria-label="' + x[1] + '" title="' + x[1] + '">' + x[0] + '</a>';
+    }).join('');
+    var first = box.querySelector('p');
+    if (first && first.nextSibling) box.insertBefore(row, first.nextSibling); else box.appendChild(row);
+  });
+
   navDropdowns.forEach(function (dropdown) {
     var toggleBtn = dropdown.querySelector('.nav-dropdown-toggle');
     if (!toggleBtn) return;
