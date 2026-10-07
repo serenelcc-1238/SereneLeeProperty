@@ -19,12 +19,13 @@ still gets whatever did refresh.
 
 Standard library only, so nothing needs installing.
 """
-import csv, glob, io, json, math, os, re, sys, time, urllib.request
+import csv, glob, io, json, math, os, re, sys, time, urllib.error, urllib.request
 from datetime import datetime, timezone, timedelta
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data")
 SGT = timezone(timedelta(hours=8))
-UA = "Mozilla/5.0 (compatible; sereneleeproperty-market-map/1.1)"
+UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+      "(KHTML, like Gecko) Chrome/129.0 Safari/537.36")
 
 HDB_DATASET = "d_8b84c4ee58e3cfc0ece0d773c8ca6abc"  # Resale flat prices, Jan-2017 onwards
 URA_TOKEN_URL = "https://eservice.ura.gov.sg/uraDataService/insertNewToken/v1"
@@ -64,6 +65,12 @@ def get(url, headers=None, tries=3):
         try:
             with urllib.request.urlopen(urllib.request.Request(url, headers=h), timeout=180) as r:
                 return r.read()
+        except urllib.error.HTTPError as e:
+            body = e.read()[:300].decode("utf-8", "replace").replace("\n", " ")
+            if i == tries - 1 or e.code in (401, 403):
+                raise RuntimeError(f"HTTP {e.code} from {url.split('?')[0]}: {body}") from None
+            print(f"  retry {i+1} after HTTP {e.code}")
+            time.sleep(5 * (i + 1))
         except Exception as e:
             if i == tries - 1:
                 raise
