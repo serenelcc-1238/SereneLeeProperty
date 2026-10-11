@@ -73,8 +73,8 @@ def row(a, notes):
     summary = (f'<span class="era-take">Serene&rsquo;s take:</span>{note}' if note
                else html.escape(trim(a.get("description"))))
     img = a.get("imageUrl") or ""
-    thumb = (f'<img src="{html.escape(img)}" alt="" loading="lazy">' if img else "")
     title = html.escape(re.sub(r"\s+", " ", a["title"]).strip())
+    thumb = (f'<img src="{html.escape(img)}" alt="{title}" loading="lazy">' if img else "")
     return (f'      <div class="blog-row" data-date="{key}" data-era-cat="{a["category"]}">\n'
             f'        <div class="blog-row-thumb">{thumb}</div>\n'
             f'        <div>\n'

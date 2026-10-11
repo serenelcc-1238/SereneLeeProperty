@@ -7,6 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Rebuild sitemap (picks up new pages automatically)
+        run: python3 scripts/build_sitemap.py
       - uses: actions/setup-node@v4
         with:
           node-version: 20

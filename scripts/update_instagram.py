@@ -64,8 +64,24 @@ def caption(text):
     return lines[0][:160] if lines else ""
 
 
+def shrink(path, size=640):
+    """Resize to fit 640x640 and re-save as a light JPEG (homepage tiles are ~250px)."""
+    try:
+        from PIL import Image
+    except ImportError:
+        print("  Pillow not installed: image left at full size")
+        return
+    with Image.open(path) as im:
+        if max(im.size) <= size and os.path.getsize(path) < 200_000:
+            return
+        im = im.convert("RGB")
+        im.thumbnail((size, size))
+        im.save(path, "JPEG", quality=80, optimize=True, progressive=True)
+
+
 def download(url, path):
     if os.path.exists(path) and os.path.getsize(path) > 1000:
+        shrink(path)
         return True
     for attempt in range(3):
         try:
@@ -76,6 +92,7 @@ def download(url, path):
                 raise RuntimeError("too small")
             with open(path, "wb") as f:
                 f.write(data)
+            shrink(path)
             return True
         except Exception as e:  # noqa: BLE001
             print(f"  image {url[:80]}… attempt {attempt + 1} failed: {e}")

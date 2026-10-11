@@ -6,73 +6,78 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://sereneleeproperty.com/about.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://sereneleeproperty.com/new-launches.html</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://sereneleeproperty.com/blog.html</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://sereneleeproperty.com/blog-post-lease-decay-99-year-property.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://sereneleeproperty.com/quiz-lease-decay.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://sereneleeproperty.com/blog-sell-hdb-or-buy-condo-first.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://sereneleeproperty.com/upgrade-checklist.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://sereneleeproperty.com/faq.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://sereneleeproperty.com/calculator.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://sereneleeproperty.com/testimonials.html</loc>
+    <loc>https://sereneleeproperty.com/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://sereneleeproperty.com/contact.html</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
+    <loc>https://sereneleeproperty.com/blog</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://sereneleeproperty.com/subscribers.html</loc>
+    <loc>https://sereneleeproperty.com/blog-post-freehold-vs-leasehold-2026</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://sereneleeproperty.com/blog-post-lease-decay-99-year-property</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://sereneleeproperty.com/blog-post-serra-residences-preview</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://sereneleeproperty.com/blog-sell-hdb-or-buy-condo-first</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://sereneleeproperty.com/calculator</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sereneleeproperty.com/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://sereneleeproperty.com/market-map.html</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://sereneleeproperty.com/faq</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://sereneleeproperty.com/million-dollar-hdb.html</loc>
+    <loc>https://sereneleeproperty.com/market-map</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://sereneleeproperty.com/million-dollar-hdb</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://sereneleeproperty.com/new-launches</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://sereneleeproperty.com/quiz-lease-decay</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://sereneleeproperty.com/subscribers</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://sereneleeproperty.com/upgrade-checklist</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>

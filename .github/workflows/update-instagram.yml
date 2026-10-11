@@ -26,6 +26,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install Pillow (image resizing)
+        run: pip install --quiet pillow
+
       - name: Pull Instagram posts sent by Buffer
         id: fetch
         env:

@@ -12,3 +12,4 @@ package-lock.json
 *.md
 *.gs
 scripts
+SendDialog.html
