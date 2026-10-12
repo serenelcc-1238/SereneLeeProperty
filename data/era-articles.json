@@ -1,6 +1,13 @@
 {
- "retrieved": "2026-10-08T00:49+08:00",
+ "retrieved": "2026-10-12T10:18+08:00",
  "articles": [
+  {
+   "category": "Blog",
+   "title": "In Land-Scarce Singapore, How Do We Find More Spaces for New Homes?",
+   "slug": "land-scarce-singapore",
+   "published": "2026-10-08T04:00:34Z",
+   "url": "https://www.era.com.sg/blogs/land-scarce-singapore"
+  },
   {
    "category": "PressRelease",
    "title": "Commentary on the launch of Lucerne Grand",
@@ -119,13 +126,6 @@
    "slug": "ndr2026-housing",
    "published": "2026-08-28T03:28:58Z",
    "url": "https://www.era.com.sg/blogs/ndr2026-housing"
-  },
-  {
-   "category": "Blog",
-   "title": "Singapore’s Emerging Estates Could Shape the Next Phase of Housing",
-   "slug": "singapores-emerging-estates-could-shape-the-next-phase-of-housing",
-   "published": "2026-08-12T09:47:58Z",
-   "url": "https://www.era.com.sg/blogs/singapores-emerging-estates-could-shape-the-next-phase-of-housing"
   }
  ]
 }
