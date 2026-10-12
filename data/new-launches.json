@@ -1,6 +1,6 @@
 {
  "source": "https://propertyportal.era.com.sg/new-launches",
- "retrieved": "2026-10-08T00:31+08:00",
+ "retrieved": "2026-10-12T09:45+08:00",
  "pinned_skipped": [
   "THESERRARESIDENCES"
  ],
@@ -10,13 +10,13 @@
    "status": "selling",
    "district": "d22",
    "region": "OCR",
-   "region_source": "district",
+   "region_source": "ura",
    "launchDate": "2026-10-03",
    "top": "2031-12-06",
    "tenure": "leasehold_99",
    "developer": "CDL",
    "units": 570,
-   "available": 220,
+   "available": 212,
    "minPrice": 1503000,
    "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/lucerne_grand/media/c6ee6051b441b8332fed83e5c5866a02d58f6a0e.jpg"
   },
@@ -46,7 +46,7 @@
    "tenure": "leasehold_99",
    "developer": "Frasers Property / Sekisui House / CSC Land",
    "units": 380,
-   "available": 142,
+   "available": 140,
    "minPrice": 1475000,
    "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/dunearn_house/media/0600bd6189a41b332882fd05c62c152fcbf61037.jpg"
   },
@@ -61,7 +61,7 @@
    "tenure": "leasehold_99",
    "developer": "Kingsford Development",
    "units": 502,
-   "available": 189,
+   "available": 188,
    "minPrice": 1180650,
    "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/lentor_gardens_residences/media/b4496dfa030f5a98ac223ca4a232a3e8eba9d6fe.jpg"
   },
@@ -91,7 +91,7 @@
    "tenure": "leasehold_99",
    "developer": "Media Circle Alpha Development PteLtd",
    "units": 325,
-   "available": 78,
+   "available": 77,
    "minPrice": 1455000,
    "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/hudson_place_residences/media/61d910d8072287c2fc51d6354aa4a4dffaeddc35.png"
   },
@@ -136,24 +136,9 @@
    "tenure": "leasehold_99",
    "developer": "Guocoland",
    "units": 455,
-   "available": 24,
+   "available": 23,
    "minPrice": 1548000,
    "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/river_modern/media/87c56f21b21412c032db51aad23dfb57e1b6179b.png"
-  },
-  {
-   "name": "Newport Residences",
-   "status": "selling",
-   "district": "d02",
-   "region": "CCR",
-   "region_source": "ura",
-   "launchDate": "2026-01-31",
-   "top": "2027-06-29",
-   "tenure": "freehold",
-   "developer": "City Developments Limited",
-   "units": 246,
-   "available": 42,
-   "minPrice": 1298000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/newport_residences/media/90243a470878c6fa530a435e48c5edd6dbc2e986.jpg"
   },
   {
    "name": "Narra Residences",
@@ -169,6 +154,21 @@
    "available": 313,
    "minPrice": 998000,
    "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/narra_residences/media/9b923e6742f1421a6d1e9f2fd60aab493515a90c.jpg"
+  },
+  {
+   "name": "Newport Residences",
+   "status": "selling",
+   "district": "d02",
+   "region": "CCR",
+   "region_source": "ura",
+   "launchDate": "2026-01-31",
+   "top": "2027-06-29",
+   "tenure": "freehold",
+   "developer": "City Developments Limited",
+   "units": 246,
+   "available": 41,
+   "minPrice": 1298000,
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/newport_residences/media/90243a470878c6fa530a435e48c5edd6dbc2e986.jpg"
   },
   {
    "name": "Coastal Cabana",
@@ -196,7 +196,7 @@
    "tenure": "leasehold_99",
    "developer": "SL Capital (8) Pte Ltd",
    "units": 347,
-   "available": 164,
+   "available": 163,
    "minPrice": 993900,
    "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/the_sen/media/34954e0ae98f0ad6e660c6dc63bf44d02e40a59b.jpg"
   },
@@ -301,7 +301,7 @@
    "tenure": "leasehold_99",
    "developer": "Valerian Residential Pte. Ltd",
    "units": 596,
-   "available": 158,
+   "available": 155,
    "minPrice": 1417600,
    "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/promenade_peak/media/8a813d46b2fc509b9d85114678d2f52116cc333d.png"
   },
@@ -346,7 +346,7 @@
    "tenure": "leasehold_999",
    "developer": "Riverside Property Pte. Ltd",
    "units": 348,
-   "available": 137,
+   "available": 136,
    "minPrice": 1288000,
    "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/the_robertson_opus/media/5e4d348731348b1eeb70bb84a4cf41a52fc53fd6.jpg"
   },
@@ -391,7 +391,7 @@
    "tenure": "freehold",
    "developer": "ZACD Group",
    "units": 107,
-   "available": 5,
+   "available": 3,
    "minPrice": 1291000,
    "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/arina_east_residences/media/03ec46f0708436aeadf88c65bb37286ff7a58e52.png"
   },
@@ -406,7 +406,7 @@
    "tenure": "leasehold_99",
    "developer": "Kingsford Development Led Consortium",
    "units": 937,
-   "available": 261,
+   "available": 260,
    "minPrice": 1197953,
    "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/one_marina_gardens/media/d3d26219ec4c05956035f85277acd2107f5bf74b.jpg"
   },
@@ -421,7 +421,7 @@
    "tenure": "leasehold_99",
    "developer": "Far East Organization / Perennial Holdings / Sino Land",
    "units": 188,
-   "available": 116,
+   "available": 115,
    "minPrice": 1771000,
    "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/aurea/media/d8841bdac74497f69f36376564557145a3bac9e4.jpg"
   },
@@ -451,7 +451,7 @@
    "tenure": "leasehold_99",
    "developer": "MCL Land/ CSC Land",
    "units": 501,
-   "available": 76,
+   "available": 75,
    "minPrice": 1158000,
    "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/elta/media/09826e2cfbf3939c3b979f2656c7bb8e167b08cb.jpg"
   },
@@ -501,21 +501,6 @@
    "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/the_collective_at_one_sophia/media/468af17c4ea2e83fca9bd7c3d8c7d8c6a0951aec.jpg"
   },
   {
-   "name": "Union Square Residences",
-   "status": "selling",
-   "district": "d01",
-   "region": "RCR",
-   "region_source": "ura",
-   "launchDate": "2024-11-16",
-   "top": "2031-03-14",
-   "tenure": "leasehold_99",
-   "developer": "CDL",
-   "units": 366,
-   "available": 113,
-   "minPrice": 1280000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/union_square_residences/media/d829b82cc4f48cfba2af12e5f8eb1507afedaa69.png"
-  },
-  {
    "name": "Nava Grove",
    "status": "selling",
    "district": "d21",
@@ -531,6 +516,21 @@
    "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/nava_grove/media/5a400d4cba38dc01a3341200fd24657473b8ee22.png"
   },
   {
+   "name": "Union Square Residences",
+   "status": "selling",
+   "district": "d01",
+   "region": "RCR",
+   "region_source": "ura",
+   "launchDate": "2024-11-16",
+   "top": "2031-03-14",
+   "tenure": "leasehold_99",
+   "developer": "CDL",
+   "units": 366,
+   "available": 108,
+   "minPrice": 1280000,
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/union_square_residences/media/d829b82cc4f48cfba2af12e5f8eb1507afedaa69.png"
+  },
+  {
    "name": "Chuan Park",
    "status": "selling",
    "district": "d19",
@@ -541,7 +541,7 @@
    "tenure": "leasehold_99",
    "developer": "Kingsford Property Development Pte Ltd",
    "units": 916,
-   "available": 12,
+   "available": 10,
    "minPrice": 1648276,
    "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/chuan_park/media/402e1571e465ccf9def88e3aeb3dfe01937b10c9.jpg"
   },
@@ -556,7 +556,7 @@
    "tenure": "freehold",
    "developer": "UOL Group Limited Singapore Land Group",
    "units": 226,
-   "available": 48,
+   "available": 46,
    "minPrice": 2014000,
    "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/meyer_blue/media/e0f3d2086a7da5e4b7de5b0a6927d58ce4af9a09.jpg"
   },
@@ -576,21 +576,6 @@
    "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/8%40bt/media/f44fdc6b37d4ab527c5f7c49ec8d05b6d74c0539.png"
   },
   {
-   "name": "Kassia",
-   "status": "selling",
-   "district": "d17",
-   "region": "OCR",
-   "region_source": "ura",
-   "launchDate": "2024-07-06",
-   "top": "2027-06-29",
-   "tenure": "freehold",
-   "developer": "Tripartite Developers Pte. Limited",
-   "units": 276,
-   "available": 41,
-   "minPrice": 885000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/kassia/media/f202dd43b4437e5a03f2edf204fba5262fdee5d8.jpg"
-  },
-  {
    "name": "Sora",
    "status": "selling",
    "district": "d22",
@@ -604,6 +589,21 @@
    "available": 200,
    "minPrice": 996000,
    "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/sora/media/34bd6182645b65d1e33192002ae8428c863d8e4c.jpg"
+  },
+  {
+   "name": "Kassia",
+   "status": "selling",
+   "district": "d17",
+   "region": "OCR",
+   "region_source": "ura",
+   "launchDate": "2024-07-06",
+   "top": "2027-06-29",
+   "tenure": "freehold",
+   "developer": "Tripartite Developers Pte. Limited",
+   "units": 276,
+   "available": 40,
+   "minPrice": 885000,
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/kassia/media/f202dd43b4437e5a03f2edf204fba5262fdee5d8.jpg"
   },
   {
    "name": "The Hillshore",
@@ -706,7 +706,7 @@
    "tenure": "freehold",
    "developer": "Hoi Hup Sunway Kent Ridge Pte Ltd",
    "units": 270,
-   "available": 20,
+   "available": 18,
    "minPrice": 1563000,
    "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/terra_hill/media/e66b2fd886c9bc9dff82851ad0dfdda1387e7e88.jpg"
   },
@@ -739,21 +739,6 @@
    "available": 1268,
    "minPrice": null,
    "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/thomson_reserve/media/d575bec50429b4ff12b387e9faec670af2140a9f.jpg"
-  },
-  {
-   "name": "Chencharu Close GLS",
-   "status": "upcoming",
-   "district": "d27",
-   "region": "OCR",
-   "region_source": "district",
-   "launchDate": "2026-12-30",
-   "top": "2029-12-30",
-   "tenure": "leasehold_99",
-   "developer": "Evia Real Estate / Gamuda Land / Ho Lee Group",
-   "units": 875,
-   "available": null,
-   "minPrice": null,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/chencharu_close_gls/media/9dba1dd13f7433bcd381d2bef4ed1fa0f7e44c80.png"
   },
   {
    "name": "Wynwood Grand",
@@ -874,6 +859,21 @@
    "available": null,
    "minPrice": null,
    "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/keppel_bay_plot_6/media/5c4cc8d6a941d40cfc39bac8d215ea1f8b4fa519.png"
+  },
+  {
+   "name": "Chencharu Close GLS",
+   "status": "upcoming",
+   "district": "d27",
+   "region": "OCR",
+   "region_source": "district",
+   "launchDate": "2027-04-24",
+   "top": "2029-12-30",
+   "tenure": "leasehold_99",
+   "developer": "Evia Real Estate / Gamuda Land / Ho Lee Group",
+   "units": 875,
+   "available": null,
+   "minPrice": null,
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/chencharu_close_gls/media/9dba1dd13f7433bcd381d2bef4ed1fa0f7e44c80.png"
   },
   {
    "name": "Miltonia Close",
