@@ -231,7 +231,7 @@ def card(x, region, today, compact=False):
     if selling:
         cta_txt, msg = "Enquire via WhatsApp", f"Hi Serene, I'd like to find out more about {name}."
     else:
-        cta_txt, msg = "Register for VIP Preview", f"Hi Serene, I'd like to register for the VIP preview of {name}."
+        cta_txt, msg = "Register for Preview", f"Hi Serene, I'd like to register for the preview of {name}."
     href = WA + urllib.parse.quote(msg)
     if compact:  # homepage card
         return (f'      <div class="launch-card">\n'
@@ -265,7 +265,7 @@ def replace_between(text, start, end, new, label):
 
 
 HOME_PINNED_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "home-pinned")
-PIN_LEAD_DAYS = 30  # a write-up card may show up to 30 days before its launch (VIP preview period)
+PIN_LEAD_DAYS = 30  # a write-up card may show up to 30 days before its launch (preview period)
 
 
 def home_pinned(items, today):

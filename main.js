@@ -469,7 +469,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 
-/* New Launches VIP banner: "See what's coming soon" switches the Status
+/* New Launches preview banner: "See what's coming soon" switches the Status
    filter to Coming soon and scrolls to the project grid. */
 document.addEventListener('click', function (e) {
   var a = e.target.closest && e.target.closest('[data-show-upcoming]');
@@ -480,5 +480,5 @@ document.addEventListener('click', function (e) {
   chip.click();
   var grid = document.getElementById('launchGrid');
   if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  try { window.posthog && posthog.capture('vip_banner_upcoming_click'); } catch (err) {}
+  try { window.posthog && posthog.capture('preview_banner_upcoming_click'); } catch (err) {}
 });

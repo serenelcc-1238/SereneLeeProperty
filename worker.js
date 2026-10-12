@@ -83,7 +83,7 @@ const LEAD_TOOL = {
       interest: {
         type: "string",
         description:
-          "Short note on what they want, e.g. 'Interested in Serra Residences VIP preview' or 'Wants help deciding sell-first vs buy-first'",
+          "Short note on what they want, e.g. 'Interested in Serra Residences preview' or 'Wants help deciding sell-first vs buy-first'",
       },
     },
     required: ["name", "interest"],
