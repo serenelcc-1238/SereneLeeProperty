@@ -137,7 +137,8 @@
 .mm-quarter{display:flex;align-items:center;gap:10px;flex:1 1 340px;min-width:0}
 .mm-qlabel{font:600 1.5rem/1 'Fraunces',Georgia,serif;color:var(--navy-900);min-width:5.4ch;font-variant-numeric:tabular-nums}
 .mm-nav{width:34px;height:34px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--navy-900);font-size:1.1rem;cursor:pointer}
-.mm-nav:hover{border-color:var(--gold-dark)}
+.mm-nav:hover:not(:disabled){border-color:var(--gold-dark)}
+.mm-nav:disabled{opacity:.35;cursor:default}
 .mm-quarter input{flex:1;min-width:0;accent-color:var(--navy)}
 
 .mm-stats b{color:var(--navy-900);font-variant-numeric:tabular-nums}
@@ -542,6 +543,7 @@ function renderMap(){
   const cu=M.span==="custom"; $("mmCustom").hidden=!cu;
   if(cu){if(M.fillLayer!==M.layer){M.fillQ();M.fillLayer=M.layer;}const lo2=pte?pteFirst:0,hi2=pte?pteLast:hdbLast;M.from=Math.min(hi2,Math.max(lo2,M.from));M.to=Math.min(hi2,Math.max(lo2,M.to));$("mmFrom").value=M.from;$("mmTo").value=M.to;}
   ["mmPrev","mmNext","mmRange"].forEach(id=>$(id).style.opacity=cu?.4:"");
+  $("mmPrev").disabled=!cu&&qi<=lo; $("mmNext").disabled=!cu&&qi>=hi;
   const [qa,qb]=mSpan(), SL=spanLabel(qa,qb), multi=qa!==qb;
   $("mmQ").textContent=SL; $("mmQ").classList.toggle("span",multi);
   const N=t=>mN(t,qa,qb), PX=t=>mP(t,qa,qb), V=d=>mV(d,qa,qb);
