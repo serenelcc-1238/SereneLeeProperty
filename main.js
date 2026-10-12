@@ -31,7 +31,10 @@ posthog.init('phc_rg6iVEBgbirYoH76SaVRhMCa43uwjWztDfHiS8peBGJK', {
 document.addEventListener('click', function (e) {
   var link = e.target.closest && e.target.closest('a[href*="wa.me"], a[href*="whatsapp.com"]');
   if (!link) return;
-  var where = link.classList.contains('fab-wa') ? 'floating button'
+  var card = link.closest('.launch-card');
+  var where = link.getAttribute('data-cta') ? link.getAttribute('data-cta')
+    : card ? 'launch card'
+    : link.classList.contains('fab-wa') ? 'floating button'
     : link.closest('header') ? 'header'
     : link.closest('.cta-banner') ? 'cta banner'
     : link.closest('footer') ? 'footer'
@@ -39,7 +42,8 @@ document.addEventListener('click', function (e) {
   posthog.capture('whatsapp_clicked', {
     button_text: (link.textContent || '').trim().slice(0, 60) || '(icon)',
     button_location: where,
-    page_path: window.location.pathname
+    page_path: window.location.pathname,
+    project: card ? ((card.querySelector('.launch-name') || {}).textContent || '').trim() : undefined
   }, { send_instantly: true, transport: 'sendBeacon' });
 }, true);
 
@@ -463,4 +467,18 @@ document.addEventListener('DOMContentLoaded', function () {
       if (e.key === 'Escape') closeInfographicLightbox();
     });
   }
+});
+
+/* New Launches VIP banner: "See what's coming soon" switches the Status
+   filter to Coming soon and scrolls to the project grid. */
+document.addEventListener('click', function (e) {
+  var a = e.target.closest && e.target.closest('[data-show-upcoming]');
+  if (!a) return;
+  var chip = document.querySelector('[data-filter-status="upcoming"]');
+  if (!chip) return;
+  e.preventDefault();
+  chip.click();
+  var grid = document.getElementById('launchGrid');
+  if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  try { window.posthog && posthog.capture('vip_banner_upcoming_click'); } catch (err) {}
 });
