@@ -801,7 +801,7 @@ a.home-mm-more{text-decoration:none;}
 .hm2-tel:hover{color:var(--gold-dark,#a9841a);}
 @media(max-width:640px){
   .hm2-grid{grid-template-columns:1fr;gap:12px;}
-  .hm2-prof{flex-direction:row;justify-content:flex-start;text-align:left;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;gap:12px;}
+  .hm2-prof{flex-direction:row-reverse;justify-content:space-between;text-align:left;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;gap:12px;}
   .hm2-prof .hm2-photo img{width:56px;height:68px;}
   .hm2-id{font-size:.76rem;}
 }
