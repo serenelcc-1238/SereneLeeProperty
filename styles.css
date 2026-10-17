@@ -846,3 +846,17 @@ a.home-mm-more{text-decoration:none;}
 /* Consent line under lead forms */
 .consent-note{font-size:.78rem;color:var(--muted);line-height:1.45;margin:10px 0 0}
 .consent-note a{color:inherit;text-decoration:underline}
+
+/* Chat: name + mobile step after the free questions */
+.chatbot-lead{display:flex;flex-direction:column;gap:8px;white-space:normal;max-width:92%}
+.chatbot-lead p{margin:0}
+.chatbot-lead label{display:flex;flex-direction:column;gap:3px;font-size:.78rem;font-weight:600;color:var(--navy-900)}
+.chatbot-lead input{font:inherit;font-size:.9rem;font-weight:400;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--navy-900)}
+.chatbot-lead input:focus{outline:none;border-color:var(--navy)}
+.chatbot-lead-err{color:#b42318;font-size:.78rem;min-height:0}
+.chatbot-lead-err:empty{display:none}
+.chatbot-lead-btn{background:var(--gold);color:var(--navy-900);border:0;border-radius:8px;padding:9px 12px;font-weight:700;cursor:pointer}
+.chatbot-lead-btn:disabled{opacity:.6;cursor:default}
+.chatbot-lead-note{font-size:.7rem;color:var(--muted)}
+.chatbot-lead-note a{color:inherit}
+.chatbot-input:disabled{opacity:.6;cursor:not-allowed}

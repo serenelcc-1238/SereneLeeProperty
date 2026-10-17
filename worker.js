@@ -493,7 +493,7 @@ function json(data, status = 200) {
   });
 }
 
-async function callClaude(env, messages) {
+async function callClaude(env, messages, extraSystem = "") {
   const model = env.ANTHROPIC_MODEL || DEFAULT_MODEL;
   const res = await fetch(ANTHROPIC_API_URL, {
     method: "POST",
@@ -505,7 +505,7 @@ async function callClaude(env, messages) {
     body: JSON.stringify({
       model,
       max_tokens: MAX_TOKENS,
-      system: SYSTEM_PROMPT,
+      system: SYSTEM_PROMPT + extraSystem,
       tools: [LEAD_TOOL, ...DATA_TOOLS],
       messages,
     }),
@@ -584,6 +584,64 @@ async function overLimit(request, env) {
   }
 }
 
+/* ---------- Name + mobile before the 3rd question ----------
+   chatbot.js asks for these after FREE_QUESTIONS answers; the same check runs
+   here so the step can't be skipped by calling the API directly. */
+const FREE_QUESTIONS = 2;
+/* Phone check: Singapore mobiles are 8 digits starting with 8 or 9 (optional
+   +65). Overseas numbers must start with + and a country code. Obvious fakes
+   (all one digit, running sequences, the form's example number) are refused.
+   This checks the number is real-looking; it cannot prove the visitor owns it
+   (that would need an SMS code). */
+function checkPhone(raw) {
+  var s = String(raw || "").trim();
+  var plus = s.charAt(0) === "+";
+  var d = s.replace(/[^0-9]/g, "");
+  if (/[a-z]/i.test(s)) return { ok: false, msg: "Please enter numbers only." };
+  if (plus && d.indexOf("65") === 0) { d = d.slice(2); plus = false; }
+  else if (!plus && d.length === 10 && d.indexOf("65") === 0) d = d.slice(2);
+  if (!plus) {
+    if (d.length !== 8) return { ok: false, msg: "Singapore mobile numbers have 8 digits, e.g. 9xxx xxxx." };
+    if (!/^[89]/.test(d)) return { ok: false, msg: "Please enter a mobile number starting with 8 or 9." };
+    var fake = /^(\d)\1{7}$/.test(d) || "0123456789".indexOf(d.slice(1)) >= 0 || "9876543210".indexOf(d.slice(1)) >= 0 ||
+      ["91234567", "81234567", "98765432", "87654321", "90000000", "80000000", "91111111", "81111111"].indexOf(d) >= 0 ||
+      /^(\d\d)\1{3}$/.test(d) || /^(\d{4})\1$/.test(d);
+    if (fake) return { ok: false, msg: "That number doesn't look real. Please enter your actual mobile number." };
+    return { ok: true, phone: "+65 " + d.slice(0, 4) + " " + d.slice(4), overseas: false };
+  }
+  if (d.length < 8 || d.length > 15 || /^0/.test(d) || /^(\d)\1+$/.test(d)) return { ok: false, msg: "Please enter a valid number with country code, e.g. +60 12 345 6789." };
+  return { ok: true, phone: "+" + d, overseas: true };
+}
+function checkName(raw) {
+  var n = String(raw || "").replace(/\s+/g, " ").trim();
+  if (n.length < 2 || n.length > 60) return { ok: false, msg: "Please enter your name." };
+  if (/[0-9@<>]/.test(n) || /^(test|asdf|abc|na|nil|none|anonymous|xxx+)$/i.test(n)) return { ok: false, msg: "Please enter your real name." };
+  return { ok: true, name: n };
+}
+
+async function handleChatLead(request, env) {
+  if (!fromOwnSite(request)) return json({ ok: false, error: "Not available." }, 403);
+  if (await overLimit(request, env)) return json({ ok: false, error: "Please wait a minute and try again." }, 429);
+  let body;
+  try { body = await request.json(); } catch { return json({ ok: false, error: "Invalid request." }, 400); }
+  const n = checkName(body.name), ph = checkPhone(body.phone);
+  if (!n.ok) return json({ ok: false, error: n.msg }, 400);
+  if (!ph.ok) return json({ ok: false, error: ph.msg }, 400);
+  const asked = (Array.isArray(body.messages) ? body.messages : [])
+    .filter((m) => m && m.role === "user" && typeof m.content === "string")
+    .slice(0, 3)
+    .map((m) => m.content.replace(/\s+/g, " ").slice(0, 160));
+  await sendLeadToSheet(
+    {
+      name: n.name,
+      phone: ph.phone,
+      interest: `Chatbot${ph.overseas ? " (overseas number)" : ""}. Asked: ${asked.join(" | ") || "-"}`,
+    },
+    typeof body.page === "string" ? body.page : ""
+  );
+  return json({ ok: true, phone: ph.phone });
+}
+
 async function handleChatPost(request, env) {
   if (!fromOwnSite(request)) {
     return json({ error: "Chat is only available on sereneleeproperty.com." }, 403);
@@ -627,10 +685,22 @@ async function handleChatPost(request, env) {
     return json({ error: "That message is a bit long for me. Please shorten it, or WhatsApp Serene directly at +65 8086 8568." }, 413);
   }
 
+  // From the 3rd question on, a valid name + mobile must come with the request.
+  const lead = body.lead && typeof body.lead === "object" ? body.lead : null;
+  const leadName = lead ? checkName(lead.name) : { ok: false };
+  const leadPhone = lead ? checkPhone(lead.phone) : { ok: false };
+  const hasLead = leadName.ok && leadPhone.ok;
+  if (messages.filter((m) => m.role === "user").length > FREE_QUESTIONS && !hasLead) {
+    return json({ needLead: true }, 428);
+  }
+  const visitorNote = hasLead
+    ? `\n\nVISITOR DETAILS: ${leadName.name}, ${leadPhone.phone}. These were already passed to Serene, so do not ask for contact details again and do not call capture_lead. You may address them by first name occasionally.`
+    : "";
+
   const pageUrl = typeof body.page === "string" ? body.page : "";
 
   try {
-    let result = await callClaude(env, messages);
+    let result = await callClaude(env, messages, visitorNote);
 
     // Tool-use loop: run every tool Claude asks for (lead capture and/or
     // HDB/URA/new-launch lookups), hand back the results, then let Claude
@@ -657,7 +727,7 @@ async function handleChatPost(request, env) {
       messages.push({ role: "assistant", content: result.content });
       messages.push({ role: "user", content: toolResults });
 
-      result = await callClaude(env, messages);
+      result = await callClaude(env, messages, visitorNote);
     }
 
     const reply = extractText(result.content) || "Sorry, I didn't catch that — could you rephrase?";
@@ -693,6 +763,9 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
+    if (url.pathname === "/api/chat-lead" && request.method === "POST") {
+      return handleChatLead(request, env);
+    }
     if (url.pathname === "/api/chat") {
       if (request.method === "POST") {
         return handleChatPost(request, env);
