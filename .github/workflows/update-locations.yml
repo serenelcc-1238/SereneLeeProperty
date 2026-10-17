@@ -1,0 +1,68 @@
+name: Update locations (OneMap)
+
+# Every Monday 7:13am Singapore time (Sunday 23:13 UTC), one hour after the
+# market data refresh, so new blocks and projects get coordinates and MRT
+# distances the same morning. Also runs on demand ("Run workflow").
+on:
+  schedule:
+    - cron: "13 23 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: site-data-commits
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    # The first run geocodes ~13,000 addresses (about an hour). Later runs take minutes.
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Look up coordinates and nearest MRT
+        id: fetch
+        run: |
+          set +e
+          python scripts/update_locations.py
+          code=$?
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          if [ "$code" = "1" ]; then exit 1; fi
+          exit 0
+
+      - name: Save data to the repo
+        id: commit
+        run: |
+          git config user.name "market-data-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A data/geo
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No change in locations."
+          else
+            git commit -m "Weekly location refresh (OneMap)"
+            git pull --rebase origin main
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # A push made by this workflow does not trigger deploy.yml, so deploy here.
+      - uses: actions/setup-node@v4
+        if: steps.commit.outputs.changed == 'true'
+        with:
+          node-version: 20
+      - name: Deploy site
+        if: steps.commit.outputs.changed == 'true'
+        run: |
+          npm install
+          npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
