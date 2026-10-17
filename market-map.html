@@ -96,6 +96,14 @@
 .mm-onemap{height:340px;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;z-index:0}
 @media(max-width:720px){.mm-onemap{height:280px}}
 /* Check my block / condo */
+.mm-form.mrt{grid-template-columns:minmax(0,1fr) 120px 170px auto}
+@media(max-width:720px){.mm-form.mrt{grid-template-columns:1fr 1fr}}
+.mm-sec{margin-top:18px;min-width:0}
+.mm-sec h4{font-size:1.02rem;margin:0 0 8px;color:var(--navy-900)}
+.mm-onemap.big{height:420px}
+@media(max-width:720px){.mm-onemap.big{height:320px}}
+.mm-key{display:flex;flex-wrap:wrap;gap:14px;font-size:.82rem;color:var(--muted);margin:8px 0 0}
+.mm-key i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:-1px;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
 .mm-look{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;margin-bottom:28px}
 .mm-look h2{font-size:1.35rem;margin-bottom:4px}
 .mm-look .sub{color:var(--muted);font-size:.9rem;margin:0 0 16px;max-width:640px}
@@ -239,11 +247,12 @@
   <div class="container">
 
     <div class="mm-look" id="mmLook">
-      <h2>Check your own block or condo</h2>
-      <p class="sub">See what flats in your block, or units in your condo, have actually sold for. Add your unit number to pick out deals on your own floor.</p>
+      <h2>Check your own block or condo, or search near an MRT</h2>
+      <p class="sub">See what flats in your block, or units in your condo, have actually sold for. Add your unit number to pick out deals on your own floor. Or pick an MRT station and a distance to see every HDB block and condo around it.</p>
       <div class="mm-tabs">
         <button type="button" class="filter-chip active" data-look="hdb">HDB flat</button>
         <button type="button" class="filter-chip" data-look="pte">Condo / private</button>
+        <button type="button" class="filter-chip" data-look="mrt">Near an MRT</button>
       </div>
       <form class="mm-form" id="lkHdbForm" autocomplete="off">
         <div class="field"><label for="lkBlk">Block</label><input type="text" id="lkBlk" placeholder="e.g. 335C" maxlength="6"></div>
@@ -255,6 +264,12 @@
         <div class="field f-wide"><label for="lkProj">Condo or project name</label><input type="text" id="lkProj" list="lkProjs" placeholder="e.g. Riverparc Residence"><datalist id="lkProjs"></datalist></div>
         <div class="field"><label for="lkPUnit">Unit <span style="font-weight:400;color:var(--muted)">(optional)</span></label><input type="text" id="lkPUnit" placeholder="#12-05" maxlength="10"></div>
         <button type="submit" class="btn btn-navy">Check my condo</button>
+      </form>
+      <form class="mm-form mrt" id="lkMrtForm" autocomplete="off" hidden>
+        <div class="field f-wide"><label for="lkStn">MRT / LRT station</label><input type="text" id="lkStn" list="lkStns" placeholder="e.g. Woodlands South"><datalist id="lkStns"></datalist></div>
+        <div class="field"><label for="lkRad">Within</label><select id="lkRad"><option value="200">200 m</option><option value="300">300 m</option><option value="400">400 m</option><option value="500" selected>500 m</option><option value="800">800 m</option><option value="1000">1 km</option></select></div>
+        <div class="field"><label for="lkKind">Show</label><select id="lkKind"><option value="all">HDB &amp; private</option><option value="hdb">HDB only</option><option value="pte">Private only</option></select></div>
+        <button type="submit" class="btn btn-navy">Find homes</button>
       </form>
       <div id="lkOut" aria-live="polite"></div>
     </div>
@@ -686,7 +701,7 @@ const norm=s=>s.toUpperCase().replace(/[^A-Z0-9' ]+/g," ").trim().split(/\s+/).m
 const tight=s=>norm(s).replace(/[\s']/g,"");
 
 let look="hdb", hIndex=null, pIndex=null, pByLabel={};
-document.querySelectorAll("[data-look]").forEach(b=>b.onclick=()=>{look=b.dataset.look;document.querySelectorAll("[data-look]").forEach(x=>x.classList.toggle("active",x===b));$("lkHdbForm").hidden=look!=="hdb";$("lkPteForm").hidden=look!=="pte";$("lkOut").innerHTML="";(look==="hdb"?loadHdbIndex:loadPteIndex)();});
+document.querySelectorAll("[data-look]").forEach(b=>b.onclick=()=>{look=b.dataset.look;document.querySelectorAll("[data-look]").forEach(x=>x.classList.toggle("active",x===b));$("lkHdbForm").hidden=look!=="hdb";$("lkPteForm").hidden=look!=="pte";$("lkMrtForm").hidden=look!=="mrt";$("lkOut").innerHTML="";({hdb:loadHdbIndex,pte:loadPteIndex,mrt:loadStations}[look])().catch(()=>{});});
 
 function loadHdbIndex(){if(hIndex)return Promise.resolve(hIndex);return getJSON("data/hdb/index.json").then(ix=>{hIndex=ix;fillStreets();return ix;});}
 function fillStreets(){if(!hIndex)return;const blk=$("lkBlk").value.trim().toUpperCase();const dl=$("lkStreets");
@@ -852,10 +867,107 @@ async function showGeo(file,key,label){
   }catch(err){const m=$("lkMap");if(m)m.remove();}
 }
 
+/* ---------------- Near an MRT ----------------
+   Station + distance -> every HDB block (resale in last 3 yrs) and private
+   project (deal in last 5 yrs) within range, from data/geo/near (OneMap). */
+let stIndex=null, mrtMap=null;
+const stLabel=s=>s[0]+(s[1]?" ("+s[1]+")":"");
+const slugS=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+const stKey=s=>tight(String(s).replace(/\(.*?\)/g," ").replace(/\b(MRT|LRT|STATION|STN)\b/gi," "));
+function loadStations(){if(stIndex)return Promise.resolve(stIndex);return getJSON("data/geo/stations.json").then(d=>{stIndex=d;
+  $("lkStns").innerHTML=d.stations.map(s=>`<option value="${esc(stLabel(s))}"></option>`).join("");return d;});}
+$("lkStn").addEventListener("focus",()=>loadStations().catch(()=>{}));
+function findStations(q){const S=stIndex.stations, k=stKey(q), code=q.trim().toUpperCase();
+  const byLabel=S.filter(s=>stLabel(s).toUpperCase()===q.trim().toUpperCase()); if(byLabel.length)return byLabel;
+  const exact=S.filter(s=>stKey(s[0])===k); if(exact.length)return exact;
+  const byCode=S.filter(s=>s[1].toUpperCase().split(" / ").includes(code)); if(byCode.length)return byCode;
+  return k?S.filter(s=>stKey(s[0]).includes(k)).slice(0,10):[];}
+$("lkMrtForm").addEventListener("submit",e=>{e.preventDefault();runMrt();});
+["lkRad","lkKind"].forEach(id=>$(id).addEventListener("change",()=>{if($("lkStn").value.trim()&&$("lkOut").querySelector("[data-mrtres]"))runMrt();}));
+async function runMrt(){
+  const out=$("lkOut"), q=$("lkStn").value.trim();
+  if(!q){out.innerHTML='<p class="mm-msg err">Pick an MRT or LRT station.</p>';return;}
+  out.innerHTML='<p class="mm-msg">Finding homes near the station…</p>';
+  try{await loadStations();}catch(err){out.innerHTML='<p class="mm-msg err">The MRT search is updating. Please try again shortly, or WhatsApp Serene.</p>';return;}
+  const hits=findStations(q);
+  if(!hits.length){out.innerHTML=`<p class="mm-msg err">We couldn't find a station called "${esc(q)}". Pick one from the list as you type, e.g. "Woodlands South".</p>`;return;}
+  if(hits.length>1){out.innerHTML=`<p class="mm-msg">Which station did you mean?</p><div class="mm-pick">${hits.map((s,i)=>`<button type="button" class="filter-chip" data-st="${i}">${esc(stLabel(s))}</button>`).join("")}</div>`;
+    out.querySelectorAll("[data-st]").forEach(b=>b.onclick=()=>{const s=hits[+b.dataset.st];$("lkStn").value=stLabel(s);showMrt(s);});return;}
+  showMrt(hits[0]);
+}
+async function showMrt(s){
+  const out=$("lkOut"), r=+$("lkRad").value, kind=$("lkKind").value, rTxt=fmtM(r);
+  let near; try{near=await getJSON("data/geo/near/"+slugS(s[0])+".json");}catch(err){out.innerHTML='<p class="mm-msg err">No location data for this station yet. Please try again after the next weekly refresh.</p>';return;}
+  const hdb=kind==="pte"?[]:near.hdb.filter(x=>x[3]<=r), pte=kind==="hdb"?[]:near.pte.filter(x=>x[3]<=r);
+  // Load price and coordinate files for the towns / districts involved (usually one or two)
+  const towns=[...new Set(hdb.map(x=>x[0]))], dists=[...new Set(pte.map(x=>x[2]))];
+  const tf=t=>(T(t)&&T(t).file)||t.toLowerCase().replace(/[^a-z0-9]+/g,"-");
+  let H={},HG={},P={},PG={};
+  try{await Promise.all([
+    ...towns.map(t=>Promise.all([getJSON("data/hdb/"+tf(t)+".json"),getJSON("data/geo/hdb/"+tf(t)+".json")]).then(([a,b])=>{H[t]=a;HG[t]=b;})),
+    ...dists.map(d=>Promise.all([getJSON("data/ura/d"+d+".json"),getJSON("data/geo/ura/d"+d+".json")]).then(([a,b])=>{P[d]=a;PG[d]=b;}))]);}
+  catch(err){out.innerHTML=NOTREADY;return;}
+  const lastH=DATA.hdb.last_month||"", cut12=(+lastH.slice(0,4)-1)+lastH.slice(4);
+  // HDB rows
+  const hRows=hdb.map(([t,st,blk,m])=>{const rs=((H[t].streets[st]||{})[blk])||[];return {t,st,blk,m,rs,geo:(HG[t]||{})[st+"|"+blk]};}).filter(x=>x.rs.length);
+  const recent=hRows.flatMap(x=>x.rs.filter(r=>r[0]>=cut12));
+  const ftCount={};recent.forEach(r=>ftCount[r[1]]=(ftCount[r[1]]||0)+1);
+  const topFt=Object.entries(ftCount).sort((a,b)=>b[1]-a[1])[0];
+  // Private rows
+  const psf=r=>r[5]===1&&r[2]>0?r[4]/(r[2]*SQFT):0;
+  const pRows=pte.map(([name,st,d,m,pt,ten])=>({name,st,d,m,pt,ten,rs:(P[d]||{})[name+"|"+st]||[],geo:(PG[d]||{})[name+"|"+st]})).filter(x=>x.rs.length);
+  const pLast=pRows.reduce((a,x)=>x.rs[0][0]>a?x.rs[0][0]:a,""), pcut=pLast?(+pLast.slice(0,4)-1)+pLast.slice(4):"";
+  const pRes=pRows.flatMap(x=>x.rs.filter(r=>r[1]===3&&r[0]>=pcut).map(psf)).filter(Boolean);
+  const tiles=[];
+  if(kind!=="pte"){tiles.push(`<div class="mm-tile"><div class="k">HDB blocks within ${rTxt}</div><div class="v">${hRows.length}</div><div class="s">Blocks with a resale in the last 3 years</div></div>`);
+    if(topFt){const ps=recent.filter(r=>r[1]===topFt[0]).map(r=>r[6]);tiles.push(`<div class="mm-tile"><div class="k">${FT[topFt[0]]} · ${ps.length} deal${ps.length>1?"s":""} in last 12 months</div><div class="v">${fmt$(median(ps))}</div><div class="s">Median resale price near ${esc(s[0])}</div></div>`);}}
+  if(kind!=="hdb"){tiles.push(`<div class="mm-tile"><div class="k">Private projects within ${rTxt}</div><div class="v">${pRows.length}</div><div class="s">Condos, ECs and landed with a deal in 5 years</div></div>`);
+    if(pRes.length)tiles.push(`<div class="mm-tile"><div class="k">Private resale · ${pRes.length} deal${pRes.length>1?"s":""} in last 12 months</div><div class="v">${fmt$(median(pRes))} psf</div><div class="s">Median, ${fmt$(Math.min(...pRes))}–${fmt$(Math.max(...pRes))} psf</div></div>`);}
+  const SHOW=15, more=(n,id)=>n>SHOW?`<p class="mm-msg" style="margin:6px 0 0"><button type="button" class="mm-linkbtn" data-msec="${id}">Show all ${n}</button></p>`:"";
+  const hTable=hRows.length?`<div class="mm-sec" id="mmSecH"><h4>HDB blocks, nearest first</h4><div class="mm-tablewrap"><table class="mm-table"><thead><tr><th>Block</th><th>Distance</th><th>Latest resale</th><th class="r">Price</th><th class="r">Deals (12 mths)</th></tr></thead><tbody>${
+    hRows.map((x,i)=>{const l=x.rs[0];return `<tr${i>=SHOW?" hidden":""}><td><button type="button" class="mm-linkbtn" data-hb="${i}">Blk ${esc(x.blk)} ${esc(title(x.st))}</button><br><span style="color:var(--muted)">${esc(title(x.t))}</span></td><td>${fmtM(x.m)}</td><td>${ym(l[0])} · ${FT[l[1]]||l[1]}</td><td class="r"><b>${fmt$(l[6])}</b></td><td class="r">${x.rs.filter(r=>r[0]>=cut12).length}</td></tr>`;}).join("")}</tbody></table></div>${more(hRows.length,"mmSecH")}</div>`
+    :(kind!=="pte"?`<p class="mm-msg">No HDB blocks with recent resales within ${rTxt} of ${esc(s[0])}. Try a wider distance.</p>`:"");
+  const pTable=pRows.length?`<div class="mm-sec" id="mmSecP"><h4>Private projects, nearest first</h4><div class="mm-tablewrap"><table class="mm-table"><thead><tr><th>Project</th><th>Distance</th><th>Latest deal</th><th class="r">Price</th><th class="r">$psf</th></tr></thead><tbody>${
+    pRows.map((x,i)=>{const l=x.rs[0],ps=psf(l);return `<tr${i>=SHOW?" hidden":""}><td><button type="button" class="mm-linkbtn" data-pb="${i}">${esc(title(x.name))}</button><br><span style="color:var(--muted)">${esc(PT[x.pt]||"")}${x.ten?" · "+esc(x.ten):""}</span></td><td>${fmtM(x.m)}</td><td>${ym(l[0])} · ${SALE[l[1]-1]}</td><td class="r"><b>${fmt$(l[4])}</b>${l[5]>1?`<span class="mm-tag grey">${l[5]} units</span>`:""}</td><td class="r">${ps?fmt$(ps):"–"}</td></tr>`;}).join("")}</tbody></table></div>${more(pRows.length,"mmSecP")}</div>`
+    :(kind!=="hdb"?`<p class="mm-msg">No private projects with deals within ${rTxt} of ${esc(s[0])}. Try a wider distance.</p>`:"");
+  out.innerHTML=`<div class="mm-res" data-mrtres>
+    <div class="mm-res-head"><h3>Homes within ${rTxt} of ${esc(s[0])}</h3><span class="meta">${esc(s[1]||"")}${s[1]?" · ":""}straight-line distance from the station · </span></div>
+    <div class="mm-tiles">${tiles.join("")}</div>
+    <div class="mm-sec"><div class="mm-onemap big" id="lkMrtMap" role="img" aria-label="Map of homes near ${esc(s[0])}"></div>
+      <div class="mm-key"><span><i style="background:#d42e12"></i>${esc(s[0])}</span>${kind!=="pte"?'<span><i style="background:#c9a227"></i>HDB block</span>':""}${kind!=="hdb"?'<span><i style="background:#0b2545"></i>Condo / EC / landed</span>':""}<span>Dashed ring: ${rTxt}</span></div></div>
+    ${hTable}${pTable}
+    <p class="mm-src">Locations and map: OneMap, Singapore Land Authority${stIndex.fetched?", retrieved "+fmtDate(stIndex.fetched):""}. Prices: ${SRC_HDB} and ${SRC_URA}. Distances are straight-line from the station; walking is usually a little longer.</p>
+    <div class="mm-res-cta"><p>Looking for a home near <b>${esc(s[0])}</b>? Tell me your budget and must-haves and I'll shortlist units for you.</p>
+      <a class="btn btn-gold" target="_blank" rel="noopener" id="lkWa" href="${WA(`Hi Serene, I'm looking for a home within ${rTxt} of ${s[0]}. Could you help me shortlist?`)}">Shortlist homes for me</a></div></div>`;
+  $("lkWa").onclick=()=>track("whatsapp_clicked",{button_text:"Shortlist homes for me",button_location:"market map mrt search",page_path:location.pathname});
+  out.querySelectorAll("[data-msec]").forEach(b=>b.onclick=()=>{const sec=$(b.dataset.msec),hid=sec.querySelectorAll("tr[hidden]");
+    if(hid.length){hid.forEach(r=>{r.hidden=false;r.dataset.x=1;});b.textContent="Show fewer";}else{sec.querySelectorAll("tr[data-x]").forEach(r=>r.hidden=true);b.textContent="Show all "+sec.querySelectorAll("tbody tr").length;}});
+  out.querySelectorAll("[data-hb]").forEach(b=>b.onclick=async()=>{try{const u=new URL(location.href);["mrt","r","type"].forEach(k=>u.searchParams.delete(k));history.replaceState(null,"",u.pathname+(u.searchParams.toString()?"?"+u.searchParams:"")+u.hash);}catch(e){}const x=hRows[+b.dataset.hb];document.querySelector('[data-look="hdb"]').click();
+    $("lkBlk").value=x.blk;$("lkStreet").value=title(x.st);$("lkUnit").value="";try{await loadHdbIndex();}catch(e){return;}showHdb(x.st,x.blk,"");$("mmLook").scrollIntoView({block:"start"});});
+  out.querySelectorAll("[data-pb]").forEach(b=>b.onclick=async()=>{try{const u=new URL(location.href);["mrt","r","type"].forEach(k=>u.searchParams.delete(k));history.replaceState(null,"",u.pathname+(u.searchParams.toString()?"?"+u.searchParams:"")+u.hash);}catch(e){}const x=pRows[+b.dataset.pb];document.querySelector('[data-look="pte"]').click();
+    try{await loadPteIndex();}catch(e){return;}const p=pIndex.find(q=>q[0]===x.name&&q[1]===x.st);if(!p)return;$("lkProj").value=title(p[0])+" · "+title(p[1]);showPte(p,"");$("mmLook").scrollIntoView({block:"start"});});
+  try{const u=new URL(location.href),q=u.searchParams;["blk","street","unit","proj","look"].forEach(k=>q.delete(k));q.set("mrt",slugS(s[0]));q.set("r",r);if(kind!=="all")q.set("type",kind);else q.delete("type");
+    history.replaceState(null,"",u.pathname+"?"+q.toString()+u.hash);}catch(e){}
+  track("market_map_mrt_search",{station:s[0],radius_m:r,kind,hdb_blocks:hRows.length,private_projects:pRows.length});
+  // Map
+  try{const L=await loadLeaflet(); if(mrtMap){try{mrtMap.remove();}catch(e){} mrtMap=null;} if(!$("lkMrtMap"))return;
+    mrtMap=L.map("lkMrtMap",{maxBounds:L.latLngBounds([1.144,103.535],[1.494,104.1]),minZoom:11,maxZoom:19,scrollWheelZoom:false});
+    L.tileLayer("https://www.onemap.gov.sg/maps/tiles/Default/{z}/{x}/{y}.png",{detectRetina:true,minZoom:11,maxZoom:19,attribution:OM_ATTR}).addTo(mrtMap);
+    const c=[s[2],s[3]], ring=L.circle(c,{radius:r,color:"#0b2545",weight:1.5,dashArray:"5 6",fillColor:"#0b2545",fillOpacity:.04}).addTo(mrtMap);
+    hRows.forEach(x=>{if(!x.geo)return;L.circleMarker([x.geo[0],x.geo[1]],{radius:6,color:"#fff",weight:1.5,fillColor:"#c9a227",fillOpacity:1}).addTo(mrtMap)
+      .bindTooltip(`Blk ${x.blk} ${title(x.st)} · ${fmtM(x.m)}<br>Latest ${FT[x.rs[0][1]]} ${fmt$(x.rs[0][6])} (${ym(x.rs[0][0])})`);});
+    pRows.forEach(x=>{if(!x.geo)return;L.circleMarker([x.geo[0],x.geo[1]],{radius:7,color:"#fff",weight:1.5,fillColor:"#0b2545",fillOpacity:1}).addTo(mrtMap)
+      .bindTooltip(`${title(x.name)} · ${fmtM(x.m)}<br>Latest ${fmt$(x.rs[0][4])} (${ym(x.rs[0][0])})`);});
+    L.circleMarker(c,{radius:9,color:"#fff",weight:2,fillColor:"#d42e12",fillOpacity:1}).addTo(mrtMap).bindTooltip(s[0],{permanent:true,direction:"top",offset:[0,-8]});
+    mrtMap.fitBounds(ring.getBounds(),{padding:[16,16]});
+  }catch(err){const m=$("lkMrtMap");if(m)m.parentNode.remove();}
+}
+
 /* ---------------- shareable links ----------------
    market-map.html?town=yishun&ft=4            HDB, Yishun, 4-room
    market-map.html?layer=private&dist=19&pt=E  Private, D19, executive condos
-   market-map.html?blk=411B&street=Fernvale%20Rd&unit=09-321   runs the block check */
+   market-map.html?blk=411B&street=Fernvale%20Rd&unit=09-321   runs the block check
+   market-map.html?mrt=woodlands-south-mrt&r=500&type=hdb       runs the MRT search */
 let ready=false;
 function applyParams(){const q=new URLSearchParams(location.search),g=k=>(q.get(k)||"").trim();
   if(g("show")==="price"){M.metric="px";Dd.metric="px";setChip("[data-metric]","px");setChip("[data-dmetric]","px");}
@@ -866,6 +978,10 @@ function applyParams(){const q=new URLSearchParams(location.search),g=k=>(q.get(
   else{const t=g("town").toUpperCase().replace(/-/g," ");const hit=towns.find(x=>x===t||x.replace("/"," ")===t||x.split("/")[0]===t);if(hit)Dd.sel=hit;
     const r=towns.map(x=>T(x).region).find(x=>x&&x.toLowerCase()===g("region").toLowerCase());if(r){M.hReg=r;setChip("[data-hreg]",r);}
     const ft=g("ft").toUpperCase().replace(/[^0-9EM]/g,"").slice(0,1);if(hasFt&&FT[ft])Dd.hFt=ft;}
+  if(g("mrt")){document.querySelector('[data-look="mrt"]').click();
+    const rv=g("r");if([...$("lkRad").options].some(o=>o.value===rv))$("lkRad").value=rv;
+    if(["hdb","pte"].includes(g("type")))$("lkKind").value=g("type");
+    return()=>{$("mmLook").scrollIntoView({block:"start"});loadStations().then(d=>{const s=d.stations.find(x=>slugS(x[0])===g("mrt").toLowerCase());if(s){$("lkStn").value=stLabel(s);showMrt(s);}}).catch(()=>{});};}
   if(g("blk")||g("street")){$("lkBlk").value=g("blk");$("lkStreet").value=g("street");$("lkUnit").value=g("unit");
     return()=>{$("mmLook").scrollIntoView({block:"start"});runHdb();};}
   if(g("proj")||g("look")==="condo"){document.querySelector('[data-look="pte"]').click();$("lkProj").value=g("proj");$("lkPUnit").value=g("unit");
