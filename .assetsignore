@@ -13,3 +13,5 @@ package-lock.json
 *.gs
 scripts
 SendDialog.html
+# Hidden until real client reviews come in (remove this line to publish)
+testimonials.html

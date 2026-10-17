@@ -50,7 +50,8 @@ SITE PAGES YOU CAN POINT VISITORS TO (use relative links exactly as written):
 - upgrade-checklist.html — free 2-minute HDB Upgrader Checklist with a readiness score.
 - blog.html — guides on lease decay, HDB upgrading, new launch write-ups.
 - faq.html — 27 detailed FAQs on buying, selling and renting.
-- testimonials.html, about.html, contact.html.
+- about.html, contact.html.
+- Do not mention or link to a testimonials or reviews page (there isn't one yet).
 
 KEY SINGAPORE PROPERTY FACTS (current as of Sep 2026 — always caveat that rules change and to verify time-sensitive figures with Serene or the relevant authority):
 - MOP (Minimum Occupation Period): 5 years for Standard HDB flats, 10 years for Plus/Prime flats, before the flat can be sold. ECs: 5-year MOP/10-year full privatisation (GLS tenders closed before 8 May 2026) or 10-year MOP/15-year privatisation (tenders closing on/after 8 May 2026).
