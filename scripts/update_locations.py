@@ -143,6 +143,8 @@ def fetch_stations():
             page += 1
     stations = []
     for name, s in sorted(found.items()):
+        if not s["codes"]:
+            continue  # shops/kiosks named after a station, e.g. "Burger King Woodlands MRT Station"
         lat = sum(p[0] for p in s["pts"]) / len(s["pts"])
         lng = sum(p[1] for p in s["pts"]) / len(s["pts"])
         stations.append([name, " / ".join(sorted(s["codes"])), round(lat, 6), round(lng, 6)])
