@@ -87,6 +87,14 @@
 .mm-updated b{color:var(--navy-900);font-weight:600}
 .mm-stale{color:var(--amber-ink);background:var(--amber-bg);padding:2px 8px;border-radius:999px;font-weight:600;margin-left:6px}
 
+/* OneMap location map (Check my block / condo) */
+.mm-geo{margin:18px 0 6px}
+.mm-geo h4{font-size:1.02rem;margin:0 0 8px;color:var(--navy-900)}
+.mm-mrt{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.mm-mrt li{border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:.88rem;background:#fff}
+.mm-mrt li span{color:var(--muted);font-size:.8rem}
+.mm-onemap{height:340px;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;z-index:0}
+@media(max-width:720px){.mm-onemap{height:280px}}
 /* Check my block / condo */
 .mm-look{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;margin-bottom:28px}
 .mm-look h2{font-size:1.35rem;margin-bottom:4px}
@@ -747,10 +755,12 @@ async function showHdb(street,blk,unit){
     <div class="mm-tablewrap"><table class="mm-table"><thead><tr><th>Month</th><th>Flat type</th><th>Floors</th><th class="r">Size</th><th>Model</th><th class="r">Price</th><th class="r">$psf</th></tr></thead><tbody>${table}</tbody></table></div>
     ${moreBtn(rows.length,"in this block since "+ym(f.since))}
     ${srcLine("hdb","Block deals cover the last 3 years; town averages come from the same dataset.")}
+    <div class="mm-geo" id="lkGeo"></div>
     <div class="mm-res-cta"><p>Want to know what <b>Blk ${esc(blk)}${esc(unitTxt)}</b> could sell for today, after your unit's condition and facing? I'll send you a free valuation.</p>
       <a class="btn btn-gold" target="_blank" rel="noopener" id="lkWa" href="${WA(`Hi Serene, I checked Blk ${blk} ${title(street)}${unitTxt} on your market map. Could you give me a valuation?`)}">Get my free valuation</a></div></div>`;
   $("lkWa").onclick=()=>track("whatsapp_clicked",{button_text:"Get my free valuation",button_location:"market map lookup",page_path:location.pathname});
   track("market_map_lookup",{kind:"hdb",town,found:true,with_unit:!!band});
+  showGeo("data/geo/hdb/"+(info.file||town.toLowerCase().replace(/[^a-z0-9]+/g,"-"))+".json",street+"|"+blk,"Blk "+blk);
 }
 async function showStreet(street){
   const out=$("lkOut"), town=hIndex[street][0], info=T(town)||{};
@@ -806,10 +816,40 @@ async function showPte(p,unit){
     <div class="mm-tablewrap"><table class="mm-table"><thead><tr><th>Month</th><th>Sale</th><th>Floor (URA band)</th><th class="r">Size</th><th class="r">Price</th><th class="r">$psf</th></tr></thead><tbody>${table}</tbody></table></div>
     ${moreBtn(rows.length,"in the last 5 years")}
     ${srcLine("ura","$psf is price divided by the recorded floor area. Floor is shown as URA publishes it, in 5-storey bands.")}
+    <div class="mm-geo" id="lkGeo"></div>
     <div class="mm-res-cta"><p>Want to know what <b>${esc(title(name))}${esc(unitTxt)}</b> could fetch today, or how it compares with new launches nearby? I'll send you a free analysis.</p>
       <a class="btn btn-gold" target="_blank" rel="noopener" id="lkWa" href="${WA(`Hi Serene, I checked ${title(name)}${unitTxt} on your market map. Could you give me a valuation?`)}">Get my free valuation</a></div></div>`;
   $("lkWa").onclick=()=>track("whatsapp_clicked",{button_text:"Get my free valuation",button_location:"market map lookup",page_path:location.pathname});
   track("market_map_lookup",{kind:"private",district:d,segment:seg,found:true,with_unit:!!band});
+  showGeo("data/geo/ura/d"+d+".json",name+"|"+street,title(name));
+}
+
+/* ---------------- OneMap location map ----------------
+   Coordinates and nearest MRT come from data/geo (scripts/update_locations.py,
+   weekly from OneMap). Base map tiles are OneMap's, with the required SLA credit. */
+let LF=null, geoMap=null;
+function loadLeaflet(){if(LF)return LF;LF=new Promise((ok,no)=>{const c=document.createElement("link");c.rel="stylesheet";c.href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";document.head.appendChild(c);
+  const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";s.onload=()=>ok(window.L);s.onerror=()=>{LF=null;no();};document.head.appendChild(s);});return LF;}
+const OM_ATTR='<img src="https://www.onemap.gov.sg/web-assets/images/logo/om_logo.png" style="height:20px;width:20px;vertical-align:middle" alt=""/>&nbsp;<a href="https://www.onemap.gov.sg/" target="_blank" rel="noopener">OneMap</a>&nbsp;&copy;&nbsp;contributors&nbsp;&#124;&nbsp;<a href="https://www.sla.gov.sg/" target="_blank" rel="noopener">Singapore Land Authority</a>';
+const fmtM=m=>m>=1000?(m/1000).toFixed(1)+" km":m+" m";
+async function showGeo(file,key,label){
+  const box=$("lkGeo"); if(!box)return;
+  let g,st; try{[g,st]=await Promise.all([getJSON(file),getJSON("data/geo/stations.json")]);}catch(err){box.remove();return;}
+  const v=g[key]; if(!v||!$("lkGeo")){box.remove();return;}
+  const S=st.stations, near=v[3].map(([i,m])=>({s:S[i],m}));
+  box.innerHTML=`<h4>Location and nearest MRT</h4><ul class="mm-mrt">${near.map(n=>`<li><b>${esc(n.s[0])}</b>${n.s[1]?` <span>${esc(n.s[1])}</span>`:""} · about ${fmtM(n.m)}</li>`).join("")}</ul><div class="mm-onemap" id="lkMap" role="img" aria-label="Map of ${esc(label)} and nearby MRT stations"></div><p class="mm-src">Map and locations: OneMap, Singapore Land Authority${st.fetched?", retrieved "+fmtDate(st.fetched):""}. Distances are straight-line; walking is usually a little longer.</p>`;
+  try{const L=await loadLeaflet(); if(geoMap){try{geoMap.remove();}catch(e){} geoMap=null;}
+    if(!$("lkMap"))return;
+    geoMap=L.map("lkMap",{maxBounds:L.latLngBounds([1.144,103.535],[1.494,104.1]),minZoom:11,maxZoom:19,scrollWheelZoom:false});
+    L.tileLayer("https://www.onemap.gov.sg/maps/tiles/Default/{z}/{x}/{y}.png",{detectRetina:true,minZoom:11,maxZoom:19,attribution:OM_ATTR}).addTo(geoMap);
+    const home=[v[0],v[1]], pts=[home];
+    near.forEach(n=>{const p=[n.s[2],n.s[3]];pts.push(p);
+      L.polyline([home,p],{color:"#0b2545",weight:2,dashArray:"4 6",opacity:.55}).addTo(geoMap);
+      L.circleMarker(p,{radius:7,color:"#fff",fillColor:"#d42e12",fillOpacity:1,weight:2}).addTo(geoMap).bindTooltip(`${n.s[0]} · about ${fmtM(n.m)}`);});
+    L.circleMarker(home,{radius:9,color:"#0b2545",fillColor:"#c9a227",fillOpacity:1,weight:3}).addTo(geoMap).bindTooltip(label,{permanent:true,direction:"top",offset:[0,-8]});
+    geoMap.fitBounds(L.latLngBounds(pts),{padding:[30,30],maxZoom:17});
+    track("market_map_onemap",{kind:file.includes("/hdb/")?"hdb":"private"});
+  }catch(err){const m=$("lkMap");if(m)m.remove();}
 }
 
 /* ---------------- shareable links ----------------

@@ -71,6 +71,7 @@ HOW TO BEHAVE:
   - hdb_resale_lookup for HDB resale prices (by town, flat type, street or block).
   - private_transactions_lookup for condo/EC/landed transaction prices (by project or postal district).
   - new_launches_lookup for current new launches (starting price, units left, TOP).
+  - mrt_lookup for anything about MRT/LRT proximity: blocks or condos near a station, or the nearest station to a block or condo. Quote distances as "about Xm straight-line" and mention walking is a bit longer. For a map view, point to market-map.html (the block and condo check shows a OneMap location map).
 - When you quote figures: give the median and range (and $psf), say how many deals and over what period, and name the source and the "data as of" date, e.g. "Based on 48 HDB resale deals in the last 12 months (data.gov.sg, updated 12 Oct 2026)". Round to the nearest $1,000. These are past transacted prices, not a valuation of the visitor's own unit — for a proper valuation or a specific unit, offer to connect them with Serene.
 - Never invent numbers. If a tool returns no deals or an error, say so and point to market-map.html or WhatsApp Serene.
 - Serene serves clients across ALL of Singapore, every HDB town and every district. Never say or imply that any town, estate or district is outside her area, focus, coverage or expertise, and never compare areas as ones she knows better or less well. Answer every location question with the same confidence, and offer Serene's help for any area.
@@ -170,6 +171,22 @@ const DATA_TOOLS = [
         district: { type: "string", description: "Optional 2-digit district, e.g. '25'." },
         region: { type: "string", enum: ["CCR", "RCR", "OCR"], description: "Optional market region." },
         name: { type: "string", description: "Optional project name or part of it." },
+      },
+    },
+  },
+  {
+    name: "mrt_lookup",
+    description:
+      "Find MRT/LRT proximity using OneMap (Singapore Land Authority) locations, refreshed weekly. Two uses: (1) give a station to list HDB blocks and private projects near it, e.g. 'which HDB in Pasir Ris is near MRT'; (2) give an HDB block (town + block, optionally street) or a private project name to get its nearest stations and distances. Distances are straight-line metres, not walking routes.",
+    input_schema: {
+      type: "object",
+      properties: {
+        station: { type: "string", description: "Station name, e.g. 'Pasir Ris', 'Woodlands South', 'Canberra'. Use for 'what's near X MRT'." },
+        town: { type: "string", description: "HDB town of the block, e.g. 'Yishun'. When asking about a town in general without a station, give the town and the tool lists its stations." },
+        street: { type: "string", description: "Optional street of the HDB block, e.g. 'Yishun St 31'." },
+        block: { type: "string", description: "HDB block number, e.g. '335C'." },
+        project: { type: "string", description: "Private condo/EC/landed project name, e.g. 'Forestville'." },
+        radius_m: { type: "integer", description: "For station searches: radius in metres (default 500, max 1000)." },
       },
     },
   },
@@ -344,11 +361,115 @@ async function newLaunchLookup(env, origin, input) {
   };
 }
 
+
+async function mrtLookup(env, origin, input) {
+  let st;
+  try {
+    st = await loadData(env, origin, "data/geo/stations.json");
+  } catch {
+    return { error: "MRT locations are still being prepared (first OneMap run). Point the visitor to market-map.html or WhatsApp Serene." };
+  }
+  const stations = st.stations; // [name, codes, lat, lng]
+  const label = (i) => `${stations[i][0]}${stations[i][1] ? " (" + stations[i][1] + ")" : ""}`;
+  const near3 = (v) => v[3].map(([i, m]) => ({ station: label(i), metres: m }));
+  const base = { source: "OneMap, Singapore Land Authority", data_as_of: st.fetched, distance_note: "Straight-line distance; walking is usually 20-40% longer." };
+
+  // 1) Station -> what's nearby
+  if (input.station) {
+    const q = norm(input.station).replace(/\b(MRT|LRT|STATION|STN)\b/g, "").trim();
+    const hits = stations
+      .map((s, i) => ({ s, i }))
+      .filter(({ s }) => norm(s[0]).replace(/\b(MRT|LRT)\b/g, "").trim() === q);
+    const found = hits.length ? hits : stations.map((s, i) => ({ s, i })).filter(({ s }) => norm(s[0]).includes(q));
+    if (!found.length) return { error: `No MRT/LRT station matching '${input.station}'.` };
+    const radius = Math.min(Math.max(parseInt(input.radius_m) || 500, 100), 1000);
+    const out = [];
+    for (const { s, i } of found.slice(0, 2)) {
+      const slug = s[0].toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      const near = await loadData(env, origin, `data/geo/near/${slug}.json`);
+      const hdb = near.hdb.filter((r) => r[3] <= radius);
+      const pte = near.pte.filter((r) => r[3] <= radius);
+      const byStreet = {};
+      for (const [town, street, blk, m] of hdb) (byStreet[street] = byStreet[street] || { town, blocks: [] }).blocks.push(`${blk} (${m}m)`);
+      out.push({
+        station: label(i),
+        radius_m: radius,
+        hdb_block_count: hdb.length,
+        hdb_by_street: Object.entries(byStreet).slice(0, 12).map(([street, v]) => ({ street, town: v.town, blocks: v.blocks.slice(0, 10) })),
+        private_projects: pte.slice(0, 15).map(([name, street, d, m, pt, ten]) => ({ name, street, district: d, metres: m, type: PROP_TYPES[pt] || pt, tenure: ten })),
+      });
+    }
+    return { ...base, results: out, note: "Only HDB blocks with a resale in the last 3 years and private projects with a deal in the last 5 years are listed." };
+  }
+
+  // 2) HDB block -> nearest stations
+  if (input.block) {
+    const blk = String(input.block).toUpperCase().replace(/^BLK\s*/, "").trim();
+    const market = await loadData(env, origin, "data/market-data.json");
+    let town = null;
+    if (input.town) {
+      const want = norm(input.town).replace(/ /g, "");
+      town = Object.keys(market.hdb.towns).find((t) => norm(t).replace(/ /g, "") === want) ||
+        Object.keys(market.hdb.towns).find((t) => norm(t).replace(/ /g, "").includes(want));
+    }
+    const towns = town ? [town] : [];
+    if (!towns.length && input.street) {
+      const ix = await loadData(env, origin, "data/hdb/index.json");
+      const sq = norm(input.street);
+      for (const [s, v] of Object.entries(ix)) if (norm(s).includes(sq) && v[1].includes(blk)) towns.push(v[0]);
+    }
+    if (!towns.length) return { error: "Need the town (or street) of the block." };
+    const res = [];
+    for (const t of [...new Set(towns)].slice(0, 3)) {
+      const g = await loadData(env, origin, `data/geo/hdb/${market.hdb.towns[t].file}.json`).catch(() => ({}));
+      const sq = input.street ? norm(input.street) : "";
+      for (const [key, v] of Object.entries(g)) {
+        const [street, b] = key.split("|");
+        if (b !== blk || (sq && !norm(street).includes(sq))) continue;
+        res.push({ block: b, street, town: t, postal: v[2], nearest_stations: near3(v) });
+      }
+    }
+    if (!res.length) return { ...base, error: `No location on file for Blk ${blk}${input.street ? " " + input.street : ""}. It may not have had a resale in 3 years.` };
+    return { ...base, results: res.slice(0, 5) };
+  }
+
+  // 3) Private project -> nearest stations
+  if (input.project) {
+    const projects = await loadData(env, origin, "data/ura/projects.json");
+    const q = norm(input.project);
+    const matches = projects.filter((p) => norm(p[0]).includes(q)).sort((a, b) => b[6] - a[6]).slice(0, 3);
+    if (!matches.length) return { error: `No private project matching '${input.project}'.` };
+    const res = [];
+    for (const p of matches) {
+      const g = await loadData(env, origin, `data/geo/ura/d${p[2]}.json`).catch(() => ({}));
+      const v = g[`${p[0]}|${p[1]}`];
+      if (v) res.push({ project: p[0], street: p[1], district: p[2], nearest_stations: near3(v) });
+    }
+    if (!res.length) return { ...base, error: "No location on file for that project yet." };
+    return { ...base, results: res };
+  }
+
+  // 4) Town only -> stations within/near the town (by its blocks)
+  if (input.town) {
+    const market = await loadData(env, origin, "data/market-data.json");
+    const want = norm(input.town).replace(/ /g, "");
+    const t = Object.keys(market.hdb.towns).find((x) => norm(x).replace(/ /g, "").includes(want));
+    if (!t) return { error: `Unknown HDB town '${input.town}'.` };
+    const g = await loadData(env, origin, `data/geo/hdb/${market.hdb.towns[t].file}.json`).catch(() => ({}));
+    const count = {};
+    for (const v of Object.values(g)) { const [i, m] = v[3][0]; if (m <= 1500) count[i] = (count[i] || 0) + 1; }
+    const list = Object.entries(count).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([i, n]) => ({ station: label(+i), blocks_nearest_to_it: n }));
+    return { ...base, town: t, stations: list, tip: "Call again with station to list the blocks within a radius." };
+  }
+  return { error: "Give a station, a block (with town or street), a project, or a town." };
+}
+
 async function runDataTool(env, origin, name, input) {
   try {
     if (name === "hdb_resale_lookup") return await hdbLookup(env, origin, input || {});
     if (name === "private_transactions_lookup") return await privateLookup(env, origin, input || {});
     if (name === "new_launches_lookup") return await newLaunchLookup(env, origin, input || {});
+    if (name === "mrt_lookup") return await mrtLookup(env, origin, input || {});
     return { error: `Unknown tool ${name}` };
   } catch (err) {
     console.error(`Tool ${name} failed:`, err);
