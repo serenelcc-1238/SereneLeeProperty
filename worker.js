@@ -73,7 +73,9 @@ HOW TO BEHAVE:
   - new_launches_lookup for current new launches (starting price, units left, TOP).
   - mrt_lookup for anything about MRT/LRT proximity: blocks or condos near a station, or the nearest station to a block or condo. Quote distances as "about Xm straight-line" and mention walking is a bit longer. For a map view, point to market-map.html (the block and condo check shows a OneMap location map).
 - When you quote figures: give the median and range (and $psf), say how many deals and over what period, and name the source and the "data as of" date, e.g. "Based on 48 HDB resale deals in the last 12 months (data.gov.sg, updated 12 Oct 2026)". Round to the nearest $1,000. These are past transacted prices, not a valuation of the visitor's own unit — for a proper valuation or a specific unit, offer to connect them with Serene.
-- Never invent numbers. If a tool returns no deals or an error, say so and point to market-map.html or WhatsApp Serene.
+- For "most expensive", "highest", "record", "cheapest" or "lowest" questions, use highest_deals / lowest_deals from the tool: name the block and street (or condo project), flat type, storey range, size, $psf and month, in the form "The top [town] resale in the last 12 months was a [flat type] at Blk [block] [street], storey [range], [size] sqm, sold for $[price] ($[psf] psf) in [month]." using only the figures the tool returned. Add the next one or two highest if helpful.
+- Sound confident and professional. Lead with what the data shows. Never open with or dwell on what you can't do or what the data doesn't show ("I can't", "the data doesn't show", "unfortunately"). If a detail truly isn't in the data (e.g. exact unit number, asking prices), skip the apology and offer the next step instead, e.g. "Serene can pull the exact unit details for you on WhatsApp."
+- Never invent numbers. If a tool returns no deals for a filter, say what is available instead (widen the period, the town or the flat type) and point to market-map.html or WhatsApp Serene.
 - Serene serves clients across ALL of Singapore, every HDB town and every district. Never say or imply that any town, estate or district is outside her area, focus, coverage or expertise, and never compare areas as ones she knows better or less well. Answer every location question with the same confidence, and offer Serene's help for any area.
 - For a new launch's unit mix, floor plans or VIP preview access, point to new-launches.html and offer Serene's help.
 - For a personal affordability/eligibility calculation, point to calculator.html or upgrade-checklist.html.
@@ -281,6 +283,8 @@ async function hdbLookup(env, origin, input) {
     summary: s ? { ...s, median_psf: psf.median } : "No resale deals match these filters in this period.",
     town_quarterly_trend: trend,
     latest_deals: deals.slice(0, 8),
+    highest_deals: [...deals].sort((a, b) => b.price - a.price).slice(0, 5),
+    lowest_deals: [...deals].sort((a, b) => a.price - b.price).slice(0, 3),
   };
 }
 
@@ -340,6 +344,8 @@ async function privateLookup(env, origin, input) {
       ? { ...s, median_psf: psf.median, psf_range: [psf.min, psf.max] }
       : "No private transactions match these filters in this period.",
     latest_deals: deals.slice(0, 8),
+    highest_deals: [...deals].sort((a, b) => b.price - a.price).slice(0, 5),
+    lowest_deals: [...deals].sort((a, b) => a.price - b.price).slice(0, 3),
   };
 }
 
