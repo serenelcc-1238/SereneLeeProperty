@@ -37,12 +37,15 @@ jobs:
           if [ "$code" = "1" ]; then exit 1; fi
           exit 0
 
+      - name: Rebuild town pages
+        run: python3 scripts/build_town_pages.py
+
       - name: Save data to the repo
         id: commit
         run: |
           git config user.name "market-data-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add -A data/geo
+          git add -A data/geo *.html
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "No change in locations."
