@@ -12,7 +12,7 @@
  *   ANTHROPIC_API_KEY   — your key from console.anthropic.com (add as a Secret)
  *
  * Optional environment variable:
- *   ANTHROPIC_MODEL     — defaults to "claude-3-5-haiku-20241022" (fast, cheap,
+ *   ANTHROPIC_MODEL     — defaults to "claude-haiku-5-5" (fast, cheap,
  *                          plenty capable for FAQ-style answers).
  *
  * Lead capture reuses the SAME Google Apps Script webhook already wired up to
@@ -23,7 +23,7 @@
 const GAS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzxomLsd_yvi8pEaXvHK3qddAPdnX7889wnjU4i5AoxXIv7dQv7h973bZ9gwQq_1dk/exec";
 
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
-const DEFAULT_MODEL = "claude-haiku-4-5-20251001";
+const DEFAULT_MODEL = "claude-haiku-5-5";
 const MAX_TOKENS = 700;
 
 /* ---------- Knowledge base / system prompt ----------
