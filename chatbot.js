@@ -53,7 +53,7 @@
     function addWelcome() {
       addBubble(
         "assistant",
-        "Hi! I'm Serene's website assistant. Ask me about HDB upgrading, MOP, financing, or her current new launches — or I can point you to the right page."
+        "Hi! I'm Serene's website assistant. Ask me about recent HDB resale or condo prices (e.g. a 4-room in Woodlands), HDB upgrading, financing, or current new launches."
       );
     }
 
