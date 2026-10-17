@@ -31,7 +31,11 @@ UA = "sereneleeproperty.com location refresh"
 PAUSE = 0.27            # OneMap allows 250 calls a minute; stay under it
 NEAR_RADIUS = 1000      # metres kept in data/geo/near/*.json
 MISS_RETRY_DAYS = 90
-MAX_LOOKUPS = int(os.environ.get("MAX_LOOKUPS", "20000"))
+MAX_LOOKUPS = int(os.environ.get("MAX_LOOKUPS", "40000"))
+# Stop looking up new addresses after this many minutes so the run always saves
+# what it found before the GitHub job time limit; the next run continues.
+TIME_BUDGET_MIN = float(os.environ.get("TIME_BUDGET_MIN", "240"))
+T0 = time.time()
 
 # HDB data uses abbreviated street names; OneMap search works best with full words.
 EXPAND = {"AVE": "AVENUE", "DR": "DRIVE", "ST": "STREET", "RD": "ROAD", "CRES": "CRESCENT",
@@ -53,6 +57,8 @@ def get(params, tries=5):
     global calls
     if calls >= MAX_LOOKUPS:
         raise RuntimeError("lookup budget used up for this run")
+    if (time.time() - T0) / 60 > TIME_BUDGET_MIN:
+        raise RuntimeError("time budget used up for this run; the next run carries on")
     url = SEARCH.format(urllib.parse.urlencode(params))
     for i in range(tries):
         try:
