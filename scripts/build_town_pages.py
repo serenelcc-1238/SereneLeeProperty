@@ -382,32 +382,32 @@ def build(town, cfg, shell_head, shell_header, shell_footer, picker):
 
 <section style="padding-top:12px;"><div class="container">
   <div class="tp-kpis">
-    <div class="tp-tile"><div class="k">HDB resales, last 12 months</div><div class="v">{len(r12):,}</div><div class="s">Median {money(med(all12))}</div></div>
-    <div class="tp-tile"><div class="k">4-room median</div><div class="v">{money(m4) if m4 else '–'}</div><div class="s">{len([r for r in r12 if r[1]=='4']):,} deals</div></div>
+    <div class="tp-tile" data-kind="hdb"><div class="k">HDB resales, last 12 months</div><div class="v">{len(r12):,}</div><div class="s">Median {money(med(all12))}</div></div>
+    <div class="tp-tile" data-kind="hdb"><div class="k">4-room median</div><div class="v">{money(m4) if m4 else '–'}</div><div class="s">{len([r for r in r12 if r[1]=='4']):,} deals</div></div>
     <div class="tp-tile"><div class="k">{'MRT &amp; LRT stations' if any('LRT' in n for n in mrt_names) else 'MRT stations'}</div><div class="v">{len(mrt_names)}</div><div class="s">{esc(', '.join(mrt_names[:4]) + (f' and {len(mrt_names)-4} more' if len(mrt_names) > 4 else ''))}</div></div>
-    <div class="tp-tile"><div class="k">Nearby condo &amp; EC resale</div><div class="v">{kpi_psf}</div><div class="s">Median, last 12 months</div></div>
+    <div class="tp-tile" data-kind="pte"><div class="k">Nearby condo &amp; EC resale</div><div class="v">{kpi_psf}</div><div class="s">Median, last 12 months</div></div>
   </div>
 
-  <div class="tp-card"><h2>HDB resale prices by flat type</h2>
+  <div class="tp-card" data-kind="hdb"><h2>HDB resale prices by flat type</h2>
     <div class="tp-tablewrap"><table class="tp-table"><thead><tr><th>Flat type</th><th class="r">Deals</th><th class="r">Median price</th><th class="r">Median $psf</th><th class="r">Range</th><th class="r">vs year before</th></tr></thead>
     <tbody>{''.join(ft_rows)}</tbody></table></div>
     <p class="tp-src">Last 12 months: {ym(months_back(last, 11))} to {ym(last)}, compared with the 12 months before. Source: <a href="https://data.gov.sg/datasets/d_8b84c4ee58e3cfc0ece0d773c8ca6abc/view" target="_blank" rel="noopener">HDB resale flat prices (data.gov.sg)</a>. Not a valuation.</p>
   </div>
 
-  <div class="tp-card"><h2>Price trend by quarter</h2>
+  <div class="tp-card" data-kind="hdb"><h2>Price trend by quarter</h2>
     {chart}
     <p class="tp-note">{esc(trend_line)}</p>
     <p class="tp-src">Average resale price per quarter, quarters with at least 3 deals. Latest full quarter: {q[endq]}.</p>
   </div>
 
-  <div class="tp-card"><h2>Prices by nearest MRT station</h2>
+  <div class="tp-card" data-kind="hdb"><h2>Prices by nearest MRT station</h2>
     <div class="tp-tablewrap"><table class="tp-table"><thead><tr><th>Nearest station</th><th class="r">Blocks</th><th class="r">Within 500 m</th><th class="r">4-room median</th><th class="r">5-room median</th></tr></thead>
     <tbody>{''.join(mrt_rows)}</tbody></table></div>
     <p class="tp-note">{esc(mrt_gap)}</p>
     <p class="tp-src">Each block counts under its nearest station within 1 km ({len(far)} blocks are further than 1 km from any station). Medians cover the last 12 months, with at least 5 deals. Locations: OneMap, Singapore Land Authority; straight-line distance. Tap a station to see every block and condo near it.</p>
   </div>
 
-  <div class="tp-two">
+  <div class="tp-two" data-kind="hdb">
     <div class="tp-card"><h2>Price by lease age</h2>
       <div class="tp-tablewrap"><table class="tp-table"><thead><tr><th>Lease started</th><th class="r">4-room</th><th class="r">5-room</th></tr></thead><tbody>{''.join(lease_rows)}</tbody></table></div>
       <p class="tp-src">Median resale price, last 12 months. HDB flats have 99-year leases. <a href="/blog-post-lease-decay-99-year-property">How lease decay affects value</a>.</p>
@@ -418,14 +418,14 @@ def build(town, cfg, shell_head, shell_header, shell_footer, picker):
     </div>
   </div>
 
-  <div class="tp-card"><h2>Condos and executive condos in and around {esc(tname)}</h2>
+  <div class="tp-card" data-kind="pte"><h2>Condos and executive condos in and around {esc(tname)}</h2>
     <div class="tp-tablewrap"><table class="tp-table"><thead><tr><th>Type</th><th class="r">Deals</th><th class="r">Median price</th><th class="r">Median $psf</th><th class="r">$psf vs year before</th></tr></thead><tbody>{''.join(pte_rows)}</tbody></table></div>
     <h3 class="tp-h3">Most traded projects</h3>
     <div class="tp-tablewrap"><table class="tp-table"><thead><tr><th>Project</th><th class="r">Deals</th><th class="r">Median $psf</th><th>Nearest MRT</th></tr></thead><tbody>{proj_rows}</tbody></table></div>
     <p class="tp-src">{len(proj_all)} private projects within {NEAR_M} m of a {esc(tname)} HDB block (OneMap locations), postal district{'s' if len(dists)>1 else ''} {', '.join(sorted(dists))}. Last 12 months of URA caveats to {ym(plast)}; single-unit deals only. Source: <a href="https://eservice.ura.gov.sg/maps/api/" target="_blank" rel="noopener">URA Data Service</a>.</p>
   </div>
 
-  {f'''<div class="tp-card"><h2>New launches in {dlab}</h2>
+  {f'''<div class="tp-card" data-kind="pte"><h2>New launches in {dlab}</h2>
     <div class="tp-tablewrap"><table class="tp-table"><thead><tr><th>Project</th><th>Status</th><th>Tenure</th><th>Completion</th><th class="r">From</th></tr></thead><tbody>{nl_rows}</tbody></table></div>
     <p class="tp-src">From the ERA new launch feed, retrieved {fmt_date(nl['retrieved'])}. <a href="/new-launches">All new launches</a> · Serene can register you for VIP previews.</p>
   </div>''' if launches else ''}
@@ -490,6 +490,11 @@ CSS = """<style>
 .tp-persona p{font-size:.92rem;color:var(--ink,inherit)}
 .tp-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
 .tp-pick{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:14px 0 4px}
+[data-kind][hidden]{display:none!important}
+.tp-est{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.tp-kind{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.tp-lab{font-weight:700;font-size:.9rem;color:var(--navy-900);margin-right:2px}
+.tp-pick{gap:12px 24px}
 .tp-pick label{font-weight:700;font-size:.9rem;color:var(--navy-900)}
 .tp-pick select{min-width:240px;max-width:100%;font-size:1rem;padding:10px 12px}
 .tp-region{font-size:1.15rem;margin:22px 0 10px}
@@ -503,16 +508,36 @@ CSS = """<style>
 </style>"""
 
 
-def picker_html(market):
+def picker_html(market, with_kind=True):
     groups = {}
     for t, v in market["hdb"]["towns"].items():
         groups.setdefault(v["region"] or "Other", []).append((title(t), v["file"]))
     opts = "".join(
         f'<optgroup label="{esc(r)}">' + "".join(f'<option value="{f}">{esc(n)}</option>' for n, f in sorted(groups[r])) + "</optgroup>"
         for r in REGION_ORDER + sorted(set(groups) - set(REGION_ORDER)) if r in groups)
-    return ('<div class="tp-pick"><label for="tpTown">Choose an estate</label>'
-            '<select id="tpTown" class="sort-select" onchange="if(this.value){try{posthog.capture(\'town_guide_switch\',{to:this.value})}catch(e){}location.href=\'/\'+this.value}">'
-            '<option value="">Select an HDB town…</option>' + opts + "</select></div>")
+    kind = ('<div class="tp-kind" role="group" aria-label="Property type"><span class="tp-lab">Show</span>'
+            '<button type="button" class="filter-chip active" data-k="all">HDB &amp; private</button>'
+            '<button type="button" class="filter-chip" data-k="hdb">HDB only</button>'
+            '<button type="button" class="filter-chip" data-k="pte">Private only</button></div>') if with_kind else ""
+    return ('<div class="tp-pick"><div class="tp-est"><label for="tpTown">Choose an estate</label>'
+            '<select id="tpTown" class="sort-select" onchange="tpGo(this.value)">'
+            '<option value="">Select an HDB town…</option>' + opts + "</select></div>" + kind + "</div>" + KIND_JS)
+
+
+KIND_JS = """<script>
+(function(){
+  var q=new URLSearchParams(location.search).get("type"), k=q==="hdb"?"hdb":q==="private"?"pte":"all";
+  function set(v,save){k=v;
+    document.querySelectorAll("[data-kind]").forEach(function(e){e.hidden=v!=="all"&&e.getAttribute("data-kind")!==v;});
+    document.querySelectorAll(".tp-kind [data-k]").forEach(function(b){b.classList.toggle("active",b.getAttribute("data-k")===v);});
+    if(save){try{var u=new URL(location.href);if(v==="all")u.searchParams.delete("type");else u.searchParams.set("type",v==="pte"?"private":"hdb");history.replaceState(null,"",u.pathname+u.search+u.hash);}catch(e){}}}
+  window.tpGo=function(t){if(!t)return;try{posthog.capture("town_guide_switch",{to:t,type:k});}catch(e){}
+    location.href="/"+t+(k==="all"?"":"?type="+(k==="pte"?"private":"hdb"));};
+  document.addEventListener("click",function(e){var b=e.target.closest(".tp-kind [data-k]");if(!b)return;set(b.getAttribute("data-k"),true);
+    try{posthog.capture("town_guide_type",{type:b.getAttribute("data-k")});}catch(x){}});
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",function(){set(k,false);});else set(k,false);
+})();
+</script>"""
 
 
 def build_hub(stats, market, head, header, footer, picker):
@@ -568,7 +593,7 @@ def main():
             stats.append(build(town, {"slug": v["file"]}, head, header, footer, picker))
         except Exception as e:  # one bad town must not stop the others
             print(f"skipped {town}: {e}")
-    build_hub(stats, market, head, header, footer, picker)
+    build_hub(stats, market, head, header, footer, picker_html(market, with_kind=False))
     print(f"built {len(stats)} town pages + town-guide.html (index={INDEX})")
 
 
