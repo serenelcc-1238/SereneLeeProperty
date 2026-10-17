@@ -587,7 +587,7 @@ async function overLimit(request, env) {
 /* ---------- Name + mobile before the 3rd question ----------
    chatbot.js asks for these after FREE_QUESTIONS answers; the same check runs
    here so the step can't be skipped by calling the API directly. */
-const FREE_QUESTIONS = 2;
+const FREE_QUESTIONS = 3;
 /* Phone check: Singapore mobiles are 8 digits starting with 8 or 9 (optional
    +65). Overseas numbers must start with + and a country code. Obvious fakes
    (all one digit, running sequences, the form's example number) are refused.

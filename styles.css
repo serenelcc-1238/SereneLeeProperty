@@ -860,3 +860,5 @@ a.home-mm-more{text-decoration:none;}
 .chatbot-lead-note{font-size:.7rem;color:var(--muted)}
 .chatbot-lead-note a{color:inherit}
 .chatbot-input:disabled{opacity:.6;cursor:not-allowed}
+.chatbot-wa{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;background:#25d366;color:#fff;font-weight:700;font-size:.84rem;padding:9px 14px;border-radius:999px;text-decoration:none}
+.chatbot-wa:hover{background:#1ebe5b}

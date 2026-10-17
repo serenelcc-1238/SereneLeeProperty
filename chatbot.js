@@ -38,7 +38,7 @@
   }
 
   // How many questions a visitor can ask before we ask for name + mobile.
-  var FREE_QUESTIONS = 2;
+  var FREE_QUESTIONS = 3;
   var LEAD_KEY = "sl_chat_lead";
   function loadLead() {
     try { var l = JSON.parse(localStorage.getItem(LEAD_KEY) || "null"); return l && l.name && l.phone ? l : null; } catch (e) { return null; }
@@ -128,7 +128,16 @@
           saveLead(lead);
           box.remove(); leadFormEl = null;
           lockInput(false);
-          addBubble("assistant", "Thanks, " + n.name.split(" ")[0] + "! What would you like to know next?");
+          addBubble("assistant", "Thanks, " + n.name.split(" ")[0] + "! What would you like to know next? If you'd rather talk to Serene directly, tap below to continue on WhatsApp.");
+          var asked = history.filter(function (m) { return m.role === "user"; }).map(function (m) { return m.content.replace(/\s+/g, " ").slice(0, 120); });
+          var wa = document.createElement("a");
+          wa.className = "chatbot-wa";
+          wa.target = "_blank"; wa.rel = "noopener";
+          wa.href = "https://wa.me/6580868568?text=" + encodeURIComponent("Hi Serene, I'm " + n.name + ". I was asking your website assistant about: " + asked.join(" / "));
+          wa.textContent = "Continue with Serene on WhatsApp";
+          wa.addEventListener("click", function () { try { window.posthog && posthog.capture("chatbot_whatsapp_click"); } catch (x) {} });
+          messagesEl.appendChild(wa);
+          messagesEl.scrollTop = messagesEl.scrollHeight;
           try { window.posthog && posthog.capture("chatbot_lead_captured", { overseas: !!ph.overseas }); } catch (x) {}
           input.focus();
         } catch (x) {
