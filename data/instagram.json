@@ -1,8 +1,44 @@
 {
  "account": "serene.leecc",
  "profile": "https://www.instagram.com/serene.leecc/",
- "updated": "2026-10-07T19:29:12Z",
+ "updated": "2026-10-17T07:26:00Z",
  "posts": [
+  {
+   "id": "6ad2bd8587c4935770a37120",
+   "url": "https://www.instagram.com/p/Deky0yeibQT/",
+   "caption": "Thomson Reserve: 1,268 new homes right next to Upper Thomson MRT. 🌳",
+   "sentAt": "2026-10-17T00:13:26.295Z",
+   "src": "https://sereneleeproperty.com/assets/ig/thomson-reserve-1.jpg",
+   "type": "post",
+   "img": "assets/ig/feed/6ad2bd8587c4935770a37120.jpg"
+  },
+  {
+   "id": "6ac66de081498cb51b81ed5a",
+   "url": "https://www.instagram.com/p/Deb0FqelZI9/",
+   "caption": "One condo launch made up 37% of all new launch sales in Singapore last quarter.",
+   "sentAt": "2026-10-13T12:31:22.512Z",
+   "src": "https://sereneleeproperty.com/assets/ig/mm-newlaunch-q2-2026.jpg",
+   "type": "post",
+   "img": "assets/ig/feed/6ac66de081498cb51b81ed5a.jpg"
+  },
+  {
+   "id": "6ac66ddb75e2178a994b7d32",
+   "url": "https://www.instagram.com/p/DeWqdwskYe_/",
+   "caption": "4-room prices in the North and North-East slipped this year. Bedok went the other way.",
+   "sentAt": "2026-10-11T12:31:03.174Z",
+   "src": "https://sereneleeproperty.com/assets/ig/mm-4room-prices-q3-2026.jpg",
+   "type": "post",
+   "img": "assets/ig/feed/6ac66ddb75e2178a994b7d32.jpg"
+  },
+  {
+   "id": "6ac66dd734c83ad4924f2061",
+   "url": "https://www.instagram.com/p/DeRdjgsEb--/",
+   "caption": "Tampines just had its busiest HDB resale quarter since at least 2017.",
+   "sentAt": "2026-10-09T12:04:30.298Z",
+   "src": "https://sereneleeproperty.com/assets/ig/mm-tampines-q3-2026.jpg",
+   "type": "post",
+   "img": "assets/ig/feed/6ac66dd734c83ad4924f2061.jpg"
+  },
   {
    "id": "6ab3d62df912ec25ba61d9d3",
    "url": "https://www.instagram.com/p/Dd3tqMhFgo4/",
