@@ -23,12 +23,11 @@ D = os.path.join(ROOT, "data")
 SITE = "https://sereneleeproperty.com"
 SQFT = 10.7639
 
-# town -> page settings. "index": False keeps the page out of Google and the
-# sitemap until Serene approves it.
-TOWNS = {
-    "WOODLANDS": {"slug": "woodlands", "district": "25", "index": False,
-                  "district_label": "District 25 (Woodlands, Admiralty, Kranji)"},
-}
+# Every HDB town in data/market-data.json gets a page at /<town-file-name>.
+# Set INDEX = False to keep all town pages out of Google and the sitemap.
+INDEX = True
+NEAR_M = 500           # private projects within this distance of a town's blocks count as "in and around" it
+REGION_ORDER = ["North", "North-East", "East", "West", "Central"]
 
 FT = {"1": "1-room", "2": "2-room", "3": "3-room", "4": "4-room", "5": "5-room", "E": "Executive", "M": "Multi-gen"}
 SALE = {1: "New sale", 2: "Sub sale", 3: "Resale"}
@@ -125,7 +124,30 @@ def line_chart(quarters, series, label):
 
 
 # ------------------------------------------------------------------ page
-def build(town, cfg, shell_head, shell_header, shell_footer):
+def nearby_projects(geo_blocks):
+    """Private projects within NEAR_M of any block of the town -> {(district, key): metres}."""
+    import math
+    grid = {}
+    for v in geo_blocks.values():
+        grid.setdefault((round(v[0] * 100), round(v[1] * 100)), []).append(v)
+    out = {}
+    for path in sorted(os.listdir(os.path.join(D, "geo", "ura"))):
+        d = path[1:3]
+        for key, v in load(f"geo/ura/{path}").items():
+            gx, gy = round(v[0] * 100), round(v[1] * 100)
+            best = 9e9
+            for dx in (-1, 0, 1):
+                for dy in (-1, 0, 1):
+                    for b in grid.get((gx + dx, gy + dy), []):
+                        dl = (v[0] - b[0]) * 110574
+                        dn = (v[1] - b[1]) * 111320 * math.cos(math.radians(v[0]))
+                        best = min(best, (dl * dl + dn * dn) ** 0.5)
+            if best <= NEAR_M:
+                out[(d, key)] = best
+    return out
+
+
+def build(town, cfg, shell_head, shell_header, shell_footer, picker):
     market = load("market-data.json")
     th = market["hdb"]["towns"][town]
     f = load(f"hdb/{th['file']}.json")
@@ -232,11 +254,21 @@ def build(town, cfg, shell_head, shell_header, shell_footer):
         f"<tr><td>{ym(r[0])}</td><td><a href='/market-map?blk={esc(r[8])}&amp;street={esc(title(r[7]))}'>Blk {esc(r[8])} {esc(title(r[7]))}</a></td>"
         f"<td>{FT[r[1]]}</td><td>{r[2]:02d}–{r[2]+2:02d}</td><td class='r'><b>{money(r[6])}</b></td></tr>" for r in top)
 
-    # --- private (district)
-    d = cfg["district"]
-    ura = load(f"ura/d{d}.json")
-    ugeo = load(f"geo/ura/d{d}.json")
-    projects = {(p[0], p[1]): p for p in load("ura/projects.json") if p[2] == d}
+    # --- private: projects in and around the town (by OneMap location)
+    near = nearby_projects(geo)
+    dists = {}
+    for (dd, _k) in near:
+        dists[dd] = dists.get(dd, 0) + 1
+    d_main = sorted(dists, key=lambda k: -dists[k])
+    d = d_main[0] if d_main else ""
+    launch_districts = [k for k in d_main if dists[k] >= max(3, 0.2 * len(near))] or d_main[:1]
+    ura, ugeo = {}, {}
+    for dd in dists:
+        u, g = load(f"ura/d{dd}.json"), load(f"geo/ura/d{dd}.json")
+        for (d2, key) in near:
+            if d2 == dd and key in u:
+                ura[key], ugeo[key] = u[key], g.get(key)
+    projects = {(p[0], p[1]): p for p in load("ura/projects.json") if p[2] in dists}
     plast = max((r[0] for rs in ura.values() for r in rs), default=last)
     pc12, pc24 = months_back(plast, 12), months_back(plast, 24)
     ppsf = lambda r: r[4] / (r[2] * SQFT)
@@ -250,7 +282,7 @@ def build(town, cfg, shell_head, shell_header, shell_footer):
         pte_rows.append(
             f"<tr><td><b>{PT[code]} resale</b></td><td class='r'>{len(a)}</td><td class='r'><b>{money(pte_med[code])}</b></td>"
             f"<td class='r'>{money(med([ppsf(r) for r in a]))}</td><td class='r'>{pct(med([ppsf(r) for r in a]), med([ppsf(r) for r in b])) if len(b) >= 10 else '–'}</td></tr>")
-    proj = []
+    proj, proj_all = [], [k for k in ura if not k.upper().startswith("LANDED HOUSING")]
     for key, rs in ura.items():
         name, street = key.split("|", 1)
         if name.upper().startswith("LANDED HOUSING"):
@@ -262,7 +294,7 @@ def build(town, cfg, shell_head, shell_header, shell_footer):
         pt = meta[4] if meta else ""
         if pt not in ("C", "E"):
             continue
-        g = ugeo.get(key)
+        g = ugeo.get(key)  # [lat, lng, postal, nearest stations]
         near = f"{esc(S[g[3][0][0]][0])}, {g[3][0][1]:,} m" if g else "–"
         kinds = {}
         for r in a:
@@ -274,7 +306,8 @@ def build(town, cfg, shell_head, shell_header, shell_footer):
 
     # --- new launches
     nl = load("new-launches.json")
-    launches = [p for p in nl["projects"] if p.get("district") == f"d{d}"]
+    launches = [p for p in nl["projects"] if p.get("district", "")[1:] in launch_districts]
+    dlab = " / ".join(f"D{k}" for k in launch_districts)
     ten = {"leasehold_99": "99-year leasehold", "freehold": "Freehold"}
     nl_rows = "".join(
         f"<tr><td><b>{esc(p['name'])}</b><br><span class='tp-mut'>{esc(p.get('developer',''))}</span></td><td>{esc(p.get('status','').title())}</td>"
@@ -283,16 +316,21 @@ def build(town, cfg, shell_head, shell_header, shell_footer):
 
     # --- persona maths
     up = ""
-    if m4 and pte_med.get("E"):
-        up = (f"<p>A typical {tname} 4-room flat resold for about <b>{money(m4)}</b> in the last 12 months. A resale executive condo in "
-              f"District {d} went for about <b>{money(pte_med['E'])}</b>, and a resale condo for about <b>{money(pte_med.get('C', 0))}</b>. "
-              f"The gap of roughly <b>{money(pte_med['E'] - m4)}</b> to an EC is what your sale proceeds, CPF and a new loan need to cover.</p>")
+    base_ft = "4" if m4 else ("5" if ft_med.get("5") else "3")
+    base = ft_med.get(base_ft, 0)
+    tgt = "E" if pte_med.get("E") else ("C" if pte_med.get("C") else "")
+    if base and tgt:
+        other = f", and a resale condo for about <b>{money(pte_med['C'])}</b>" if tgt == "E" and pte_med.get("C") else ""
+        up = (f"<p>A typical {tname} {FT[base_ft]} flat resold for about <b>{money(base)}</b> in the last 12 months. A resale "
+              f"{PT[tgt].lower()} in and around {tname} went for about <b>{money(pte_med[tgt])}</b>{other}. "
+              f"The gap of roughly <b>{money(pte_med[tgt] - base)}</b> to {'an EC' if tgt=='E' else 'a condo'} is what your sale proceeds, CPF and a new loan need to cover.</p>")
     down = ""
     big = ft_med.get("E") or ft_med.get("5")
-    small = ft_med.get("3")
-    if big and small:
+    small = ft_med.get("3") or ft_med.get("2")
+    if big and small and big > small:
         bl = "Executive" if ft_med.get("E") else "5-room"
-        down = (f"<p>An {bl} flat here resold for about <b>{money(big)}</b>, and a 3-room for about <b>{money(small)}</b>. "
+        sl = "3-room" if ft_med.get("3") else "2-room"
+        down = (f"<p>{'An' if bl[0] in 'AEIOU' else 'A'} {bl} flat here resold for about <b>{money(big)}</b>, and a {sl} for about <b>{money(small)}</b>. "
                 f"Moving from one to the other in {tname} could free up roughly <b>{money(big - small)}</b> before stamp duty, agent fees "
                 f"and the CPF refund to your own account.</p>")
 
@@ -304,23 +342,25 @@ def build(town, cfg, shell_head, shell_header, shell_footer):
         (f"Which MRT stations serve {tname}?",
          f"Most {tname} HDB blocks are nearest to {', '.join(mrt_names[:-1])} or {mrt_names[-1]} station, based on OneMap locations." if len(mrt_names) > 1 else ""),
         (f"Is {tname} a good place to upgrade or right-size?",
-         f"{tname} has a wide range of flat ages and sizes plus condos and executive condos in District {d}, so upgraders and "
+         f"{tname} has a range of flat ages and sizes, with {len(proj_all)} condo and EC projects in and around the estate, so upgraders and "
          f"right-sizers can often stay in the same area. The right choice depends on your budget, CPF and timeline; Serene can work out the numbers with you."),
         (f"Are there new launches near {tname}?",
-         (f"Yes. {', '.join(p['name'] for p in launches)} {'is' if len(launches)==1 else 'are'} in District {d}. See the New Launches page for details and VIP previews."
-          if launches else f"There are no new launches in District {d} in the current feed. See the New Launches page for options nearby.")),
+         (f"Yes. {', '.join(p['name'] for p in launches)} {'is' if len(launches)==1 else 'are'} in {dlab}, the postal district{'s' if len(launch_districts)>1 else ''} around {tname}. See the New Launches page for details and VIP previews."
+          if launches else f"There are no new launches in {dlab} in the current feed. See the New Launches page for options elsewhere.")),
     ]
     faqs = [(qq, aa) for qq, aa in faqs if aa]
     faq_html = "".join(f"<h3>{esc(qq)}</h3><p>{esc(aa)}</p>" for qq, aa in faqs)
     faq_ld = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
         {"@type": "Question", "name": qq, "acceptedAnswer": {"@type": "Answer", "text": aa}} for qq, aa in faqs]}
 
+    cps = [ppsf(r) for rs in ura.values() for r in rs if r[1] == 3 and r[6] in ("C", "E") and r[5] == 1 and r[0] > pc12]
+    kpi_psf = f"{money(med(cps))} psf" if len(cps) >= 5 else "–"
     hdb_date = fmt_date(market["hdb"]["fetched"])
     ura_date = fmt_date(market["ura"]["fetched"])
     meta_title = f"{tname} HDB & Condo Prices {now_year}: Resale, MRT & New Launches | Serene Lee"
     meta_desc = (f"{tname} 4-room HDB resale median {money(m4)} in the last 12 months. Prices by flat type, lease and MRT station, "
-                 f"District {d} condos and ECs, and new launches. Official HDB & URA data, updated weekly.")
-    robots = "" if cfg["index"] else '<meta name="robots" content="noindex, follow">\n'
+                 f"condos and ECs nearby, and new launches. Official HDB & URA data, updated weekly.")
+    robots = "" if INDEX else '<meta name="robots" content="noindex, follow">\n'
     head = shell_head
     head = re.sub(r"<title>.*?</title>", f"<title>{esc(meta_title)}</title>", head, flags=re.S)
     head = re.sub(r'(<meta (?:name|property)="(?:description|og:description|twitter:description)" content=")[^"]*', lambda m: m.group(1) + esc(meta_desc), head)
@@ -333,8 +373,9 @@ def build(town, cfg, shell_head, shell_header, shell_footer):
     wa = lambda t: "https://wa.me/6580868568?text=" + re.sub(r" ", "%20", esc(t))
     body = f"""
 <div class="page-hero page-hero-wide container">
-  <span class="eyebrow">Town guide · {esc(tname)}</span>
-  <h1 style="font-size:2.1rem;">{esc(tname)} property prices: HDB, condos and MRT</h1>
+  <span class="eyebrow">Town guide</span>
+  {picker.replace(f'value="{page}"', f'value="{page}" selected')}
+  <h1 style="font-size:2.1rem;margin-top:14px">{esc(tname)} property prices: HDB, condos and MRT</h1>
   <p>What {esc(tname)} flats and condos have actually sold for, by flat type, lease and MRT station. Official HDB and URA data, updated every week.</p>
   <p class="tp-upd">HDB data retrieved {hdb_date} (latest resale month {ym(last)}) · URA data retrieved {ura_date}</p>
 </div>
@@ -342,9 +383,9 @@ def build(town, cfg, shell_head, shell_header, shell_footer):
 <section style="padding-top:12px;"><div class="container">
   <div class="tp-kpis">
     <div class="tp-tile"><div class="k">HDB resales, last 12 months</div><div class="v">{len(r12):,}</div><div class="s">Median {money(med(all12))}</div></div>
-    <div class="tp-tile"><div class="k">4-room median</div><div class="v">{money(m4)}</div><div class="s">{len([r for r in r12 if r[1]=='4']):,} deals</div></div>
-    <div class="tp-tile"><div class="k">MRT stations</div><div class="v">{len(mrt_names)}</div><div class="s">{esc(', '.join(n.replace(' MRT','') for n in mrt_names))}</div></div>
-    <div class="tp-tile"><div class="k">District {d} condo resale</div><div class="v">{money(med([ppsf(r) for rs in ura.values() for r in rs if r[1]==3 and r[6]=='C' and r[5]==1 and r[0]>pc12]))} psf</div><div class="s">Median, last 12 months</div></div>
+    <div class="tp-tile"><div class="k">4-room median</div><div class="v">{money(m4) if m4 else '–'}</div><div class="s">{len([r for r in r12 if r[1]=='4']):,} deals</div></div>
+    <div class="tp-tile"><div class="k">{'MRT &amp; LRT stations' if any('LRT' in n for n in mrt_names) else 'MRT stations'}</div><div class="v">{len(mrt_names)}</div><div class="s">{esc(', '.join(mrt_names[:4]) + (f' and {len(mrt_names)-4} more' if len(mrt_names) > 4 else ''))}</div></div>
+    <div class="tp-tile"><div class="k">Nearby condo &amp; EC resale</div><div class="v">{kpi_psf}</div><div class="s">Median, last 12 months</div></div>
   </div>
 
   <div class="tp-card"><h2>HDB resale prices by flat type</h2>
@@ -377,14 +418,14 @@ def build(town, cfg, shell_head, shell_header, shell_footer):
     </div>
   </div>
 
-  <div class="tp-card"><h2>Condos and executive condos: {esc(cfg['district_label'])}</h2>
+  <div class="tp-card"><h2>Condos and executive condos in and around {esc(tname)}</h2>
     <div class="tp-tablewrap"><table class="tp-table"><thead><tr><th>Type</th><th class="r">Deals</th><th class="r">Median price</th><th class="r">Median $psf</th><th class="r">$psf vs year before</th></tr></thead><tbody>{''.join(pte_rows)}</tbody></table></div>
     <h3 class="tp-h3">Most traded projects</h3>
     <div class="tp-tablewrap"><table class="tp-table"><thead><tr><th>Project</th><th class="r">Deals</th><th class="r">Median $psf</th><th>Nearest MRT</th></tr></thead><tbody>{proj_rows}</tbody></table></div>
-    <p class="tp-src">Last 12 months of URA caveats to {ym(plast)}; single-unit deals only. Source: <a href="https://eservice.ura.gov.sg/maps/api/" target="_blank" rel="noopener">URA Data Service</a>.</p>
+    <p class="tp-src">{len(proj_all)} private projects within {NEAR_M} m of a {esc(tname)} HDB block (OneMap locations), postal district{'s' if len(dists)>1 else ''} {', '.join(sorted(dists))}. Last 12 months of URA caveats to {ym(plast)}; single-unit deals only. Source: <a href="https://eservice.ura.gov.sg/maps/api/" target="_blank" rel="noopener">URA Data Service</a>.</p>
   </div>
 
-  {f'''<div class="tp-card"><h2>New launches in District {d}</h2>
+  {f'''<div class="tp-card"><h2>New launches in {dlab}</h2>
     <div class="tp-tablewrap"><table class="tp-table"><thead><tr><th>Project</th><th>Status</th><th>Tenure</th><th>Completion</th><th class="r">From</th></tr></thead><tbody>{nl_rows}</tbody></table></div>
     <p class="tp-src">From the ERA new launch feed, retrieved {fmt_date(nl['retrieved'])}. <a href="/new-launches">All new launches</a> · Serene can register you for VIP previews.</p>
   </div>''' if launches else ''}
@@ -412,7 +453,8 @@ def build(town, cfg, shell_head, shell_header, shell_footer):
     out = head + shell_header + body + shell_footer
     with open(os.path.join(ROOT, f"{page}.html"), "w") as fh:
         fh.write(out)
-    print(f"built {page}.html ({len(out)//1024} KB, index={cfg['index']})")
+    return {"town": tname, "slug": page, "region": th["region"], "m4": m4, "n12": len(r12),
+            "med": med(all12), "mrt": len(mrt_names), "psf": kpi_psf}
 
 
 CSS = """<style>
@@ -447,19 +489,87 @@ CSS = """<style>
 .tp-key i{display:inline-block;width:14px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle}
 .tp-persona p{font-size:.92rem;color:var(--ink,inherit)}
 .tp-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.tp-pick{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:14px 0 4px}
+.tp-pick label{font-weight:700;font-size:.9rem;color:var(--navy-900)}
+.tp-pick select{min-width:240px;max-width:100%;font-size:1rem;padding:10px 12px}
+.tp-region{font-size:1.15rem;margin:22px 0 10px}
+.tp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.tp-town{display:flex;flex-direction:column;gap:3px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;text-decoration:none;color:var(--muted);font-size:.84rem}
+.tp-town b{font:600 1.1rem 'Fraunces',Georgia,serif;color:var(--navy-900);margin-bottom:4px}
+.tp-town strong{color:var(--navy-900)}
+.tp-town:hover{border-color:var(--gold);box-shadow:var(--shadow)}
 .tp-faq h3{font-size:1rem;margin:16px 0 4px}
 .tp-faq p{color:var(--muted);font-size:.92rem;margin:0;max-width:820px}
 </style>"""
+
+
+def picker_html(market):
+    groups = {}
+    for t, v in market["hdb"]["towns"].items():
+        groups.setdefault(v["region"] or "Other", []).append((title(t), v["file"]))
+    opts = "".join(
+        f'<optgroup label="{esc(r)}">' + "".join(f'<option value="{f}">{esc(n)}</option>' for n, f in sorted(groups[r])) + "</optgroup>"
+        for r in REGION_ORDER + sorted(set(groups) - set(REGION_ORDER)) if r in groups)
+    return ('<div class="tp-pick"><label for="tpTown">Choose an estate</label>'
+            '<select id="tpTown" class="sort-select" onchange="if(this.value){try{posthog.capture(\'town_guide_switch\',{to:this.value})}catch(e){}location.href=\'/\'+this.value}">'
+            '<option value="">Select an HDB town…</option>' + opts + "</select></div>")
+
+
+def build_hub(stats, market, head, header, footer, picker):
+    by = {}
+    for x in stats:
+        by.setdefault(x["region"], []).append(x)
+    cards = ""
+    for r in REGION_ORDER:
+        if r not in by:
+            continue
+        cards += f'<h2 class="tp-region">{esc(r)}</h2><div class="tp-grid">' + "".join(
+            f'<a class="tp-town" href="/{x["slug"]}"><b>{esc(x["town"])}</b>'
+            f'<span>4-room median <strong>{money(x["m4"]) if x["m4"] else "–"}</strong></span>'
+            f'<span>{x["n12"]:,} HDB resales · {x["mrt"]} MRT/LRT station{"s" if x["mrt"] != 1 else ""}</span>'
+            f'<span>Condo &amp; EC resale {x["psf"]}</span></a>' for x in sorted(by[r], key=lambda x: x["town"])) + "</div>"
+    last = market["hdb"]["last_month"]
+    t = "Singapore HDB Town Guides: Resale Prices, MRT & Condos by Estate | Serene Lee"
+    dsc = "Resale prices for every HDB town in Singapore: flat types, lease age, prices by MRT station, nearby condos and ECs, and new launches. Official HDB & URA data, updated weekly."
+    h = re.sub(r"<title>.*?</title>", f"<title>{esc(t)}</title>", head, flags=re.S)
+    h = re.sub(r'(<meta (?:name|property)="(?:description|og:description|twitter:description)" content=")[^"]*', lambda m: m.group(1) + esc(dsc), h)
+    h = re.sub(r'(<meta (?:property|name)="(?:og:title|twitter:title)" content=")[^"]*', lambda m: m.group(1) + esc(t), h)
+    h = re.sub(r'(<link rel="canonical" href=")[^"]*', r"\g<1>" + SITE + "/town-guide", h)
+    h = re.sub(r'(<meta property="og:url" content=")[^"]*', r"\g<1>" + SITE + "/town-guide", h)
+    if not INDEX:
+        h = h.replace('<link rel="canonical"', '<meta name="robots" content="noindex, follow">\n<link rel="canonical"', 1)
+    h = h.replace("</head>", CSS + "\n</head>")
+    body = f"""
+<div class="page-hero page-hero-wide container">
+  <span class="eyebrow">Town guides</span>
+  <h1 style="font-size:2.1rem;">HDB town guides: prices by estate</h1>
+  <p>Pick an estate to see what flats and condos there have actually sold for, by flat type, lease and MRT station. Official HDB and URA data, updated every week.</p>
+  {picker}
+  <p class="tp-upd">Last 12 months of HDB resales to {ym(last)}.</p>
+</div>
+<section style="padding-top:12px;"><div class="container">{cards}</div></section>
+"""
+    with open(os.path.join(ROOT, "town-guide.html"), "w") as fh:
+        fh.write(h + header + body + footer)
 
 
 def main():
     tpl = open(os.path.join(ROOT, "million-dollar-hdb.html")).read()
     head = tpl[:tpl.index("<body>")]
     header = tpl[tpl.index("<body>"):tpl.index("</header>") + len("</header>")] + "\n"
-    footer = tpl[tpl.index("<!-- FOOTER -->"):]
-    # Drop the million-dollar page's own JSON-LD (keep the RealEstateAgent block)
-    for town, cfg in TOWNS.items():
-        build(town, cfg, head, header, "\n" + footer)
+    footer = "\n" + tpl[tpl.index("<!-- FOOTER -->"):]
+    market = load("market-data.json")
+    picker = picker_html(market)
+    stats = []
+    for town, v in market["hdb"]["towns"].items():
+        if not os.path.exists(os.path.join(D, "hdb", v["file"] + ".json")):
+            continue
+        try:
+            stats.append(build(town, {"slug": v["file"]}, head, header, footer, picker))
+        except Exception as e:  # one bad town must not stop the others
+            print(f"skipped {town}: {e}")
+    build_hub(stats, market, head, header, footer, picker)
+    print(f"built {len(stats)} town pages + town-guide.html (index={INDEX})")
 
 
 if __name__ == "__main__":
