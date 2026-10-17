@@ -42,15 +42,16 @@ ABOUT SERENE:
 - Contact: WhatsApp +65 8086 8568 (wa.me/6580868568), email serenelcc@gmail.com.
 - ERA Realty Network Pte Ltd, 450 Lorong 6 Toa Payoh, #03-01 ERA APAC Centre, Singapore 319394. ERA main line +65 6226 2000.
 
-SITE PAGES YOU CAN POINT VISITORS TO (use relative links exactly as written):
-- new-launches.html — current new launch projects Serene is tracking, with prices, TOP dates, region/tenure filters.
-- market-map.html — interactive map of HDB resale and private transactions by town/district, with "Check my block" and "Check my condo" lookups.
-- million-dollar-hdb.html — every $1M+ HDB resale.
-- calculator.html — free affordability calculator (TDSR/MSR, loan eligibility estimate).
-- upgrade-checklist.html — free 2-minute HDB Upgrader Checklist with a readiness score.
-- blog.html — guides on lease decay, HDB upgrading, new launch write-ups.
-- faq.html — 27 detailed FAQs on buying, selling and renting.
-- about.html, contact.html.
+SITE PAGES YOU CAN POINT VISITORS TO (write them as sereneleeproperty.com/<page>, e.g. sereneleeproperty.com/market-map):
+- /new-launches — current new launch projects Serene is tracking, with prices, TOP dates, region/tenure filters.
+- /market-map — interactive map of HDB resale and private transactions by town/district, with "Check my block" and "Check my condo" lookups.
+- /million-dollar-hdb — every $1M+ HDB resale.
+- /calculator — free affordability calculator (TDSR/MSR, loan eligibility estimate).
+- /upgrade-checklist — free 2-minute HDB Upgrader Checklist with a readiness score.
+- /blog — guides on lease decay, HDB upgrading, new launch write-ups.
+- /faq — 27 detailed FAQs on buying, selling and renting.
+- /about, /contact.
+- /privacy — privacy policy (how visitors' personal data is used).
 - Do not mention or link to a testimonials or reviews page (there isn't one yet).
 
 KEY SINGAPORE PROPERTY FACTS (current as of Sep 2026 — always caveat that rules change and to verify time-sensitive figures with Serene or the relevant authority):
@@ -62,7 +63,7 @@ KEY SINGAPORE PROPERTY FACTS (current as of Sep 2026 — always caveat that rule
 - CPF refund on sale: principal withdrawn + accrued interest (2.5% p.a. floor rate) must be refunded to CPF.
 - HDB resale levy (for 2nd-timers, flats booked on/after 3 Mar 2006): $15k (2-room) to $50k (Executive/Maisonette) — does not apply if buying resale without a CPF grant, or upgrading to private property.
 - Renting: 6-month minimum lease for HDB, 3-month for private. Whole-flat HDB rental needs 5-year MOP met and ALL owners must be Singapore Citizens (a PR co-owner disqualifies it). Non-Citizen Quota: 8% neighbourhood / 11% block cap on foreign tenants (Malaysians exempt). HDB approval required via My HDBPage before tenancy starts ($20 fee).
-- Full detail and more FAQs (income ceilings, CPF grants, SSD, tenant screening, tax) are on faq.html — point visitors there for anything more specific than the summary above.
+- Full detail and more FAQs (income ceilings, CPF grants, SSD, tenant screening, tax) are on /faq — point visitors there for anything more specific than the summary above.
 
 HOW TO BEHAVE:
 - Be warm, concise, and helpful — like a knowledgeable colleague, not a sales script. Short paragraphs or a few bullet points, not walls of text.
@@ -72,16 +73,17 @@ HOW TO BEHAVE:
   - hdb_resale_lookup for HDB resale prices (by town, flat type, street or block).
   - private_transactions_lookup for condo/EC/landed transaction prices (by project or postal district).
   - new_launches_lookup for current new launches (starting price, units left, TOP).
-  - mrt_lookup for anything about MRT/LRT proximity: blocks or condos near a station, or the nearest station to a block or condo. Quote distances as "about Xm straight-line" and mention walking is a bit longer. For a map view, point to market-map.html (the block and condo check shows a OneMap location map).
+  - mrt_lookup for anything about MRT/LRT proximity: blocks or condos near a station, or the nearest station to a block or condo. Quote distances as "about Xm straight-line" and mention walking is a bit longer. For a map view, point to /market-map (the block and condo check shows a OneMap location map).
 - When you quote figures: give the median and range (and $psf), say how many deals and over what period, and name the source and the "data as of" date, e.g. "Based on 48 HDB resale deals in the last 12 months (data.gov.sg, updated 12 Oct 2026)". Round to the nearest $1,000. These are past transacted prices, not a valuation of the visitor's own unit — for a proper valuation or a specific unit, offer to connect them with Serene.
 - For "most expensive", "highest", "record", "cheapest" or "lowest" questions, use highest_deals / lowest_deals from the tool: name the block and street (or condo project), flat type, storey range, size, $psf and month, in the form "The top [town] resale in the last 12 months was a [flat type] at Blk [block] [street], storey [range], [size] sqm, sold for $[price] ($[psf] psf) in [month]." using only the figures the tool returned. Add the next one or two highest if helpful.
 - Sound confident and professional. Lead with what the data shows. Never open with or dwell on what you can't do or what the data doesn't show ("I can't", "the data doesn't show", "unfortunately"). If a detail truly isn't in the data (e.g. exact unit number, asking prices), skip the apology and offer the next step instead, e.g. "Serene can pull the exact unit details for you on WhatsApp."
-- Never invent numbers. If a tool returns no deals for a filter, say what is available instead (widen the period, the town or the flat type) and point to market-map.html or WhatsApp Serene.
+- Never invent numbers. If a tool returns no deals for a filter, say what is available instead (widen the period, the town or the flat type) and point to /market-map or WhatsApp Serene.
 - Serene serves clients across ALL of Singapore, every HDB town and every district. Never say or imply that any town, estate or district is outside her area, focus, coverage or expertise, and never compare areas as ones she knows better or less well. Answer every location question with the same confidence, and offer Serene's help for any area.
-- For a new launch's unit mix, floor plans or VIP preview access, point to new-launches.html and offer Serene's help.
-- For a personal affordability/eligibility calculation, point to calculator.html or upgrade-checklist.html.
+- For a new launch's unit mix, floor plans or VIP preview access, point to /new-launches and offer Serene's help.
+- For a personal affordability/eligibility calculation, point to /calculator or /upgrade-checklist.
 - Do not give definitive personal financial, mortgage, tax or legal advice — share the general rule, then suggest confirming specifics with Serene or the relevant authority (HDB/IRAS/CPF Board).
 - You are not able to book viewings, see current asking prices/listings, or see a visitor's financial documents — for anything requiring that, direct them to WhatsApp Serene directly.
+- When you ask for contact details, say they will be passed to Serene so she can follow up (/privacy has the details). Never ask for NRIC, bank or other sensitive details, and tell visitors not to share them.
 - If a visitor shares their name AND a way to reach them (phone or email) AND what they're interested in, use the capture_lead tool ONCE to pass it to Serene — then let them know Serene will follow up. Don't ask for contact details unless the conversation naturally calls for a follow-up (e.g. they want a specific project's pricing when it's out, or want Serene to review their numbers) — don't be pushy about it.
 - If asked who you are: you're an AI assistant answering on Serene's behalf, not Serene herself.`;
 
@@ -364,7 +366,7 @@ async function newLaunchLookup(env, origin, input) {
       name: p.name, status: p.status, district: p.district, region: p.region, developer: p.developer,
       tenure: p.tenure, top: p.top, units: p.units, available: p.available, from_price: p.minPrice,
     })),
-    note: "Pinned spotlight projects (e.g. The Serra Residences) are on new-launches.html but not in this feed.",
+    note: "Pinned spotlight projects (e.g. The Serra Residences) are on /new-launches but not in this feed.",
   };
 }
 
@@ -374,7 +376,7 @@ async function mrtLookup(env, origin, input) {
   try {
     st = await loadData(env, origin, "data/geo/stations.json");
   } catch {
-    return { error: "MRT locations are still being prepared (first OneMap run). Point the visitor to market-map.html or WhatsApp Serene." };
+    return { error: "MRT locations are still being prepared (first OneMap run). Point the visitor to /market-map or WhatsApp Serene." };
   }
   const stations = st.stations; // [name, codes, lat, lng]
   const label = (i) => `${stations[i][0]}${stations[i][1] ? " (" + stations[i][1] + ")" : ""}`;
@@ -480,7 +482,7 @@ async function runDataTool(env, origin, name, input) {
     return { error: `Unknown tool ${name}` };
   } catch (err) {
     console.error(`Tool ${name} failed:`, err);
-    return { error: "Data lookup failed. Tell the visitor you couldn't pull the figures right now and suggest market-map.html or WhatsApp Serene." };
+    return { error: "Data lookup failed. Tell the visitor you couldn't pull the figures right now and suggest /market-map or WhatsApp Serene." };
   }
 }
 
@@ -550,7 +552,46 @@ function extractText(content) {
     .replace(/__(.*?)__/g, "$1");
 }
 
+/* ---------- Spam / cost protection ----------
+   1. Only accept chat requests sent from Serene's own website pages.
+   2. Limit each visitor (by IP address) to CHAT_LIMIT messages a minute,
+      using Cloudflare's rate limiting binding (CHAT_LIMITER in wrangler.jsonc).
+   3. Cap message and conversation length (see handleChatPost).
+   Backstop: set a monthly spend limit in the Anthropic Console. */
+const MAX_MESSAGE_CHARS = 1500;
+const MAX_CONVERSATION_CHARS = 15000;
+const ALLOWED_HOSTS = ["sereneleeproperty.com", "www.sereneleeproperty.com"];
+
+function fromOwnSite(request) {
+  const src = request.headers.get("Origin") || request.headers.get("Referer") || "";
+  try {
+    const host = new URL(src).hostname;
+    const self = new URL(request.url).hostname; // e.g. the workers.dev preview address
+    return ALLOWED_HOSTS.includes(host) || host === self || host === "localhost" || host === "127.0.0.1";
+  } catch {
+    return false;
+  }
+}
+
+async function overLimit(request, env) {
+  if (!env.CHAT_LIMITER) return false; // binding missing: don't block real visitors
+  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+  try {
+    const { success } = await env.CHAT_LIMITER.limit({ key: ip });
+    return !success;
+  } catch {
+    return false;
+  }
+}
+
 async function handleChatPost(request, env) {
+  if (!fromOwnSite(request)) {
+    return json({ error: "Chat is only available on sereneleeproperty.com." }, 403);
+  }
+  if (await overLimit(request, env)) {
+    return json({ error: "You're sending messages quite fast. Please wait a minute and try again, or WhatsApp Serene directly at +65 8086 8568." }, 429);
+  }
+
   if (!env.ANTHROPIC_API_KEY) {
     return json(
       { error: "Chat isn't configured yet — ANTHROPIC_API_KEY is missing." },
@@ -571,11 +612,20 @@ async function handleChatPost(request, env) {
   }
 
   // Keep the conversation bounded — last 20 turns is plenty for an FAQ bot
-  // and keeps per-request cost predictable.
+  // and keeps per-request cost predictable. Only plain text is accepted, so
+  // nobody can send images, files or fake tool results through the widget.
   const messages = incoming.slice(-20).map((m) => ({
     role: m.role === "assistant" ? "assistant" : "user",
-    content: m.content,
+    content: typeof m.content === "string" ? m.content : "",
   }));
+  const last = messages[messages.length - 1];
+  const totalChars = messages.reduce((n, m) => n + m.content.length, 0);
+  if (last.role !== "user" || !last.content.trim()) {
+    return json({ error: "Please type a message." }, 400);
+  }
+  if (last.content.length > MAX_MESSAGE_CHARS || totalChars > MAX_CONVERSATION_CHARS) {
+    return json({ error: "That message is a bit long for me. Please shorten it, or WhatsApp Serene directly at +65 8086 8568." }, 413);
+  }
 
   const pageUrl = typeof body.page === "string" ? body.page : "";
 

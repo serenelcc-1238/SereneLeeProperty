@@ -69,16 +69,16 @@ document.addEventListener('DOMContentLoaded', function () {
      other HTML pages don't each need editing. Skipped where the page
      already has the link written in (market-map.html itself). */
   document.querySelectorAll('.nav-dropdown-menu').forEach(function (menu) {
-    if (menu.querySelector('a[href="market-map.html"]')) return;
+    if (menu.querySelector('a[href="/market-map"]')) return;
     var mm = document.createElement('a');
-    mm.href = 'market-map.html';
+    mm.href = '/market-map';
     mm.textContent = 'Market Map';
     menu.appendChild(mm);
   });
   document.querySelectorAll('.nav-dropdown-menu').forEach(function (menu) {
-    if (menu.querySelector('a[href="million-dollar-hdb.html"]')) return;
+    if (menu.querySelector('a[href="/million-dollar-hdb"]')) return;
     var md = document.createElement('a');
-    md.href = 'million-dollar-hdb.html';
+    md.href = '/million-dollar-hdb';
     md.textContent = 'Million-Dollar HDB';
     if (location.pathname.indexOf('million-dollar-hdb') >= 0) md.className = 'active';
     menu.appendChild(md);

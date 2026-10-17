@@ -26,7 +26,7 @@
       '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 20l18-8L3 4v6l12 2-12 2z"/></svg>' +
       "</button>" +
       "</div>" +
-      '<div class="chatbot-disclaimer">AI assistant · general info only, not financial or legal advice.</div>' +
+      '<div class="chatbot-disclaimer">AI assistant · general info only, not financial or legal advice. Contact details you share go to Serene so she can follow up. <a href="/privacy" target="_blank" rel="noopener">Privacy</a></div>' +
       "</div>";
     document.body.appendChild(wrap);
 

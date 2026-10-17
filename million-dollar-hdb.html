@@ -51,26 +51,26 @@
 
 <header>
   <div class="nav-wrap">
-    <a href="index.html" class="brand">
+    <a href="/" class="brand">
       <strong>Serene Lee</strong>
     </a>
     <nav class="nav-links" id="navLinks">
-      <a href="index.html">Home</a>
-      <a href="about.html">About</a>
-      <a href="new-launches.html">New Launches</a>
-      <a href="blog.html">Blog</a>
-      <a href="faq.html">FAQ</a>
+      <a href="/">Home</a>
+      <a href="/about">About</a>
+      <a href="/new-launches">New Launches</a>
+      <a href="/blog">Blog</a>
+      <a href="/faq">FAQ</a>
       <div class="nav-dropdown">
         <button type="button" class="nav-dropdown-toggle">Tools <span class="caret">&#9662;</span></button>
         <div class="nav-dropdown-menu">
-          <a href="calculator.html">Affordability Calculator</a>
-          <a href="upgrade-checklist.html">Upgrade Checklist</a>
-          <a href="market-map.html">Market Map</a>
+          <a href="/calculator">Affordability Calculator</a>
+          <a href="/upgrade-checklist">Upgrade Checklist</a>
+          <a href="/market-map">Market Map</a>
         </div>
       </div>
-      <!-- Testimonials hidden until real client reviews: <a href="testimonials.html">Testimonials</a> -->
-      <a href="subscribers.html">Subscribe</a>
-      <a href="contact.html">Contact</a>
+      <!-- Testimonials hidden until real client reviews: <a href="/testimonials">Testimonials</a> -->
+      <a href="/subscribers">Subscribe</a>
+      <a href="/contact">Contact</a>
     </nav>
     <div class="nav-cta">
       <a href="https://wa.me/6580868568?text=Hi%20Serene%2C%20I%20found%20your%20website%20and%20would%20like%20to%20find%20out%20more." target="_blank" rel="noopener" class="btn btn-gold btn-sm">WhatsApp Serene</a>
@@ -197,7 +197,7 @@
       <h3>Are million-dollar HDB flats only 5-room or Executive flats?</h3>
       <p>No. Over the same 3 years, about 4 in 10 were 4-room flats, about 36% were 5-room and about 23% were Executive flats. Newer flats near MRT stations and the city, on high floors, make up a large share.</p>
       <h3>How do I find out what my own flat could sell for?</h3>
-      <p>Check every resale in your block on the <a href="market-map.html">Market Map</a>, then ask Serene for a free valuation that takes your unit's floor, facing and condition into account.</p>
+      <p>Check every resale in your block on the <a href="/market-map">Market Map</a>, then ask Serene for a free valuation that takes your unit's floor, facing and condition into account.</p>
     </div>
   </div>
 </section>
@@ -246,7 +246,7 @@
   <div class="container cta-banner">
     <h2>Wondering what your flat could fetch?</h2>
     <div class="btns">
-      <a href="market-map.html" class="btn btn-navy">Check My Block's Resale Prices</a>
+      <a href="/market-map" class="btn btn-navy">Check My Block's Resale Prices</a>
       <a href="https://wa.me/6580868568?text=Hi%20Serene%2C%20I%20saw%20your%20million-dollar%20HDB%20list%20and%20would%20like%20a%20valuation%20of%20my%20flat." target="_blank" rel="noopener" class="btn" style="background:#fff;color:var(--navy-900);">Ask Serene on WhatsApp</a>
     </div>
   </div>
@@ -359,7 +359,7 @@ function list(){
   $("mdSum").innerHTML=`<div><div class="k" title="Total number of HDB resale transactions">Total transactions</div><div class="v">${all.toLocaleString()}</div></div><div><div class="k">$1M and above</div><div class="v">${mill.toLocaleString()}</div></div><div><div class="k">Share at $1M+</div><div class="v">${all?(mill/all*100).toFixed(1)+"%":"–"}</div></div><div><div class="k">Highest price</div><div class="v">${mill?fmt$(Math.max(...D.filter(d=>inR(d[0])&&(!t||d[1]===t)&&(!f||d[4]===f)).map(d=>d[9]))):"–"}</div></div>`;
   $("mdCount").textContent="All HDB resales and million-dollar resales for: "+scope+(q?" · showing "+r.length.toLocaleString()+" matching \""+$("mdQ").value.trim()+"\"":"")+(range()[1]===LAST?" ("+ym(LAST)+" still in progress)":"")+".";
   $("mdBody").innerHTML=r.slice(0,shown).map(d=>{const band=String(d[5]).padStart(2,"0")+"–"+String(d[5]+2).padStart(2,"0");
-    const link="market-map.html?blk="+encodeURIComponent(d[2])+"&street="+encodeURIComponent(title(d[3]));
+    const link="/market-map?blk="+encodeURIComponent(d[2])+"&street="+encodeURIComponent(title(d[3]));
     return `<tr><td>${ym(d[0])}</td><td class="wrap" style="min-width:0">${esc(title(d[1]))}</td><td class="wrap"><a href="${link}" title="See every resale in this block">Blk ${esc(d[2])} ${esc(title(d[3]))}</a></td><td>${FT[d[4]]||d[4]}</td><td>${band}</td><td class="r">${Math.round(d[6]*SQFT).toLocaleString()}</td><td class="wrap" style="min-width:0">${esc(d[7])}</td><td>${d[8]}</td><td class="r"><b>${fmt$(d[9])}</b></td><td class="r">${fmt$(psf(d))}</td></tr>`;}).join("")||'<tr><td colspan="10">No million-dollar resales for this filter.</td></tr>';
   $("mdMore").hidden=r.length<=shown; $("mdMore").textContent="Show more ("+(r.length-Math.min(shown,r.length)).toLocaleString()+" left)";
 }
@@ -380,7 +380,8 @@ function list(){
     </div>
     <div class="legal-box">
       <p><strong>Serene Lee</strong> &middot; CEA Registration No. R027578Z</p>
-      <p><a href="subscribers.html" class="footer-subscribe">Subscribe to my blog &amp; newsletter &rarr;</a></p>
+      <p><a href="/privacy" class="footer-subscribe">Privacy Policy</a></p>
+      <p><a href="/subscribers" class="footer-subscribe">Subscribe to my blog &amp; newsletter &rarr;</a></p>
       <p>This website is for general information only and does not constitute financial, mortgage, or legal advice.</p>
       <p>&copy; <span id="year"></span> Serene Lee. All rights reserved.</p>
     </div>
