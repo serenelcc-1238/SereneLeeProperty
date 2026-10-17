@@ -57,7 +57,7 @@ jobs:
       - uses: actions/setup-node@v4
         if: steps.commit.outputs.changed == 'true'
         with:
-          node-version: 20
+          node-version: 22
       - name: Deploy site
         if: steps.commit.outputs.changed == 'true'
         run: |
