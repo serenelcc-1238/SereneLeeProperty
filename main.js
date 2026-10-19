@@ -66,10 +66,10 @@ document.addEventListener('DOMContentLoaded', function () {
   var navDropdowns = document.querySelectorAll('.nav-dropdown');
 
   /* Agent profile card above the footer on every page, except where her photo
-     already appears (homepage hero, About page). */
+     already appears (homepage hero, About page, Contact page). */
   (function () {
     var footer = document.querySelector('footer');
-    if (!footer || document.querySelector('.hm2-prof, .about-photo, .agent-band')) return;
+    if (!footer || document.querySelector('.hm2-prof, .about-photo, .contact-photo, .agent-band')) return;
     var band = document.createElement('section');
     band.className = 'agent-band';
     band.innerHTML =
