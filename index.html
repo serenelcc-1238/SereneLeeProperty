@@ -225,6 +225,33 @@
 })();
 </script>
 
+<!-- TOWN GUIDES: Serene's focus estates (figures filled in weekly by scripts/build_town_pages.py) -->
+<style>
+.home-towns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media(max-width:760px){.home-towns{grid-template-columns:1fr}}
+.home-towns .tp-town{display:flex;flex-direction:column;gap:3px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px;text-decoration:none;color:var(--muted);font-size:.86rem}
+.home-towns .tp-town b{font:600 1.15rem 'Fraunces',Georgia,serif;color:var(--navy-900);margin-bottom:4px}
+.home-towns .tp-town strong{color:var(--navy-900)}
+.home-towns .tp-town:hover{border-color:var(--gold);box-shadow:var(--shadow)}
+.home-towns .tp-go{margin-top:8px;font-weight:700;color:var(--navy-900)}
+.tp-upd{font-size:.82rem;color:var(--muted)}
+</style>
+<section>
+  <div class="container">
+    <div class="section-band">
+      <div>
+        <span class="eyebrow">Town guides</span>
+        <h2 style="font-size:1.6rem;margin:0;">Prices in Woodlands, Sembawang and Yishun</h2>
+      </div>
+      <a href="/town-guide" class="see-all" data-hm="town-guides">All 26 town guides &rarr;</a>
+    </div>
+<!-- TOWNS:START -->
+<div class="tp-grid home-towns"><a class="tp-town" href="/woodlands" data-hm="town-woodlands"><b>Woodlands</b><span>4-room median <strong>$550,000</strong></span><span>1,815 HDB resales in 12 months</span><span>Condo &amp; EC resale $1,234 psf</span><span class="tp-go">Open the Woodlands guide &rarr;</span></a><a class="tp-town" href="/sembawang" data-hm="town-sembawang"><b>Sembawang</b><span>4-room median <strong>$600,000</strong></span><span>852 HDB resales in 12 months</span><span>Condo &amp; EC resale $1,416 psf</span><span class="tp-go">Open the Sembawang guide &rarr;</span></a><a class="tp-town" href="/yishun" data-hm="town-yishun"><b>Yishun</b><span>4-room median <strong>$550,000</strong></span><span>1,548 HDB resales in 12 months</span><span>Condo &amp; EC resale $1,292 psf</span><span class="tp-go">Open the Yishun guide &rarr;</span></a></div>
+<p class="tp-upd" style="margin-top:10px">Official HDB and URA data to Oct 2026, updated weekly. <a href="/town-guide">See all 26 HDB town guides</a>.</p>
+<!-- TOWNS:END -->
+  </div>
+</section>
+
 <!-- FEATURED LAUNCHES -->
 <section class="band-alt">
   <div class="container">

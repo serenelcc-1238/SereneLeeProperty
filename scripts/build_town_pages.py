@@ -345,7 +345,7 @@ def build(town, cfg, shell_head, shell_header, shell_footer, picker):
          f"{tname} has a range of flat ages and sizes, with {len(proj_all)} condo and EC projects in and around the estate, so upgraders and "
          f"right-sizers can often stay in the same area. The right choice depends on your budget, CPF and timeline; Serene can work out the numbers with you."),
         (f"Are there new launches near {tname}?",
-         (f"Yes. {', '.join(p['name'] for p in launches)} {'is' if len(launches)==1 else 'are'} in {dlab}, the postal district{'s' if len(launch_districts)>1 else ''} around {tname}. See the New Launches page for details and VIP previews."
+         (f"Yes. {', '.join(p['name'] for p in launches)} {'is' if len(launches)==1 else 'are'} in {dlab}, the postal district{'s' if len(launch_districts)>1 else ''} around {tname}. See the New Launches page for details."
           if launches else f"There are no new launches in {dlab} in the current feed. See the New Launches page for options elsewhere.")),
     ]
     faqs = [(qq, aa) for qq, aa in faqs if aa]
@@ -357,9 +357,10 @@ def build(town, cfg, shell_head, shell_header, shell_footer, picker):
     kpi_psf = f"{money(med(cps))} psf" if len(cps) >= 5 else "–"
     hdb_date = fmt_date(market["hdb"]["fetched"])
     ura_date = fmt_date(market["ura"]["fetched"])
-    meta_title = f"{tname} HDB & Condo Prices {now_year}: Resale, MRT & New Launches | Serene Lee"
-    meta_desc = (f"{tname} 4-room HDB resale median {money(m4)} in the last 12 months. Prices by flat type, lease and MRT station, "
-                 f"condos and ECs nearby, and new launches. Official HDB & URA data, updated weekly.")
+    meta_title = f"{tname} HDB & Condo Prices {now_year} | Serene Lee"
+    lead = (f"{tname} 4-room HDB resale median {money(m4)} in the last 12 months." if m4
+            else f"{tname} HDB resale prices for the last 12 months.")
+    meta_desc = f"{lead} Prices by flat type, lease and MRT, plus nearby condos and ECs. Updated weekly."
     robots = "" if INDEX else '<meta name="robots" content="noindex, follow">\n'
     head = shell_head
     head = re.sub(r"<title>.*?</title>", f"<title>{esc(meta_title)}</title>", head, flags=re.S)
@@ -427,7 +428,7 @@ def build(town, cfg, shell_head, shell_header, shell_footer, picker):
 
   {f'''<div class="tp-card" data-kind="pte"><h2>New launches in {dlab}</h2>
     <div class="tp-tablewrap"><table class="tp-table"><thead><tr><th>Project</th><th>Status</th><th>Tenure</th><th>Completion</th><th class="r">From</th></tr></thead><tbody>{nl_rows}</tbody></table></div>
-    <p class="tp-src">From the ERA new launch feed, retrieved {fmt_date(nl['retrieved'])}. <a href="/new-launches">All new launches</a> · Serene can register you for VIP previews.</p>
+    <p class="tp-src">From the ERA new launch feed, retrieved {fmt_date(nl['retrieved'])}. <a href="/new-launches">All new launches</a> · Ask Serene about prices and availability.</p>
   </div>''' if launches else ''}
 
   <div class="tp-two">
@@ -554,8 +555,8 @@ def build_hub(stats, market, head, header, footer, picker):
             f'<span>{x["n12"]:,} HDB resales · {x["mrt"]} MRT/LRT station{"s" if x["mrt"] != 1 else ""}</span>'
             f'<span>Condo &amp; EC resale {x["psf"]}</span></a>' for x in sorted(by[r], key=lambda x: x["town"])) + "</div>"
     last = market["hdb"]["last_month"]
-    t = "Singapore HDB Town Guides: Resale Prices, MRT & Condos by Estate | Serene Lee"
-    dsc = "Resale prices for every HDB town in Singapore: flat types, lease age, prices by MRT station, nearby condos and ECs, and new launches. Official HDB & URA data, updated weekly."
+    t = "HDB Town Guides: Prices by Estate | Serene Lee"
+    dsc = "Resale prices for all 26 HDB towns by flat type, lease and MRT station, plus nearby condos, ECs and new launches. Official HDB and URA data, weekly."
     h = re.sub(r"<title>.*?</title>", f"<title>{esc(t)}</title>", head, flags=re.S)
     h = re.sub(r'(<meta (?:name|property)="(?:description|og:description|twitter:description)" content=")[^"]*', lambda m: m.group(1) + esc(dsc), h)
     h = re.sub(r'(<meta (?:property|name)="(?:og:title|twitter:title)" content=")[^"]*', lambda m: m.group(1) + esc(t), h)
@@ -578,6 +579,31 @@ def build_hub(stats, market, head, header, footer, picker):
         fh.write(h + header + body + footer)
 
 
+HOME_TOWNS = ["woodlands", "sembawang", "yishun"]  # Serene's focus estates, shown on the homepage
+
+
+def update_home(stats, market):
+    """Refresh the town-guide strip on index.html between <!-- TOWNS:START --> and <!-- TOWNS:END -->."""
+    path = os.path.join(ROOT, "index.html")
+    h = open(path, encoding="utf-8").read()
+    if "<!-- TOWNS:START -->" not in h:
+        return
+    by = {x["slug"]: x for x in stats}
+    cards = "".join(
+        f'<a class="tp-town" href="/{s}" data-hm="town-{s}"><b>{esc(by[s]["town"])}</b>'
+        f'<span>4-room median <strong>{money(by[s]["m4"]) if by[s]["m4"] else "–"}</strong></span>'
+        f'<span>{by[s]["n12"]:,} HDB resales in 12 months</span>'
+        f'<span>Condo &amp; EC resale {by[s]["psf"]}</span>'
+        f'<span class="tp-go">Open the {esc(by[s]["town"])} guide &rarr;</span></a>'
+        for s in HOME_TOWNS if s in by)
+    block = (f'<!-- TOWNS:START -->\n<div class="tp-grid home-towns">{cards}</div>\n'
+             f'<p class="tp-upd" style="margin-top:10px">Official HDB and URA data to {ym(market["hdb"]["last_month"])}, updated weekly. '
+             f'<a href="/town-guide">See all 26 HDB town guides</a>.</p>\n<!-- TOWNS:END -->')
+    h = re.sub(r"<!-- TOWNS:START -->.*?<!-- TOWNS:END -->", lambda m: block, h, flags=re.S)
+    with open(path, "w", encoding="utf-8") as fh:
+        fh.write(h)
+
+
 def main():
     tpl = open(os.path.join(ROOT, "million-dollar-hdb.html")).read()
     head = tpl[:tpl.index("<body>")]
@@ -594,6 +620,7 @@ def main():
         except Exception as e:  # one bad town must not stop the others
             print(f"skipped {town}: {e}")
     build_hub(stats, market, head, header, footer, picker_html(market, with_kind=False))
+    update_home(stats, market)
     print(f"built {len(stats)} town pages + town-guide.html (index={INDEX})")
 
 
