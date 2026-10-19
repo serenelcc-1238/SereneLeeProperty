@@ -436,6 +436,7 @@ def build(town, cfg, shell_head, shell_header, shell_footer, picker):
       <div class="tp-btns"><a class="btn btn-navy" href="/upgrade-checklist">Check my upgrade readiness</a>
       <a class="btn btn-gold" target="_blank" rel="noopener" href="{wa(f'Hi Serene, I live in {tname} and want to know if I can upgrade.')}">Ask Serene</a></div></div>
     <div class="tp-card tp-persona"><h2>Right-sizing after the children move out?</h2>{down}
+      {f'<p><a href="/right-sizing-north?town={page}"><b>Read the right-sizing guide for {esc(tname)}</b></a>: selling, renting out rooms and the Lease Buyback Scheme, with a quick estimate.</p>' if page in ("woodlands", "sembawang", "yishun") else ''}
       <div class="tp-btns"><a class="btn btn-navy" href="/market-map?town={page}">Check my block's prices</a>
       <a class="btn btn-gold" target="_blank" rel="noopener" href="{wa(f'Hi Serene, I am thinking of right-sizing from my {tname} flat. Could we talk?')}">Ask Serene</a></div></div>
   </div>
@@ -598,7 +599,7 @@ def update_home(stats, market):
         for s in HOME_TOWNS if s in by)
     block = (f'<!-- TOWNS:START -->\n<div class="tp-grid home-towns">{cards}</div>\n'
              f'<p class="tp-upd" style="margin-top:10px">Official HDB and URA data to {ym(market["hdb"]["last_month"])}, updated weekly. '
-             f'<a href="/town-guide">See all 26 HDB town guides</a>.</p>\n<!-- TOWNS:END -->')
+             f'<a href="/town-guide">See all 26 HDB town guides</a> · Children moved out? <a href="/right-sizing-north">Read the right-sizing guide</a>.</p>\n<!-- TOWNS:END -->')
     h = re.sub(r"<!-- TOWNS:START -->.*?<!-- TOWNS:END -->", lambda m: block, h, flags=re.S)
     with open(path, "w", encoding="utf-8") as fh:
         fh.write(h)
@@ -609,6 +610,10 @@ def main():
     head = tpl[:tpl.index("<body>")]
     header = tpl[tpl.index("<body>"):tpl.index("</header>") + len("</header>")] + "\n"
     footer = "\n" + tpl[tpl.index("<!-- FOOTER -->"):]
+    # The shell comes from the million-dollar page: drop its own menu highlight and its
+    # page-specific schema (add_schema.py adds the right ones for each generated page).
+    header = header.replace(' class="active"', "")
+    head = re.sub(r'\n?<script type="application/ld\+json" data-schema="(?:breadcrumb|dataset)">.*?</script>', "", head, flags=re.S)
     market = load("market-data.json")
     picker = picker_html(market)
     stats = []
@@ -621,7 +626,58 @@ def main():
             print(f"skipped {town}: {e}")
     build_hub(stats, market, head, header, footer, picker_html(market, with_kind=False))
     update_home(stats, market)
+    build_rightsizing(market, head, header, footer)
     print(f"built {len(stats)} town pages + town-guide.html (index={INDEX})")
+
+
+RS_TOWNS = ["WOODLANDS", "SEMBAWANG", "YISHUN"]
+# HDB median monthly rent (whole flat), Q2 2026, from HDB's quarterly public housing data, Annex D.
+# Update each quarter when HDB publishes new figures.
+RENT_SRC = ("Q2 2026", "https://www.hdb.gov.sg/-/media/hdb-pulse/news/2026/20260724-2nd-quarter-2026-public-housing-data-and-upcoming-flat-supply/Annex-D.pdf")
+RENTS = {"WOODLANDS": {"3": 2600, "4": 3100, "5": 3300, "E": 3550},
+         "SEMBAWANG": {"4": 3180, "5": 3300, "E": 3600},
+         "YISHUN": {"3": 2700, "4": 3100, "5": 3500}}
+SMALL_SQM = 70  # "smaller condo": units up to 70 sqm (about 750 sqft)
+
+
+def build_rightsizing(market, head, header, footer):
+    from rightsizing_page import render  # page text and layout live in their own file
+    last = market["hdb"]["last_month"]
+    c12 = months_back(last, 12)
+    data = {}
+    for town in RS_TOWNS:
+        info = market["hdb"]["towns"][town]
+        f = load(f"hdb/{info['file']}.json")
+        geo = load(f"geo/hdb/{info['file']}.json")
+        rows = [r for st in f["streets"].values() for rs in st.values() for r in rs if r[0] > c12]
+        sale = {}
+        for ft in ["2", "3", "4", "5", "E"]:
+            a = [r[6] for r in rows if r[1] == ft]
+            if len(a) >= 5:
+                sale[ft] = [len(a), round(med(a), -3)]
+        near = nearby_projects(geo)
+        small = []
+        plast = ""
+        for (dd, key) in near:
+            for r in load(f"ura/d{dd}.json").get(key, []):
+                plast = max(plast, r[0])
+        pc12 = months_back(plast or last, 12)
+        for (dd, key) in near:
+            if key.upper().startswith("LANDED HOUSING"):
+                continue
+            for r in load(f"ura/d{dd}.json").get(key, []):
+                if r[1] == 3 and r[5] == 1 and r[6] in ("C", "E") and r[2] <= SMALL_SQM and r[0] > pc12:
+                    small.append(r[4])
+        nxt = {k: sale[k] for k in ("3", "2") if k in sale}
+        if len(small) >= 5:
+            nxt["condo"] = [len(small), round(med(small), -3)]
+        data[info["file"]] = {"name": title(town), "sale": sale, "next": nxt, "rent": RENTS.get(town, {})}
+    meta = {"hdb_month": ym(last), "hdb_from": ym(months_back(last, 11)), "hdb_date": fmt_date(market["hdb"]["fetched"]),
+            "ura_date": fmt_date(market["ura"]["fetched"]), "rent_q": RENT_SRC[0], "rent_url": RENT_SRC[1], "small_sqm": SMALL_SQM}
+    page = render(data, meta, head, header, footer, esc, money)
+    with open(os.path.join(ROOT, "right-sizing-north.html"), "w", encoding="utf-8") as fh:
+        fh.write(page)
+    print("built right-sizing-north.html")
 
 
 if __name__ == "__main__":
