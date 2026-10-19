@@ -130,12 +130,34 @@
 .md-more{margin-top:12px}
 .md-about h3{font-size:1rem;margin:16px 0 4px}
 .md-about p{color:var(--muted);font-size:.92rem;margin:0;max-width:820px}
+.md-check{background:#fff;border:2px solid var(--gold);border-radius:var(--radius);padding:18px 20px;margin:16px 0 4px;max-width:820px;box-shadow:0 10px 24px rgba(201,162,39,.15)}
+.md-check-k{display:block;font-family:var(--font-display,inherit);font-weight:700;font-size:1.15rem;color:var(--navy-900);margin-bottom:10px}
+.md-check-row{display:flex;gap:10px;flex-wrap:wrap}
+.md-check-row input{flex:1 1 260px;min-width:0;font-size:1rem;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-family:inherit}
+.md-check-row input:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+.md-check-row .btn{flex:0 0 auto}
+.md-check-hint{font-size:.78rem;color:var(--muted);margin:8px 0 0}
+.md-check-res{margin-top:14px;padding:14px 16px;border-radius:10px;background:var(--cream,#f7f3e8);font-size:.95rem;line-height:1.5;color:var(--navy-900)}
+.md-check-res .big{font-size:1.6rem;font-weight:800;color:var(--gold-dark,#a8811a)}
+.md-check-res .acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.md-check-res .acts a{flex:0 0 auto}
+.md-check-res .note{font-size:.75rem;color:var(--muted);margin-top:8px}
+@media(max-width:560px){.md-check-row .btn{width:100%}.md-check-res .acts a{width:100%;text-align:center}}
 </style>
 <div class="page-hero page-hero-wide container">
   <span class="eyebrow">Million-Dollar HDB</span>
   <h1 style="font-size:2.1rem;">Every HDB flat that resold for $1 million or more</h1>
   <p>All HDB resale deals of $1,000,000 and above in the last 3 years, by town, block, flat type and floor. Official HDB data, updated weekly.</p>
   <p class="mm-updated" id="mdUpdated" style="font-size:.82rem;color:var(--muted)">Loading the latest data…</p>
+  <form class="md-check" id="mdCheck" role="search" onsubmit="return false">
+    <label class="md-check-k" for="mdHeroQ">🔎 Is your block on the million-dollar list?</label>
+    <div class="md-check-row">
+      <input type="search" id="mdHeroQ" placeholder="Type your block or street, e.g. 96A Henderson" autocomplete="off" enterkeyhint="search">
+      <button type="submit" class="btn btn-gold" id="mdHeroGo">Check my block</button>
+    </div>
+    <p class="md-check-hint">Searches every $1M+ HDB resale in the last 3 years.</p>
+    <div class="md-check-res" id="mdHeroRes" aria-live="polite" hidden></div>
+  </form>
 </div>
 <section style="padding-top:12px;">
   <div class="container">
@@ -288,6 +310,37 @@ fetch("data/hdb/million.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw 0;retu
   if(q.get("ft")&&FT[q.get("ft").toUpperCase()])$("mdFt").value=q.get("ft").toUpperCase();
   ["mdTown","mdFt","mdSort"].forEach(id=>$(id).onchange=()=>{shown=PAGE;list();track("million_filter",{[id]:$(id).value});});
   $("mdQ").oninput=()=>{shown=PAGE;list();};
+  /* Hero "Check my block": search all 3 years, then prompt a WhatsApp chat about their own flat */
+  const WA="https://wa.me/6580868568?text=";
+  let lastQ="", tmr=null;
+  const checkBlock=(fromSubmit)=>{
+    const raw=$("mdHeroQ").value.trim();
+    const q=raw.toUpperCase().replace(/^(BLK|BLOCK)\s*/,"").replace(/\s+/g," ");
+    const res=$("mdHeroRes");
+    if(q.length<2){res.hidden=true;return;}
+    const hits=D.filter(d=>(d[2]+" "+d[3]).includes(q));
+    const blocks=[...new Set(hits.map(d=>d[2]+" "+d[3]))];
+    let html, msg;
+    if(hits.length){
+      const top=hits.reduce((a,b)=>b[9]>a[9]?b:a), latest=hits.reduce((a,b)=>b[0]>a[0]?b:a);
+      const one=blocks.length===1, name="Blk "+esc(title(blocks[0]));
+      html=(one?`<b>${name}</b> has had`:`<b>${blocks.length} blocks</b> matching “${esc(raw)}” have had`)
+        +` <span class="big">${hits.length}</span> million-dollar resale${hits.length>1?"s":""} since ${ym(D.reduce((a,b)=>b[0]<a[0]?b:a)[0])}.`
+        +`<br>Highest: <b>${fmt$(top[9])}</b> (${FT[top[4]]||top[4]}${one?"":", Blk "+esc(top[2])+" "+esc(title(top[3]))}, ${ym(top[0])}). Latest: ${ym(latest[0])}.`;
+      msg=`Hi Serene, I checked ${one?"Blk "+title(blocks[0]):"“"+raw+"”"} on your million-dollar HDB list. Could you tell me what my flat could sell for?`;
+      html+=`<div class="acts"><a class="btn btn-gold" data-cta="million block check" target="_blank" rel="noopener" href="${WA+encodeURIComponent(msg)}">What could my flat fetch? WhatsApp Serene →</a><a class="btn btn-navy" href="#mdBody" id="mdHeroSee">See ${hits.length>1?"these "+hits.length+" deals":"this deal"} ↓</a></div>`;
+    }else{
+      html=`No million-dollar resale found for “${esc(raw)}” since ${ym(D.reduce((a,b)=>b[0]<a[0]?b:a)[0])}.<br>That doesn't mean your flat isn't valuable: size, floor, lease and nearby sales all matter.`;
+      msg=`Hi Serene, my block (${raw}) isn't on your million-dollar HDB list. Could you tell me what my flat could sell for?`;
+      html+=`<div class="acts"><a class="btn btn-gold" data-cta="million block check (not found)" target="_blank" rel="noopener" href="${WA+encodeURIComponent(msg)}">Find out what my flat could sell for →</a></div>`;
+    }
+    html+=`<p class="note">Based on HDB's resale data. Not a valuation.</p>`;
+    res.innerHTML=html; res.hidden=false;
+    const see=$("mdHeroSee"); if(see) see.onclick=e=>{e.preventDefault();setPer("all");$("mdQ").value=raw;shown=PAGE;list();document.querySelector(".md-filters").scrollIntoView({behavior:"smooth",block:"start"});track("million_block_see_deals",{q:raw});};
+    if(q!==lastQ){lastQ=q;track("million_block_search",{q:raw,matches:hits.length,blocks:blocks.length,via:fromSubmit?"submit":"typing"});}
+  };
+  $("mdCheck").onsubmit=e=>{e.preventDefault();clearTimeout(tmr);checkBlock(true);return false;};
+  $("mdHeroQ").oninput=()=>{clearTimeout(tmr);tmr=setTimeout(()=>checkBlock(false),700);};
   $("mdMore").onclick=()=>{shown+=PAGE;list();};
   $("mdMap").addEventListener("click",e=>{const p=e.target.closest("path[data-t]");if(!p)return;const t=p.dataset.t;$("mdTown").value=$("mdTown").value===t?"":t;shown=PAGE;list();track("million_filter",{map_town:t});document.querySelector(".md-filters").scrollIntoView({behavior:"smooth",block:"start"});});
   $("mdMap").addEventListener("mouseover",e=>{const p=e.target.closest("path[data-t]");if(p)$("mdMapTip").textContent=p.querySelector("title").textContent+" · tap to filter";});
