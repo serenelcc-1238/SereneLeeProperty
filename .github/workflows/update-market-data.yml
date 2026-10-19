@@ -37,7 +37,7 @@ jobs:
           exit 0
 
       - name: Rebuild town pages
-        run: python3 scripts/build_town_pages.py
+        run: python3 scripts/build_town_pages.py && python3 scripts/add_schema.py
 
       - name: Save data to the repo
         id: commit
