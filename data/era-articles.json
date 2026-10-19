@@ -1,6 +1,48 @@
 {
- "retrieved": "2026-10-12T10:18+08:00",
+ "retrieved": "2026-10-19T09:09+08:00",
  "articles": [
+  {
+   "category": "Blog",
+   "title": "Where Are The Opportunities In Singapore’s Property Market?",
+   "slug": "where-are-the-opportunities-in-singapores-property-market",
+   "published": "2026-10-16T09:05:51Z",
+   "url": "https://www.era.com.sg/blogs/where-are-the-opportunities-in-singapores-property-market"
+  },
+  {
+   "category": "Research",
+   "title": "Marina Gardens Lane – Government Land Sale (GLS) Site Analysis",
+   "slug": "marina-gardens-lane-government-gls-site-analysis",
+   "published": "2026-10-16T03:38:04Z",
+   "url": "https://www.era.com.sg/research-articles/marina-gardens-lane-government-gls-site-analysis"
+  },
+  {
+   "category": "PressRelease",
+   "title": "Commentary on Marina Gardens Lane GLS Tender Closing",
+   "slug": "commentary-on-marina-gardens-lane-gls-tender-closing",
+   "published": "2026-10-15T10:16:02Z",
+   "url": "https://www.era.com.sg/press-release/commentary-on-marina-gardens-lane-gls-tender-closing"
+  },
+  {
+   "category": "Research",
+   "title": "September 2026 Developers’ Sales: New Home Sales Rebound from Low Base as Buyers Revisit Earlier Launches",
+   "slug": "september-2026-developers-sales",
+   "published": "2026-10-15T09:10:46Z",
+   "url": "https://www.era.com.sg/research-articles/september-2026-developers-sales"
+  },
+  {
+   "category": "PressRelease",
+   "title": "Commentary on September 2026 Monthly Developer Sales",
+   "slug": "commentary-on-september-2026-monthly-developer-sales",
+   "published": "2026-10-15T05:53:26Z",
+   "url": "https://www.era.com.sg/press-release/commentary-on-september-2026-monthly-developer-sales"
+  },
+  {
+   "category": "Research",
+   "title": "1H 2026 Luxury Homes Report: New High in Luxury Home Transactions Underscores Singapore’s Safe Haven Appeal",
+   "slug": "1h-2026-luxury-homes",
+   "published": "2026-10-09T10:00:18Z",
+   "url": "https://www.era.com.sg/research-articles/1h-2026-luxury-homes"
+  },
   {
    "category": "Blog",
    "title": "In Land-Scarce Singapore, How Do We Find More Spaces for New Homes?",
@@ -65,39 +107,11 @@
    "url": "https://www.era.com.sg/press-release/commentary-on-3q-2026-hdb-flash-estimates"
   },
   {
-   "category": "PressRelease",
-   "title": "Commentary on Rare 999-Year Leasehold Ground Floor F&B shops at Dickson Road for Sale",
-   "slug": "commentary-on-rare-999-year-leasehold-ground-floor-fb-shops-at-dickson-road-for-sale",
-   "published": "2026-09-29T06:11:42Z",
-   "url": "https://www.era.com.sg/press-release/commentary-on-rare-999-year-leasehold-ground-floor-fb-shops-at-dickson-road-for-sale"
-  },
-  {
-   "category": "PressRelease",
-   "title": "Commentary on East Coast Road GLS Tender Opening",
-   "slug": "commentary-on-east-coast-road-gls-tender-opening",
-   "published": "2026-09-29T03:00:06Z",
-   "url": "https://www.era.com.sg/press-release/commentary-on-east-coast-road-gls-tender-opening"
-  },
-  {
    "category": "Blog",
    "title": "The Future of Lakeside: A Live-Work-Play Destination in the Making?",
    "slug": "future-of-lakeside",
    "published": "2026-09-23T06:24:17Z",
    "url": "https://www.era.com.sg/blogs/future-of-lakeside"
-  },
-  {
-   "category": "Research",
-   "title": "August 2026 Developer Sales: New Home Sales Slump as Launches Dry Up Amid Seventh Month",
-   "slug": "august-2026-developer-sales",
-   "published": "2026-09-16T10:25:43Z",
-   "url": "https://www.era.com.sg/research-articles/august-2026-developer-sales"
-  },
-  {
-   "category": "Research",
-   "title": "Lorong Puntong/Sin Ming Avenue – Government Land Sale (GLS) Site Analysis",
-   "slug": "lorong-puntong-sin-ming-avenue-gls-site-analysis",
-   "published": "2026-09-16T02:27:42Z",
-   "url": "https://www.era.com.sg/research-articles/lorong-puntong-sin-ming-avenue-gls-site-analysis"
   },
   {
    "category": "Blog",
@@ -107,25 +121,11 @@
    "url": "https://www.era.com.sg/blogs/cbd-liveable"
   },
   {
-   "category": "Research",
-   "title": "2Q 2026 Landed Report: Landed Transactions Rise 15.8% in 2Q 2026 as Prices Recover 2.5%",
-   "slug": "2q-2026-landed-report",
-   "published": "2026-09-09T05:56:10Z",
-   "url": "https://www.era.com.sg/research-articles/2q-2026-landed-report"
-  },
-  {
    "category": "Blog",
    "title": "With New Freehold Launches Becoming Rarer in 2026, Will Buyers Have Enough Choices?",
    "slug": "freehold-rarer-2026",
    "published": "2026-09-07T03:53:21Z",
    "url": "https://www.era.com.sg/blogs/freehold-rarer-2026"
-  },
-  {
-   "category": "Blog",
-   "title": "National Day Rally 2026: What the Latest Housing Announcements Mean for You and Singapore’s Property Market",
-   "slug": "ndr2026-housing",
-   "published": "2026-08-28T03:28:58Z",
-   "url": "https://www.era.com.sg/blogs/ndr2026-housing"
   }
  ]
 }
