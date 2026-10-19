@@ -772,6 +772,7 @@ a.home-mm-more{text-decoration:none;}
 .hm2-chart-k{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);}
 .hm2-chart svg{width:100%;height:auto;display:block;}
 .hm2-chart-s{font-size:.78rem;color:var(--navy-900);font-weight:600;}
+.hm2-asof{font-size:.68rem;color:var(--muted);}
 @media(max-width:900px){.hm2-card{grid-template-columns:1fr;}}
 @media(max-width:640px){
   .hm2{padding:18px 0;}

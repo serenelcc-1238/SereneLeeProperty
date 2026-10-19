@@ -94,6 +94,7 @@
         <span class="hm2-chart-k" id="hmMdChartK">$1M+ resales per month</span>
         <svg id="hmMdBars" viewBox="0 0 300 150" aria-hidden="true"></svg>
         <span class="hm2-chart-s" id="hmMdChartS">&nbsp;</span>
+        <span class="hm2-asof" id="hmMdAsOf">HDB resale data (data.gov.sg)</span>
       </a>
     </div>
     <div class="hm2-prof">
@@ -209,6 +210,7 @@
         if(j===0||last) svg+='<text x="'+(j===0?x:x+bw-6)+'" y="140" text-anchor="'+(j===0?"start":"end")+'" font-size="11" fill="#5c6b78" font-family="Inter,sans-serif">'+MON[+k.slice(5)-1]+" "+k.slice(2,4)+'</text>';
         if(last) svg+='<text x="'+(x+(bw-6)/2)+'" y="'+(116-bh)+'" text-anchor="middle" font-size="13" font-weight="700" fill="#0b2a4a" font-family="Inter,sans-serif">'+v+'</text>';});
       $("hmMdBars").innerHTML=svg;
+      if(m.fetched){var fd=new Date(m.fetched);$("hmMdAsOf").textContent="Data as of "+fd.toLocaleDateString("en-SG",{day:"numeric",month:"short",year:"numeric"})+" · HDB resale data (data.gov.sg)";}
       $("hmMdChartS").textContent=vs[0]+" in "+MON[+ks[0].slice(5)-1]+" "+ks[0].slice(0,4)+" → "+vs[vs.length-1]+" in "+MON[+ks[ks.length-1].slice(5)-1]+" "+ks[ks.length-1].slice(0,4);
     }).catch(function(){});
     var dt=new Date(d.generated); $("hmSrc").innerHTML=$("hmSrc").innerHTML.replace("Refreshed weekly.","Refreshed weekly; retrieved "+dt.toLocaleDateString("en-SG",{day:"numeric",month:"short",year:"numeric"})+".");
