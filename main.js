@@ -65,6 +65,30 @@ document.addEventListener('DOMContentLoaded', function () {
      nav is already a vertical list. */
   var navDropdowns = document.querySelectorAll('.nav-dropdown');
 
+  /* Agent profile card above the footer on every page, except where her photo
+     already appears (homepage hero, About page). */
+  (function () {
+    var footer = document.querySelector('footer');
+    if (!footer || document.querySelector('.hm2-prof, .about-photo, .agent-band')) return;
+    var band = document.createElement('section');
+    band.className = 'agent-band';
+    band.innerHTML =
+      '<div class="container"><div class="agent-card">' +
+        '<a href="/about" class="ac-photo" aria-label="About Serene Lee"><img src="/assets/serene-photo.jpg" alt="Serene Lee, ERA Realty, CEA Reg. R027578Z" loading="lazy"></a>' +
+        '<div class="ac-text">' +
+          '<a href="/about" class="ac-name">Serene Lee</a>' +
+          '<span class="ac-role">HDB Resale, Condo &amp; New Launch Specialist in Singapore</span>' +
+          '<div class="ac-meta">ERA Realty &middot; CEA Reg. R027578Z<br>' +
+          '<a class="ac-tel" href="tel:+6580868568">&#128222; +65 8086 8568</a></div>' +
+        '</div>' +
+        '<div class="ac-acts">' +
+          '<a class="btn btn-gold" data-cta="profile card" target="_blank" rel="noopener" href="https://wa.me/6580868568?text=Hi%20Serene%2C%20I%20found%20your%20website%20and%20would%20like%20to%20find%20out%20more.">WhatsApp Serene</a>' +
+          '<a class="btn btn-navy" href="/about">About Serene</a>' +
+        '</div>' +
+      '</div></div>';
+    footer.parentNode.insertBefore(band, footer);
+  })();
+
   /* Social links in every page footer (Instagram, Facebook, TikTok). */
   var SOCIAL = [
     ['IG', 'Instagram @serene.leecc', 'https://www.instagram.com/serene.leecc/'],
