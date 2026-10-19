@@ -296,8 +296,9 @@ function setErr(id, msg) {
   var box = document.getElementById("q-" + id); if (box) box.classList.add("bad");
 }
 function validMobile(v) {
-  var d = String(v || "").replace(/[\s-]/g, "").replace(/^\+?65/, "");
-  return /^[689]\d{7}$/.test(d) ? d : null;
+  var d = String(v || "").replace(/\D/g, "");
+  if (d.length === 10 && d.indexOf("65") === 0) d = d.slice(2);
+  return /^[3689]\d{7}$/.test(d) ? d : null;
 }
 
 function validate(qs, withConsent) {
@@ -307,7 +308,7 @@ function validate(qs, withConsent) {
     if (id === "watching") return;
     if (q.type === "multi") { if (!v || !v.length) msg = "Pick at least one."; }
     else if (q.type === "radio") { if (!v) msg = "Choose one."; }
-    else if (id === "mobile") { if (!validMobile(v)) msg = "Enter an 8-digit Singapore number, for example 9123 4567."; }
+    else if (id === "mobile") { if (!validMobile(v)) msg = "Enter your 8-digit Singapore mobile number. Spaces are optional."; }
     else if (!v || !String(v).trim()) msg = "Enter your name.";
     if (msg) { setErr(id, msg); if (!firstBad) firstBad = id; }
   });
@@ -446,3 +447,4 @@ render();
 </script>
 </body>
 </html>
+
