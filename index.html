@@ -332,7 +332,7 @@
   var MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
   fetch("data/instagram.json",{cache:"no-cache"}).then(function(r){return r.json();}).then(function(d){
-    var ps=(d.posts||[]).slice(0,6); if(!ps.length) throw 0;
+    var ps=(d.posts||[]).slice().sort(function(a,b){return new Date(b.sentAt)-new Date(a.sentAt);}).slice(0,8); /* newest 8 only; oldest drops off */ if(!ps.length) throw 0;
     g.innerHTML=ps.map(function(p){var dt=new Date(p.sentAt);
       return '<a class="ig-tile" href="'+esc(p.url)+'" target="_blank" rel="noopener" data-ig="'+esc(p.id)+'"><span class="ig-img"><img src="'+esc(p.img)+'" alt="'+esc(p.caption||"Instagram post by Serene Lee")+'" loading="lazy">'+(p.type==="reel"?'<span class="ig-reel">&#9654; Reel</span>':'')+'</span><span class="ig-cap">'+esc(p.caption||"")+'</span><span class="ig-date">'+dt.getDate()+" "+MON[dt.getMonth()]+" "+dt.getFullYear()+' · View on Instagram</span></a>';}).join("");
     g.addEventListener("click",function(e){var a=e.target.closest("a[data-ig]");if(a)try{window.posthog&&posthog.capture("instagram_post_click",{post:a.getAttribute("data-ig")});}catch(x){}});
