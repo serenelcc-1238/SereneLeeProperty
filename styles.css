@@ -547,16 +547,19 @@ footer .container{display:flex;gap:44px;flex-wrap:wrap;}
 /* CHAT WIDGET (chatbot.js) — opposite corner from the WhatsApp FAB above */
 .chatbot-fab{
   position:fixed;bottom:20px;left:20px;z-index:60;
-  height:54px;padding:0 20px 0 16px;border-radius:30px;background:var(--navy);
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  color:#fff;font:700 .98rem 'Inter',sans-serif;white-space:nowrap;
+  height:28px;padding:0 11px 0 9px;border-radius:16px;background:var(--navy);
+  display:flex;align-items:center;justify-content:center;gap:5px;
+  color:#fff;font:700 .78rem 'Inter',sans-serif;white-space:nowrap;
   box-shadow:0 8px 20px rgba(0,0,0,.25);border:none;cursor:pointer;
   transition:background .15s ease;
 }
 .chatbot-fab:hover{background:var(--navy-800);}
+.chatbot-fab svg{width:13px;height:13px;}
+/* keep a finger-sized tap area around the smaller button */
+.chatbot-fab::before{content:'';position:absolute;inset:-9px -6px;}
 .chatbot-fab.chatbot-fab-open{background:var(--navy-900);}
 .chatbot-panel{
-  position:fixed;bottom:90px;left:20px;z-index:61;
+  position:fixed;bottom:60px;left:20px;z-index:61;
   width:360px;max-width:calc(100vw - 32px);
   height:min(520px,70vh);
   background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);
