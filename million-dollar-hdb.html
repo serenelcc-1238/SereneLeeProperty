@@ -190,7 +190,7 @@
   <div class="container">
     <div class="md-card md-about">
       <h2>About this list</h2>
-      <p>This page tracks every HDB resale flat in Singapore sold for $1 million or more, using HDB's official resale flat prices published on data.gov.sg. It updates every Monday. Million-dollar resales have risen steadily: about 1,035 in 2024, 1,593 in 2025 and 1,556 in 2026 up to early October.</p>
+      <p>This page tracks every HDB resale flat in Singapore sold for $1 million or more, using HDB's official resale flat prices published on data.gov.sg. It updates every Monday. Million-dollar resales have risen steadily: about 1,035 in 2024, 1,593 in 2025 and <span id="mdYtd">1,639 in 2026 as of 19 Oct 2026</span>.</p>
       <h3>What counts as a million-dollar HDB flat?</h3>
       <p>Any HDB resale flat registered at a price of $1,000,000 or more in HDB's official resale data (data.gov.sg). The list covers the last 3 years and is grouped by the month HDB registered the resale, so the latest month keeps filling in until it ends.</p>
       <h3>Which HDB towns have the most million-dollar flats?</h3>
@@ -268,7 +268,10 @@ let D=[], TOT=[], shown=PAGE, LAST="", PER="ytd", RF="", RT="", MONTHS=[];
 fetch("data/hdb/million.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw 0;return r.json();}).then(m=>{
   D=m.deals; TOT=m.totals||[]; LAST=m.last_month;
   const yr=LAST.slice(0,4);
-  $("mdUpdated").innerHTML="Covers "+ym(m.since)+" to "+ym(LAST)+" · "+D.length.toLocaleString()+" deals in total. "+ym(LAST)+" is still in progress.";
+  const asof=m.fetched?new Date(m.fetched).toLocaleDateString("en-SG",{day:"numeric",month:"short",year:"numeric"}):"";
+  $("mdUpdated").innerHTML=(asof?"<b>Data as of "+asof+"</b> · ":"")+"Covers "+ym(m.since)+" to "+ym(LAST)+" · "+D.length.toLocaleString()+" deals in total. "+ym(LAST)+" is still in progress.";
+  if(asof)$("mdRetrieved").textContent="; data as of "+asof;
+  const ytd=D.filter(d=>d[0].slice(0,4)===yr).length; if(asof&&$("mdYtd"))$("mdYtd").textContent=ytd.toLocaleString()+" in "+yr+" as of "+asof;
   bars();
   const first=[...new Set(TOT.map(x=>x[0]).concat(D.map(d=>d[0])))].sort()[0];MONTHS=[];for(let k=first;k<=LAST;k=addM(k,1))MONTHS.push(k);
   const opts=MONTHS.slice().reverse().map(k=>`<option value="${k}">${ym(k)}${k===LAST?" (in progress)":""}</option>`).join("");$("mdFrom").innerHTML=$("mdTo").innerHTML=opts;

@@ -207,7 +207,7 @@ def build_hdb(rows, now=None):
                     if d[6] >= 1_000_000:
                         mill.append([d[0], t, blk, st, d[1], d[2], d[3], model_list[d[4]], d[5], d[6]])
     mill.sort(key=lambda x: (x[0], x[9]), reverse=True)
-    files["million"] = {"since": since, "last_month": last, "threshold": 1_000_000,
+    files["million"] = {"fetched": now.isoformat(timespec="minutes"), "since": since, "last_month": last, "threshold": 1_000_000,
                         "fields": ["month", "town", "block", "street", "flat_type", "storey_from", "sqm", "model", "lease_start", "price"],
                         "deals": mill,
                         "totals": tot_rows}
