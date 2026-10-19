@@ -45,13 +45,19 @@
   }
   function saveLead(l) { try { localStorage.setItem(LEAD_KEY, JSON.stringify(l)); } catch (e) {} }
 
+  /* PostHog events so the chatbot's use can be measured (no message text is sent) */
+  function track(ev, props) {
+    try { window.posthog && posthog.capture(ev, Object.assign({ page_path: window.location.pathname }, props || {})); } catch (e) {}
+  }
+
   function init() {
     if (document.getElementById("chatbotFab")) return; // already injected
 
     var wrap = document.createElement("div");
     wrap.innerHTML =
-      '<button id="chatbotFab" class="chatbot-fab" aria-label="Chat with Serene\'s assistant">' +
-      '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>' +
+      '<button id="chatbotFab" class="chatbot-fab" aria-label="Ask AI: chat with Serene\'s assistant">' +
+      '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>' +
+      '<span class="chatbot-fab-label">Ask AI</span>' +
       '</button>' +
       '<div id="chatbotPanel" class="chatbot-panel" hidden>' +
       '<div class="chatbot-header">' +
@@ -190,6 +196,7 @@
 
       addBubble("user", text);
       history.push({ role: "user", content: text });
+      track("chatbot_message_sent", { question_number: history.filter(function (m) { return m.role === "user"; }).length, length: text.length });
       input.value = "";
       autoResize();
       sending = true;
@@ -214,6 +221,7 @@
           lead = null; saveLead(null);
           showLeadForm();
         } else if (!res.ok || data.error) {
+          track("chatbot_error", { status: res.status });
           addBubble("assistant", data.error || "Something went wrong — please try again or WhatsApp Serene directly.");
         } else {
           addBubble("assistant", data.reply);
@@ -221,6 +229,7 @@
         }
       } catch (err) {
         hideTyping();
+        track("chatbot_error", { status: 0 });
         addBubble("assistant", "I couldn't reach the server — please try again or WhatsApp Serene directly.");
       } finally {
         sending = false;
@@ -233,6 +242,7 @@
       panel.hidden = !panel.hidden;
       if (!panel.hidden) {
         fab.classList.add("chatbot-fab-open");
+        track("chatbot_opened", { first_open_on_page: !opened });
         if (!opened) {
           opened = true;
           addWelcome();
@@ -244,6 +254,7 @@
     });
 
     closeBtn.addEventListener("click", function () {
+      track("chatbot_closed", { questions_asked: history.filter(function (m) { return m.role === "user"; }).length });
       panel.hidden = true;
       fab.classList.remove("chatbot-fab-open");
     });
