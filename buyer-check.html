@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en-SG">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buyer Readiness Check | Serene Lee | ERA Realty</title>
+<meta name="description" content="Free 2-minute Buyer Readiness Check for HDB and private property in Singapore. Get a personal summary of your budget range, grants, stamp duties and three options to view.">
+<link rel="canonical" href="https://sereneleeproperty.com/buyer-check">
+<meta property="og:title" content="Buyer Readiness Check | Serene Lee | ERA Realty">
+<meta property="og:description" content="Free 2-minute check for HDB and private buyers. Get a personal summary on WhatsApp within 1 working day.">
+<meta property="og:image" content="https://sereneleeproperty.com/assets/serene-photo.jpg">
+<meta property="og:url" content="https://sereneleeproperty.com/buyer-check">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230b2a4a%22/><text x=%2250%22 y=%2266%22 font-size=%2258%22 text-anchor=%22middle%22 fill=%22%23c9a227%22 font-family=%22Georgia,serif%22>S</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+.bc-wrap{max-width:720px;margin:0 auto;padding:40px 20px 64px;}
+.bc-hero{display:flex;gap:28px;align-items:center;flex-wrap:wrap;margin-bottom:28px;}
+.bc-hero-copy{flex:1 1 340px;min-width:0;}
+.bc-hero h1{font-size:2.1rem;margin-bottom:10px;}
+.bc-lede{color:var(--muted);margin:0 0 14px;max-width:520px;}
+.bc-gets{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:.95rem;}
+.bc-gets li{display:flex;gap:10px;align-items:baseline;}
+.bc-gets li::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--gold);transform:translateY(-1px);}
+.bc-who{flex:0 0 auto;text-align:center;font-size:.82rem;color:var(--muted);line-height:1.4;}
+.bc-who img{width:104px;height:104px;border-radius:50%;object-fit:cover;margin:0 auto 8px;border:3px solid #fff;box-shadow:var(--shadow);}
+.bc-who strong{display:block;color:var(--navy-900);font-family:'Fraunces',Georgia,serif;font-size:1rem;}
+.bc-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px;display:grid;gap:22px;}
+.bc-stepbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.bc-pill{background:var(--navy);color:var(--gold);font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:6px 12px;border-radius:999px;}
+.bc-segs{flex:1;min-width:120px;display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}
+.bc-segs i{height:5px;border-radius:3px;background:var(--line);}
+.bc-segs i.on{background:var(--gold);}
+.bc-card h2{font-size:1.4rem;margin:0;}
+.bc-form{display:grid;gap:24px;}
+.bc-form fieldset{border:0;padding:0;margin:0;min-width:0;display:grid;gap:10px;}
+.bc-form legend{padding:0;margin-bottom:2px;font-weight:600;font-size:.95rem;color:var(--navy-900);}
+.bc-hint{margin:0;font-size:.82rem;color:var(--muted);}
+.bc-opts{display:grid;gap:8px;}
+.bc-opt{position:relative;display:block;cursor:pointer;}
+.bc-opt input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer;}
+.bc-opt span{display:flex;align-items:center;gap:12px;min-height:48px;padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;background:#fff;font-size:.95rem;}
+.bc-opt span::before{content:"";flex:none;width:18px;height:18px;border:2px solid #b9b4a6;border-radius:50%;}
+.bc-opt.multi span::before{border-radius:4px;}
+.bc-opt:hover span{border-color:var(--gold);}
+.bc-opt:has(input:checked) span{border-color:var(--gold-dark);background:#fbf6e4;}
+.bc-opt:has(input:checked) span::before{border-color:var(--gold-dark);background:var(--gold-dark);box-shadow:inset 0 0 0 3px #fbf6e4;}
+.bc-opt:has(input:focus-visible) span{outline:3px solid var(--navy);outline-offset:2px;}
+.bc-form .field{margin:0;}
+.bc-inp{display:flex;gap:8px;}
+.bc-pre{display:grid;place-items:center;padding:0 12px;border:1.5px solid var(--line);border-radius:10px;font-size:.9rem;color:var(--muted);background:#fff;}
+.bc-err{margin:0;font-size:.84rem;font-weight:600;color:var(--danger);}
+.bc-err:empty{display:none;}
+.bc-form fieldset.bad .bc-opt span,.bc-form .field.bad input{border-color:var(--danger);}
+.bc-consent{display:flex;gap:12px;align-items:flex-start;font-size:.82rem;color:var(--muted);line-height:1.45;font-weight:400;}
+.bc-consent input{width:20px;height:20px;margin:2px 0 0;flex:none;accent-color:var(--navy);}
+.bc-consent a{color:inherit;text-decoration:underline;}
+.bc-hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;}
+.bc-nav{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;}
+.bc-nav .btn{min-width:120px;justify-content:center;}
+.bc-nav .bc-next{margin-left:auto;}
+.bc-nav button:disabled{opacity:.6;cursor:progress;}
+.bc-ghost{background:transparent;color:var(--navy);border:1.5px solid var(--line);}
+.bc-ghost:hover{border-color:var(--navy);}
+.bc-done{display:grid;gap:18px;}
+.bc-next-list{margin:0;padding:0;list-style:none;display:grid;gap:12px;counter-reset:n;}
+.bc-next-list li{display:grid;grid-template-columns:32px 1fr;gap:12px;align-items:baseline;counter-increment:n;}
+.bc-next-list li::before{content:counter(n);display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--navy);color:var(--gold);font-size:.82rem;font-weight:700;}
+.bc-tip{border-left:4px solid var(--gold);padding:4px 0 4px 14px;margin:0;color:var(--ink);}
+.bc-demo{font-size:.85rem;color:var(--muted);border:1px dashed var(--line);border-radius:10px;padding:10px 14px;margin:0;}
+@media(max-width:520px){.bc-card{padding:20px;}.bc-hero h1{font-size:1.75rem;}.bc-who{display:none;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-wrap">
+    <a href="/" class="brand">
+      <strong>Serene Lee</strong>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="/">Home</a>
+      <a href="/new-launches">New Launches</a>
+      <a href="/market-map">Market Map</a>
+      <a href="/million-dollar-hdb">$1M HDB</a>
+      <a href="/blog">Blog</a>
+      <div class="nav-dropdown">
+        <button type="button" class="nav-dropdown-toggle">Plan Your Move <span class="caret">&#9662;</span></button>
+        <div class="nav-dropdown-menu">
+          <a href="/calculator">Affordability Calculator</a>
+          <a href="/upgrade-checklist">Upgrade Checklist</a>
+          <a href="/town-guide">Town Guides</a>
+          <a href="/faq">Property FAQ</a>
+        </div>
+      </div>
+      <div class="nav-dropdown">
+        <button type="button" class="nav-dropdown-toggle">Get in Touch <span class="caret">&#9662;</span></button>
+        <div class="nav-dropdown-menu">
+          <a href="/contact">Contact Serene</a>
+          <a href="/subscribers">Subscribe for Updates</a>
+        </div>
+      </div>
+      <!-- Testimonials hidden until real client reviews: <a href="/testimonials">Testimonials</a> -->
+      <a href="/about">About</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="https://wa.me/6580868568?text=Hi%20Serene%2C%20I%20found%20your%20website%20and%20would%20like%20to%20find%20out%20more." target="_blank" rel="noopener" class="btn btn-gold btn-sm">WhatsApp Serene</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">&#9776;</button>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="bc-wrap">
+    <div class="bc-hero">
+      <div class="bc-hero-copy">
+        <span class="eyebrow">Free &middot; about 2 minutes &middot; HDB and private</span>
+        <h1>Buyer Readiness Check</h1>
+        <p class="bc-lede">Tell me what you plan to buy. Within 1 working day I send you a personal summary on WhatsApp.</p>
+        <ul class="bc-gets">
+          <li>Your likely budget range and the loan limits that apply</li>
+          <li>Grants, stamp duties and one-off costs that apply to your case</li>
+          <li>Three options worth viewing, with the trade-offs for each</li>
+        </ul>
+      </div>
+      <div class="bc-who">
+        <img src="assets/serene-photo.jpg" alt="Serene Lee, ERA Realty, CEA Reg. R027578Z">
+        <strong>Serene Lee</strong>
+        ERA Realty<br>CEA Reg. R027578Z
+      </div>
+    </div>
+
+    <div class="bc-card" id="bcCard" aria-live="polite">
+      <noscript><p>This check needs JavaScript. You can <a href="https://wa.me/6580868568">WhatsApp Serene</a> instead.</p></noscript>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-era">
+      <img src="assets/era-logo.png" alt="ERA Realty Network logo" class="era-logo">
+      <div>
+        <div class="footer-era-name">ERA Realty Network Pte Ltd</div>
+        <div class="footer-era-line">Company Reg No. 198103027M</div>
+        <div class="footer-era-line">Estate Agent Licence No. L3002382K</div>
+        <div class="footer-era-line">Tel: +65 6226 2000 &middot; Fax: +65 6220 0066 &middot; www.era.com.sg</div>
+      </div>
+    </div>
+    <div class="legal-box">
+      <p><strong>Serene Lee</strong> &middot; CEA Registration No. R027578Z</p>
+      <p><a href="/privacy" class="footer-subscribe">Privacy Policy</a></p>
+      <p><a href="/subscribers" class="footer-subscribe">Subscribe to my blog &amp; newsletter &rarr;</a></p>
+      <p>This website is for general information only and does not constitute financial, mortgage, or legal advice.</p>
+      <p>&copy; <span id="year"></span> Serene Lee. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<a href="https://wa.me/6580868568?text=Hi%20Serene%2C%20I%20found%20your%20website%20and%20would%20like%20to%20find%20out%20more." target="_blank" rel="noopener" class="fab-wa" aria-label="Chat on WhatsApp">
+  <svg width="30" height="30" viewBox="0 0 24 24" fill="white"><path d="M17.6 6.32A7.85 7.85 0 0 0 12.04 4c-4.34 0-7.87 3.53-7.87 7.87 0 1.39.36 2.74 1.05 3.93L4 20l4.32-1.13a7.86 7.86 0 0 0 3.72.95h.01c4.34 0 7.87-3.53 7.87-7.87 0-2.1-.82-4.08-2.32-5.63zm-5.56 12.1h-.01a6.5 6.5 0 0 1-3.32-.91l-.24-.14-2.47.65.66-2.41-.16-.25a6.53 6.53 0 0 1-1-3.49c0-3.61 2.94-6.55 6.56-6.55a6.5 6.5 0 0 1 4.63 1.92 6.5 6.5 0 0 1 1.92 4.63c0 3.62-2.94 6.55-6.57 6.55z"/></svg>
+</a>
+
+<script src="main.js"></script>
+<script src="chatbot.js"></script>
+<script>
+var BC_ENDPOINT = "https://script.google.com/macros/s/AKfycbyxO7U29SWevPqRpmVvsu3JoWnt1rZQdSv6tZG6ppJXYGQy50YHK9b8hu3pEFWjJ-6rHw/exec";
+var WA_NUMBER = "6580868568";
+var TURNAROUND = "1 working day";
+var STEP_TOTAL = 4;
+var KEYS = ["interest","purpose","timeline","budget","status","flatType","hdbRegion","timer","sellFirst","buyWith","hdbLoan","ownNow","region","unitType","financing","watching","priorities","name","mobile","contactTime"];
+
+var Q = {
+  interest: { type: "radio", label: "What are you looking at?", options: ["HDB BTO or SBF","HDB resale","New launch condo or EC","Resale condo or landed","Not sure yet"] },
+  purpose: { type: "radio", label: "Who is it for?", options: ["Own stay","Investment or rental","Both"] },
+  timeline: { type: "radio", label: "When do you want to buy?", options: ["Within 3 months","3 to 6 months","6 to 12 months","Just exploring"] },
+  budget: { type: "radio", label: "Your price range", hint: "A rough band is enough.", options: ["Below $500k","$500k to $800k","$800k to $1.2m","$1.2m to $1.8m","$1.8m to $2.5m","Above $2.5m","Not sure yet"] },
+  status: { type: "radio", label: "Buyer status", hint: "This decides which stamp duties and grants apply.", options: ["Singapore Citizen","Permanent Resident","Foreigner","Mixed couple (citizen with PR or foreigner)"] },
+
+  flatType: { type: "radio", label: "Flat type", options: ["2-room Flexi","3-room","4-room","5-room or 3Gen","Executive","Not sure yet"] },
+  hdbRegion: { type: "multi", label: "Preferred areas", hint: "Pick all that work.", options: ["Central","East","North","North-East","West","Open to anywhere"] },
+  timer: { type: "radio", label: "Is this your first HDB flat?", options: ["First-timer","Second-timer","Not sure"] },
+  sellFirst: { type: "radio", label: "Do you own a flat now?", options: ["Yes, I must sell it first","Yes, I can hold both for a while","No property now"] },
+  buyWith: { type: "radio", label: "Buying with", options: ["Alone","Spouse or fiance(e)","Parents or children","Siblings or other relatives","Not decided"] },
+  hdbLoan: { type: "radio", label: "Loan you prefer", options: ["HDB loan","Bank loan","Not sure yet"] },
+
+  ownNow: { type: "radio", label: "What do you own now?", options: ["No property","An HDB flat","A private property","More than one property"] },
+  region: { type: "multi", label: "Preferred region", hint: "Pick all that work.", options: ["Core Central (CCR)","Rest of Central (RCR)","Outside Central (OCR)","Not sure yet"] },
+  unitType: { type: "radio", label: "Unit size", options: ["Studio or 1-bedroom","2-bedroom","3-bedroom","4-bedroom or larger","Not sure yet"] },
+  financing: { type: "radio", label: "Financing", options: ["Loan approved or ready","I need a mortgage introduction","Mostly cash","Not started"] },
+  watching: { type: "text", label: "Projects you are watching (optional)", placeholder: "e.g. names of launches you like" },
+  priorities: { type: "multi", label: "What matters most to you?", hint: "Pick up to three.", max: 3, options: ["Lower monthly cost","More space","Location and transport","Long-term value or rental income","Near family or schools","Move-in timing"] },
+
+  name: { type: "text", label: "Your name", autocomplete: "name" },
+  mobile: { type: "tel", label: "Mobile number (WhatsApp)", autocomplete: "tel-national", placeholder: "9123 4567" },
+  contactTime: { type: "radio", label: "Best time for a quick call", options: ["Morning","Afternoon","Evening","WhatsApp only"] }
+};
+
+var answers = {};
+var step = 0;
+var sending = false;
+var card = document.getElementById("bcCard");
+
+function branch() {
+  var i = answers.interest;
+  if (i === "HDB BTO or SBF" || i === "HDB resale") return "hdb";
+  if (i === "New launch condo or EC" || i === "Resale condo or landed") return "private";
+  return "unsure";
+}
+function branchQs() {
+  var b = branch();
+  if (b === "hdb") return ["flatType","hdbRegion","timer","sellFirst","buyWith","hdbLoan"];
+  if (b === "private") return ["ownNow","region","unitType","financing","watching"];
+  return ["ownNow","priorities"];
+}
+var STEPS = [
+  { title: "What you plan to buy", qs: function () { return ["interest","purpose","timeline"]; } },
+  { title: "Budget and buyer status", qs: function () { return ["budget","status"]; } },
+  { title: function () { var b = branch(); return b === "hdb" ? "About the flat" : b === "private" ? "About the property" : "About your situation"; }, qs: branchQs },
+  { title: "Where should I send it?", qs: function () { return ["name","mobile","contactTime"]; }, consent: true }
+];
+
+function el(tag, cls, text) {
+  var n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text != null) n.textContent = text;
+  return n;
+}
+
+function renderQ(id) {
+  var q = Q[id];
+  if (q.type === "radio" || q.type === "multi") {
+    var fs = el("fieldset"); fs.id = "q-" + id;
+    fs.appendChild(el("legend", "", q.label));
+    if (q.hint) fs.appendChild(el("p", "bc-hint", q.hint));
+    var wrap = el("div", "bc-opts");
+    q.options.forEach(function (o, k) {
+      var lab = el("label", "bc-opt" + (q.type === "multi" ? " multi" : ""));
+      var inp = document.createElement("input");
+      inp.type = q.type === "multi" ? "checkbox" : "radio";
+      inp.name = id; inp.value = o; inp.id = "bc-" + id + "-" + k;
+      var cur = answers[id];
+      inp.checked = q.type === "multi" ? (cur || []).indexOf(o) > -1 : cur === o;
+      inp.addEventListener("change", function () { collect(id); });
+      lab.appendChild(inp); lab.appendChild(el("span", "", o));
+      wrap.appendChild(lab);
+    });
+    fs.appendChild(wrap);
+    var e = el("p", "bc-err"); e.id = "e-" + id; fs.appendChild(e);
+    return fs;
+  }
+  var f = el("div", "field"); f.id = "q-" + id;
+  var l = el("label", "", q.label); l.htmlFor = "f-" + id;
+  var i = document.createElement("input");
+  i.type = q.type; i.id = "f-" + id; i.name = id;
+  if (q.type === "tel") i.inputMode = "tel";
+  if (q.autocomplete) i.autocomplete = q.autocomplete;
+  if (q.placeholder) i.placeholder = q.placeholder;
+  i.value = answers[id] || "";
+  i.addEventListener("input", function () { answers[id] = i.value; });
+  f.appendChild(l);
+  if (q.type === "tel") {
+    var row = el("div", "bc-inp"); row.appendChild(el("span", "bc-pre", "+65")); row.appendChild(i); f.appendChild(row);
+  } else f.appendChild(i);
+  var e2 = el("p", "bc-err"); e2.id = "e-" + id; f.appendChild(e2);
+  return f;
+}
+
+function collect(id) {
+  var q = Q[id];
+  var nodes = card.querySelectorAll('input[name="' + id + '"]');
+  if (q.type === "multi") {
+    var vals = [];
+    nodes.forEach(function (n) { if (n.checked) vals.push(n.value); });
+    if (q.max && vals.length > q.max) {
+      var last = document.activeElement;
+      if (last && last.type === "checkbox") { last.checked = false; vals = vals.filter(function (v) { return v !== last.value; }); }
+    }
+    answers[id] = vals;
+  } else {
+    nodes.forEach(function (n) { if (n.checked) answers[id] = n.value; });
+  }
+  clearErr(id);
+}
+function clearErr(id) {
+  var e = document.getElementById("e-" + id); if (e) e.textContent = "";
+  var box = document.getElementById("q-" + id); if (box) box.classList.remove("bad");
+}
+function setErr(id, msg) {
+  var e = document.getElementById("e-" + id); if (e) e.textContent = msg;
+  var box = document.getElementById("q-" + id); if (box) box.classList.add("bad");
+}
+function validMobile(v) {
+  var d = String(v || "").replace(/[\s-]/g, "").replace(/^\+?65/, "");
+  return /^[689]\d{7}$/.test(d) ? d : null;
+}
+
+function validate(qs, withConsent) {
+  var firstBad = null;
+  qs.forEach(function (id) {
+    var q = Q[id], v = answers[id], msg = "";
+    if (id === "watching") return;
+    if (q.type === "multi") { if (!v || !v.length) msg = "Pick at least one."; }
+    else if (q.type === "radio") { if (!v) msg = "Choose one."; }
+    else if (id === "mobile") { if (!validMobile(v)) msg = "Enter an 8-digit Singapore number, for example 9123 4567."; }
+    else if (!v || !String(v).trim()) msg = "Enter your name.";
+    if (msg) { setErr(id, msg); if (!firstBad) firstBad = id; }
+  });
+  if (withConsent) {
+    var c = document.getElementById("bc-consent");
+    var ce = document.getElementById("e-consent");
+    if (!c.checked) { ce.textContent = "Tick the box so I can contact you."; if (!firstBad) firstBad = "consent"; }
+    else ce.textContent = "";
+  }
+  if (firstBad) {
+    var t = document.getElementById(firstBad === "consent" ? "bc-consent" : "q-" + firstBad);
+    var focusable = t && (t.matches("input") ? t : t.querySelector("input"));
+    if (focusable) focusable.focus();
+    return false;
+  }
+  return true;
+}
+
+function render() {
+  var s = STEPS[step];
+  card.textContent = "";
+  var bar = el("div", "bc-stepbar");
+  bar.appendChild(el("span", "bc-pill", "Step " + (step + 1) + " of " + STEP_TOTAL));
+  var segs = el("div", "bc-segs"); segs.setAttribute("aria-hidden", "true");
+  for (var k = 0; k < STEP_TOTAL; k++) segs.appendChild(el("i", k <= step ? "on" : ""));
+  bar.appendChild(segs);
+  card.appendChild(bar);
+  card.appendChild(el("h2", "", typeof s.title === "function" ? s.title() : s.title));
+
+  var form = document.createElement("form"); form.noValidate = true; form.className = "bc-form";
+  s.qs().forEach(function (id) { form.appendChild(renderQ(id)); });
+
+  if (s.consent) {
+    var hp = el("div", "bc-hp"); hp.setAttribute("aria-hidden", "true");
+    var hpi = document.createElement("input"); hpi.type = "text"; hpi.id = "bc-website"; hpi.name = "website"; hpi.tabIndex = -1; hpi.autocomplete = "off";
+    hp.appendChild(hpi); form.appendChild(hp);
+    var cw = el("div", "field");
+    var lab = el("label", "bc-consent");
+    var cb = document.createElement("input"); cb.type = "checkbox"; cb.id = "bc-consent";
+    lab.appendChild(cb);
+    var txt = el("span", "", "I agree that Serene Lee (ERA Realty) may collect and use these details, and contact me by call, SMS or WhatsApp about my enquiry, under the Personal Data Protection Act. I can withdraw this at any time. See the ");
+    var pl = el("a", "", "Privacy Policy"); pl.href = "/privacy";
+    txt.appendChild(pl); txt.appendChild(document.createTextNode("."));
+    lab.appendChild(txt);
+    cw.appendChild(lab);
+    var ce = el("p", "bc-err"); ce.id = "e-consent"; cw.appendChild(ce);
+    form.appendChild(cw);
+  }
+
+  var nav = el("div", "bc-nav");
+  if (step > 0) {
+    var back = el("button", "btn bc-ghost", "Back"); back.type = "button";
+    back.addEventListener("click", function () { step--; render(); });
+    nav.appendChild(back);
+  }
+  var next = el("button", "btn btn-gold bc-next", step === STEP_TOTAL - 1 ? "Send my summary request" : "Next"); next.type = "submit";
+  nav.appendChild(next);
+  form.appendChild(nav);
+
+  form.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    if (sending) return;
+    if (!validate(s.qs(), !!s.consent)) return;
+    if (step < STEP_TOTAL - 1) { step++; render(); card.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+    submit(next);
+  });
+  card.appendChild(form);
+}
+
+function score() {
+  var pts = { "Within 3 months": 3, "3 to 6 months": 2, "6 to 12 months": 1, "Just exploring": 0 }[answers.timeline] || 0;
+  if (answers.budget && answers.budget !== "Not sure yet") pts += 1;
+  var b = branch();
+  if (b === "hdb" && answers.hdbLoan && answers.hdbLoan !== "Not sure yet") pts += 1;
+  if (b === "private" && (answers.financing === "Loan approved or ready" || answers.financing === "Mostly cash")) pts += 1;
+  return { pts: pts, tier: pts >= 5 ? "Hot" : pts >= 3 ? "Warm" : "Cold" };
+}
+
+function payload() {
+  var allowed = {};
+  STEPS.forEach(function (s) { s.qs().forEach(function (id) { allowed[id] = 1; }); });
+  var p = {};
+  KEYS.forEach(function (k) {
+    var v = allowed[k] ? answers[k] : "";
+    if (k === "mobile") v = "+65" + validMobile(answers.mobile);
+    p[k] = Array.isArray(v) ? v.join(" | ") : (v || "");
+  });
+  var sc = score();
+  p.score = sc.pts; p.tier = sc.tier; p.consent = "Yes";
+  var src = "";
+  try { src = new URLSearchParams(location.search).get("src") || ""; } catch (e) {}
+  p.source = src || "buyer-check";
+  p.website = document.getElementById("bc-website") ? document.getElementById("bc-website").value : "";
+  return p;
+}
+
+function submit(btn) {
+  sending = true; btn.disabled = true; btn.textContent = "Sending...";
+  fetch(BC_ENDPOINT, { method: "POST", mode: "no-cors", body: new URLSearchParams(payload()) })
+    .then(function () { sending = false; done(); })
+    .catch(function () {
+      sending = false; btn.disabled = false; btn.textContent = "Send my summary request";
+      document.getElementById("e-consent").textContent = "That did not send. Check your connection and try again.";
+    });
+}
+
+function done() {
+  var first = String(answers.name).trim().split(/\s+/)[0];
+  var b = branch();
+  card.textContent = "";
+  var wrap = el("div", "bc-done");
+  wrap.appendChild(el("span", "bc-pill", "Request received"));
+  wrap.firstChild.style.justifySelf = "start";
+  wrap.appendChild(el("h2", "", "Thank you, " + first + "."));
+  var steps = el("ol", "bc-next-list");
+  steps.appendChild(el("li", "", "I review your answers and prepare your summary."));
+  steps.appendChild(el("li", "", "You get it on WhatsApp within " + TURNAROUND + "."));
+  steps.appendChild(el("li", "", answers.contactTime === "WhatsApp only" ? "We keep it to WhatsApp, as you asked." : "I offer a short call in the " + String(answers.contactTime).toLowerCase() + " to go through it."));
+  wrap.appendChild(steps);
+
+  var tip = el("p", "bc-tip");
+  if (b === "hdb") tip.textContent = "While you wait: apply for your HDB Flat Eligibility letter early. It confirms whether you can use an HDB loan and CPF housing grants, and it sets your budget.";
+  else if (b === "private") tip.textContent = "While you wait: stamp duty for private property depends on your residency and how many properties you own, and banks cap total debt repayments. I check both for your case first, so there are no surprises at the option fee.";
+  else tip.textContent = "While you wait: think about whether your priority is a lower monthly cost or a bigger home. That one answer decides whether HDB or private suits you better, and I will show you both in your summary.";
+  wrap.appendChild(tip);
+
+  var wa = el("a", "btn btn-gold btn-block", "Message Serene on WhatsApp now");
+  wa.href = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent("Hi Serene, I just filled in the Buyer Readiness Check.");
+  wa.target = "_blank"; wa.rel = "noopener";
+  wrap.appendChild(wa);
+  card.appendChild(wrap);
+  card.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+render();
+</script>
+</body>
+</html>
