@@ -229,7 +229,9 @@ def card(x, region, today, compact=False):
     alt = f"{name} artist's impression"
     region_seg = region(x)[0]
     if selling:
-        cta_txt, msg = "Enquire via WhatsApp", f"Hi Serene, I'd like to find out more about {name}."
+        # Balance units sell at a different range from the launch "from" price, so no starting
+        # price is shown for selling projects (Serene, 19 Oct 2026).
+        cta_txt, msg = "Avail Units &amp; Prices - check with Serene", f"Hi Serene, I'd like the available units and prices for {name}."
     else:
         cta_txt, msg = "Register for Preview", f"Hi Serene, I'd like to register for the preview of {name}."
     href = WA + urllib.parse.quote(msg)
@@ -239,7 +241,7 @@ def card(x, region, today, compact=False):
                 f'        <div class="launch-body">\n'
                 f'          <div class="launch-name">{esc(name)}</div>\n'
                 f'          <div class="launch-meta">{esc(loc)} &middot; TOP {topq or "TBA"}</div>\n'
-                f'          <div class="launch-price">{price}</div>\n'
+                f'          <div class="launch-price">{"Avail Units &amp; Prices - check with Serene" if selling else price}</div>\n'
                 f'        </div>\n'
                 f'      </div>\n')
     return (f'      <div class="launch-card" data-region="{region_seg}" data-tenure="{ten_key}" data-top="{topkey or "9999"}" '
@@ -249,7 +251,7 @@ def card(x, region, today, compact=False):
             f'          <div class="launch-name">{esc(name)}</div>\n'
             f'          <div class="launch-meta">{meta1}</div>\n'
             f'          <div class="launch-meta" style="margin-top:-4px;">{meta2}</div>\n'
-            f'          <div class="launch-price">{price}</div>\n'
+            + ('' if selling else f'          <div class="launch-price">{price}</div>\n')
             + (f'          <p class="launch-desc" style="font-size:.85rem;color:var(--muted);margin:6px 0 10px;">{detail}</p>\n' if detail else
                '          <p class="launch-desc" style="font-size:.85rem;color:var(--muted);margin:6px 0 10px;">Unit mix and prices to be announced at launch.</p>\n')
             + f'          <a href="{href}" target="_blank" rel="noopener" class="btn btn-gold btn-block">{cta_txt}</a>\n'

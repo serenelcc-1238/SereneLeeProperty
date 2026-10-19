@@ -43,7 +43,7 @@ ABOUT SERENE:
 - ERA Realty Network Pte Ltd, 450 Lorong 6 Toa Payoh, #03-01 ERA APAC Centre, Singapore 319394. ERA main line +65 6226 2000.
 
 SITE PAGES YOU CAN POINT VISITORS TO (write them as sereneleeproperty.com/<page>, e.g. sereneleeproperty.com/market-map):
-- /new-launches — current new launch projects Serene is tracking, with prices, TOP dates, region/tenure filters.
+- /new-launches — current new launch projects Serene is tracking, with units, TOP dates, region/tenure filters.
 - /market-map — interactive map of HDB resale and private transactions by town/district, with "Check my block" and "Check my condo" lookups.
 - /million-dollar-hdb — every $1M+ HDB resale.
 - /calculator — free affordability calculator (TDSR/MSR, loan eligibility estimate).
@@ -72,7 +72,7 @@ HOW TO BEHAVE:
 - For questions about actual prices, use the data tools instead of guessing:
   - hdb_resale_lookup for HDB resale prices (by town, flat type, street or block).
   - private_transactions_lookup for condo/EC/landed transaction prices (by project or postal district).
-  - new_launches_lookup for current new launches (starting price, units left, TOP).
+  - new_launches_lookup for current new launches (units left, TOP). Never quote a starting price for a project that is already selling: the balance units are in a different price range. Say "For available units and prices, check with Serene" and offer WhatsApp.
   - mrt_lookup for anything about MRT/LRT proximity: blocks or condos near a station, or the nearest station to a block or condo. Quote distances as "about Xm straight-line" and mention walking is a bit longer. For a map view, point to /market-map (the block and condo check shows a OneMap location map).
 - When you quote figures: give the median and range (and $psf), say how many deals and over what period, and name the source and the "data as of" date, e.g. "Based on 48 HDB resale deals in the last 12 months (data.gov.sg, updated 12 Oct 2026)". Round to the nearest $1,000. These are past transacted prices, not a valuation of the visitor's own unit — for a proper valuation or a specific unit, offer to connect them with Serene.
 - For "most expensive", "highest", "record", "cheapest" or "lowest" questions, use highest_deals / lowest_deals from the tool: name the block and street (or condo project), flat type, storey range, size, $psf and month, in the form "The top [town] resale in the last 12 months was a [flat type] at Blk [block] [street], storey [range], [size] sqm, sold for $[price] ($[psf] psf) in [month]." using only the figures the tool returned. Add the next one or two highest if helpful.
@@ -169,7 +169,7 @@ const DATA_TOOLS = [
   {
     name: "new_launches_lookup",
     description:
-      "List current new launch condo/EC projects (from the ERA new launch feed, refreshed weekly) with district, region, TOP, tenure, total/available units and starting price. Filter by district, region or name.",
+      "List current new launch condo/EC projects (from the ERA new launch feed, refreshed weekly) with district, region, TOP, tenure and total/available units. Filter by district, region or name.",
     input_schema: {
       type: "object",
       properties: {
@@ -364,7 +364,9 @@ async function newLaunchLookup(env, origin, input) {
     count: list.length,
     projects: list.slice(0, 12).map((p) => ({
       name: p.name, status: p.status, district: p.district, region: p.region, developer: p.developer,
-      tenure: p.tenure, top: p.top, units: p.units, available: p.available, from_price: p.minPrice,
+      tenure: p.tenure, top: p.top, units: p.units, available: p.available,
+      // No starting price for selling projects: balance units sell at a different range (Serene, 19 Oct 2026).
+      ...(p.status === "selling" ? {} : { from_price: p.minPrice }),
     })),
     note: "Pinned spotlight projects (e.g. The Serra Residences) are on /new-launches but not in this feed.",
   };
