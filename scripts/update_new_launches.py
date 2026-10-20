@@ -223,7 +223,8 @@ def card(x, region, today, compact=False):
     else:
         status = f"Expected {quarter(ld)[0]}"
     price = (f"From {money(u['minPrice'])}" if u.get("minPrice") else "Pricing not yet released")
-    psf = (f"${u['minPsf']:,.0f}–${u['maxPsf']:,.0f} psf" if u.get("minPsf") and u.get("maxPsf") else "")
+    # No project-wide $psf range once selling: balance units sit in a different range (Serene, 21 Oct 2026).
+    psf = (f"${u['minPsf']:,.0f}–${u['maxPsf']:,.0f} psf" if u.get("minPsf") and u.get("maxPsf") and x["_status"] != "selling" else "")
     mix = bedrooms(u.get("bedroomTypes"))
     size = (f"{u['minArea']:,}–{u['maxArea']:,} sqft" if u.get("minArea") and u.get("maxArea") else "")
     meta1 = " &middot; ".join(filter(None, [esc(loc), ten_txt, esc(ptype_txt), f"TOP {topq}" if topq else "TOP to be advised"]))

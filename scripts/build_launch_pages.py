@@ -175,7 +175,7 @@ def render(x, slug, d, up, g, stations, hdb_pts, market, ura, ura_geo, meta_by_k
         facts.append(("Unit mix", x["mix"]))
     if x.get("minArea") and x.get("maxArea"):
         facts.append(("Unit sizes", f"{x['minArea']:,}–{x['maxArea']:,} sqft"))
-    if x.get("minPsf") and x.get("maxPsf"):
+    if x.get("minPsf") and x.get("maxPsf") and not selling:  # no project-wide range once selling (Serene, 21 Oct 2026)
         facts.append(("Price per sq ft (ERA listing)", f"${x['minPsf']:,.0f}–${x['maxPsf']:,.0f} psf"))
     if not selling:
         facts.append(("Launch", f"Expected {dmy(x['launchDate'])}" if x.get("launchDate") else "To be advised"))
