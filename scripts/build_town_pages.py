@@ -627,6 +627,8 @@ def main():
     build_hub(stats, market, head, header, footer, picker_html(market, with_kind=False))
     update_home(stats, market)
     build_rightsizing(market, head, header, footer)
+    import build_useful_numbers  # same shell, so menu/footer changes reach it too
+    build_useful_numbers.main()
     print(f"built {len(stats)} town pages + town-guide.html (index={INDEX})")
 
 

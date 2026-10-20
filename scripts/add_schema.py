@@ -26,7 +26,7 @@ NAMES = {
     "calculator": "Affordability Calculator", "upgrade-checklist": "Upgrade Checklist",
     "buyer-check": "Buyer Readiness Check", "market-map": "Market Map",
     "million-dollar-hdb": "Million-Dollar HDB", "new-launches": "New Launches",
-    "subscribers": "Subscribe", "privacy": "Privacy Policy", "town-guide": "Town Guides", "right-sizing-north": "Right-Sizing Guide",
+    "subscribers": "Subscribe", "privacy": "Privacy Policy", "town-guide": "Town Guides", "right-sizing-north": "Right-Sizing Guide", "useful-numbers": "Useful Phone Numbers",
     "testimonials": "Testimonials",
 }
 BLOG_CHILDREN = {"quiz-lease-decay"}  # pages that sit under the Blog
