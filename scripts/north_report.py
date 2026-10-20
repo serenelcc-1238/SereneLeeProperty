@@ -203,8 +203,8 @@ def kit_tree(o):
             fontSize=12, color="#6B7280")),
     ]
     subject = f"North HDB resale: {o['label']} ({o['total']} flats sold)"
-    preview = o["highlights"][1] if len(o["highlights"]) > 1 else o["highlights"][0]
-    return {"subject": subject, "preview_text": preview[:140], "content_tree": tree,
+    preview = f"Woodlands, Sembawang & Yishun: flats sold, median prices and the month's top sale."
+    return {"subject": subject, "preview_text": preview, "content_tree": tree,
             "tag_id": 24833032, "email_template_id": 5567270}
 
 

@@ -1,0 +1,74 @@
+name: Monthly North HDB report
+
+# 6th of every month, 9:00am Singapore time (01:00 UTC): builds last month's
+# Woodlands / Sembawang / Yishun report (image card + Kit email content) and deploys
+# the image so the email can show it. A scheduled Claude task then drafts the email
+# in Kit for Serene to review and send. Run by hand from the Actions tab with a month
+# (YYYY-MM) to rebuild one.
+on:
+  schedule:
+    - cron: "0 1 6 * *"
+  workflow_dispatch:
+    inputs:
+      month:
+        description: "Month to build (YYYY-MM). Leave blank for last month."
+        required: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: site-data-commits
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Chromium and fonts for the image card
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq fonts-inter fonts-dejavu-core >/dev/null || true
+          pip install -q playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Build the report
+        run: python scripts/north_report.py ${{ github.event.inputs.month }}
+
+      - name: Save to the repo
+        id: commit
+        run: |
+          git config user.name "north-report-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A data/north-report assets/email
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "North HDB report: $(ls -t data/north-report/*-kit.json | head -1 | xargs basename | cut -c1-7)"
+            git pull --rebase origin main
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # A push made by this workflow does not trigger deploy.yml, so deploy here.
+      - uses: actions/setup-node@v4
+        if: steps.commit.outputs.changed == 'true'
+        with:
+          node-version: 22
+      - name: Deploy site
+        if: steps.commit.outputs.changed == 'true'
+        run: |
+          npm install
+          python3 scripts/build_town_pages.py && python3 scripts/add_schema.py
+          python3 scripts/build_sitemap.py
+          npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
