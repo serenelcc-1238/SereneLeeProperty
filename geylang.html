@@ -93,6 +93,10 @@
 .tp-town b{font:600 1.1rem 'Fraunces',Georgia,serif;color:var(--navy-900);margin-bottom:4px}
 .tp-town strong{color:var(--navy-900)}
 .tp-town:hover{border-color:var(--gold);box-shadow:var(--shadow)}
+.tp-blks{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;max-height:420px;overflow:auto;padding-right:4px}
+.tp-blk{display:flex;flex-direction:column;gap:2px;border:1px solid var(--line);border-radius:10px;padding:9px 12px;text-decoration:none;color:var(--navy-900);font-size:.88rem}
+.tp-blk span{color:var(--muted);font-size:.76rem}
+.tp-blk:hover{border-color:var(--gold)}
 .tp-faq h3{font-size:1rem;margin:16px 0 4px}
 .tp-faq p{color:var(--muted);font-size:.92rem;margin:0;max-width:820px}
 </style>
@@ -198,6 +202,8 @@
       <p class="tp-src">Tap a block to see every resale in it on the Market Map.</p>
     </div>
   </div>
+
+  
 
   <div class="tp-card" data-kind="pte"><h2>Condos and executive condos in and around Geylang</h2>
     <div class="tp-tablewrap"><table class="tp-table"><thead><tr><th>Type</th><th class="r">Deals</th><th class="r">Median price</th><th class="r">Median $psf</th><th class="r">$psf vs year before</th></tr></thead><tbody><tr><td><b>Condo resale</b></td><td class='r'>627</td><td class='r'><b>$1,488,888</b></td><td class='r'>$1,760</td><td class='r'><span class="tp-chg down">-0.8%</span></td></tr></tbody></table></div>

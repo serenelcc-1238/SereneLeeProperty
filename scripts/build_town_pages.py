@@ -147,6 +147,23 @@ def nearby_projects(geo_blocks):
     return out
 
 
+BLOCKS = {}  # TOWN -> [(street, blk, path, deals, latest_price, latest_ft)], filled by build_block_pages
+
+
+def block_card(town, tname):
+    bl = BLOCKS.get(town)
+    if not bl:
+        return ""
+    links = "".join(
+        f'<a class="tp-blk" href="{p}"><b>Blk {esc(b)}</b> {esc(title(s))}<span>{n} resales · latest {money(lp)}</span></a>'
+        for s, b, p, n, lp, ft in bl)
+    return (f'<div class="tp-card" data-kind="hdb"><h2>Block guides: {len(bl)} most-traded {esc(tname)} blocks</h2>'
+            f'<p class="tp-note" style="margin:0 0 10px">Every resale, prices by flat type, lease left, nearest MRT and condos nearby, block by block.</p>'
+            f'<div class="tp-blks">{links}</div>'
+            f'<p class="tp-src">Blocks with at least 15 resales in the last 3 years, or a resale of $1 million or more. '
+            f'For any other block, use <a href="/market-map">Check my block</a> on the Market Map.</p></div>')
+
+
 def build(town, cfg, shell_head, shell_header, shell_footer, picker):
     market = load("market-data.json")
     th = market["hdb"]["towns"][town]
@@ -421,6 +438,8 @@ def build(town, cfg, shell_head, shell_header, shell_footer, picker):
     </div>
   </div>
 
+  {block_card(town, tname)}
+
   <div class="tp-card" data-kind="pte"><h2>Condos and executive condos in and around {esc(tname)}</h2>
     <div class="tp-tablewrap"><table class="tp-table"><thead><tr><th>Type</th><th class="r">Deals</th><th class="r">Median price</th><th class="r">Median $psf</th><th class="r">$psf vs year before</th></tr></thead><tbody>{''.join(pte_rows)}</tbody></table></div>
     <h3 class="tp-h3">Most traded projects</h3>
@@ -507,6 +526,10 @@ CSS = """<style>
 .tp-town b{font:600 1.1rem 'Fraunces',Georgia,serif;color:var(--navy-900);margin-bottom:4px}
 .tp-town strong{color:var(--navy-900)}
 .tp-town:hover{border-color:var(--gold);box-shadow:var(--shadow)}
+.tp-blks{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;max-height:420px;overflow:auto;padding-right:4px}
+.tp-blk{display:flex;flex-direction:column;gap:2px;border:1px solid var(--line);border-radius:10px;padding:9px 12px;text-decoration:none;color:var(--navy-900);font-size:.88rem}
+.tp-blk span{color:var(--muted);font-size:.76rem}
+.tp-blk:hover{border-color:var(--gold)}
 .tp-faq h3{font-size:1rem;margin:16px 0 4px}
 .tp-faq p{color:var(--muted);font-size:.92rem;margin:0;max-width:820px}
 </style>"""
@@ -618,6 +641,8 @@ def main():
     head = re.sub(r'\n?<script type="application/ld\+json" data-schema="(?:breadcrumb|dataset)">.*?</script>', "", head, flags=re.S)
     market = load("market-data.json")
     picker = picker_html(market)
+    import build_block_pages  # block pages first, so town pages can list them
+    BLOCKS.update(build_block_pages.build_all(head, header, footer))
     stats = []
     for town, v in market["hdb"]["towns"].items():
         if not os.path.exists(os.path.join(D, "hdb", v["file"] + ".json")):

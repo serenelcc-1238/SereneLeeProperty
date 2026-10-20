@@ -88,20 +88,27 @@ def main():
 
     home = ("Home", SITE + "/")
     n_bc = n_ds = 0
-    for path in sorted(glob.glob(os.path.join(ROOT, "*.html"))):
+    pages = sorted(glob.glob(os.path.join(ROOT, "*.html"))) + sorted(glob.glob(os.path.join(ROOT, "hdb", "*", "*.html")))
+    for path in pages:
         name = os.path.basename(path)
+        rel = os.path.relpath(path, ROOT).replace(os.sep, "/")
         if name in SKIP:
             continue
         h = open(path, encoding="utf-8").read()
         if re.search(r'<meta name="robots" content="[^"]*noindex', h):
             continue
         h = re.sub(r'\n?<script type="application/ld\+json" data-schema="(?:breadcrumb|dataset)">.*?</script>', "", h, flags=re.S)
-        slug = name[:-5]
+        slug = rel[:-5]
         url = f"{SITE}/{slug}"
         add = []
 
         # ---------------- breadcrumbs
-        if slug in towns:
+        if slug.startswith("hdb/"):  # block page: Home > Town Guides > Town > Blk
+            tslug = slug.split("/")[1]
+            tname = title(towns[tslug][0]) if tslug in towns else tslug.title()
+            add.append(block("breadcrumb", crumbs([home, ("Town Guides", SITE + "/town-guide"), (tname, f"{SITE}/{tslug}"),
+                                                   (page_title(h).replace(" HDB Resale Prices", "").replace(" Resale Prices", ""), url)])))
+        elif slug in towns:
             tname = title(towns[slug][0])
             add.append(block("breadcrumb", crumbs([home, ("Town Guides", SITE + "/town-guide"), (tname, url)])))
         elif slug.startswith("blog-") or slug in BLOG_CHILDREN:

@@ -22,7 +22,7 @@ def git_date(path):
     """Date (Singapore time) the file last changed in git; today if git has no record.
     Workflows check out the full history (fetch-depth: 0) so this is accurate."""
     try:
-        out = subprocess.run(["git", "log", "-1", "--format=%cI", "--", os.path.basename(path)],
+        out = subprocess.run(["git", "log", "-1", "--format=%cI", "--", os.path.relpath(path, ROOT)],
                              cwd=ROOT, capture_output=True, text=True, timeout=20).stdout.strip()
         if out:
             return datetime.fromisoformat(out).astimezone(timezone(timedelta(hours=8))).strftime("%Y-%m-%d")
@@ -33,8 +33,8 @@ def git_date(path):
 
 def main():
     urls = []
-    for path in sorted(glob.glob(os.path.join(ROOT, "*.html"))):
-        name = os.path.basename(path)
+    for path in sorted(glob.glob(os.path.join(ROOT, "*.html"))) + sorted(glob.glob(os.path.join(ROOT, "hdb", "*", "*.html"))):
+        name = os.path.relpath(path, ROOT).replace(os.sep, "/")
         if name in SKIP:
             continue
         html = open(path, encoding="utf-8").read()
