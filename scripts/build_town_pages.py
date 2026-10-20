@@ -179,10 +179,12 @@ def build(town, cfg, shell_head, shell_header, shell_footer, picker):
         b = [r for r in r24 if r[1] == code]
         m, mb = med([r[6] for r in a]), med([r[6] for r in b])
         ft_med[code] = m
+        rent = RENTS.get(town, {}).get(code)
         ft_rows.append(
             f"<tr><td><b>{FT[code]}</b></td><td class='r'>{len(a):,}</td><td class='r'><b>{money(m)}</b></td>"
             f"<td class='r'>{money(med([psf(r) for r in a]))}</td><td class='r'>{money_k(min(r[6] for r in a))} – {money_k(max(r[6] for r in a))}</td>"
-            f"<td class='r'>{pct(m, mb) if len(b) >= 10 else '–'}</td></tr>")
+            f"<td class='r'>{pct(m, mb) if len(b) >= 10 else '–'}</td>"
+            f"<td class='r'>{money(rent) + '/mth' if rent else '–'}</td></tr>")
     all12 = [r[6] for r in r12]
     m4 = ft_med.get("4", 0)
 
@@ -390,9 +392,9 @@ def build(town, cfg, shell_head, shell_header, shell_footer, picker):
   </div>
 
   <div class="tp-card" data-kind="hdb"><h2>HDB resale prices by flat type</h2>
-    <div class="tp-tablewrap"><table class="tp-table"><thead><tr><th>Flat type</th><th class="r">Deals</th><th class="r">Median price</th><th class="r">Median $psf</th><th class="r">Range</th><th class="r">vs year before</th></tr></thead>
+    <div class="tp-tablewrap"><table class="tp-table"><thead><tr><th>Flat type</th><th class="r">Deals</th><th class="r">Median price</th><th class="r">Median $psf</th><th class="r">Range</th><th class="r">vs year before</th><th class="r">Median rent{(' (' + RENT_SRC[0] + ')') if RENT_SRC[0] else ''}</th></tr></thead>
     <tbody>{''.join(ft_rows)}</tbody></table></div>
-    <p class="tp-src">Last 12 months: {ym(months_back(last, 11))} to {ym(last)}, compared with the 12 months before. Source: <a href="https://data.gov.sg/datasets/d_8b84c4ee58e3cfc0ece0d773c8ca6abc/view" target="_blank" rel="noopener">HDB resale flat prices (data.gov.sg)</a>. Not a valuation.</p>
+    <p class="tp-src">Last 12 months: {ym(months_back(last, 11))} to {ym(last)}, compared with the 12 months before. Source: <a href="https://data.gov.sg/datasets/d_8b84c4ee58e3cfc0ece0d773c8ca6abc/view" target="_blank" rel="noopener">HDB resale flat prices (data.gov.sg)</a>. Not a valuation.{(' Median rent: whole-flat rentals approved by HDB in ' + RENT_SRC[0] + ', <a href="' + RENT_SRC[1] + '" target="_blank" rel="noopener">HDB median rents (data.gov.sg)</a>; "–" means too few rentals to publish.') if RENT_SRC[0] else ''}</p>
   </div>
 
   <div class="tp-card" data-kind="hdb"><h2>Price trend by quarter</h2>
@@ -633,12 +635,19 @@ def main():
 
 
 RS_TOWNS = ["WOODLANDS", "SEMBAWANG", "YISHUN"]
-# HDB median monthly rent (whole flat), Q2 2026, from HDB's quarterly public housing data, Annex D.
-# Update each quarter when HDB publishes new figures.
-RENT_SRC = ("Q2 2026", "https://www.hdb.gov.sg/-/media/hdb-pulse/news/2026/20260724-2nd-quarter-2026-public-housing-data-and-upcoming-flat-supply/Annex-D.pdf")
-RENTS = {"WOODLANDS": {"3": 2600, "4": 3100, "5": 3300, "E": 3550},
-         "SEMBAWANG": {"4": 3180, "5": 3300, "E": 3600},
-         "YISHUN": {"3": 2700, "4": 3100, "5": 3500}}
+
+
+def load_rents():
+    """HDB median monthly rents (whole flat) from data/rents.json, refreshed weekly by
+    scripts/update_rents.py; HDB publishes a new quarter about 4 weeks after it ends."""
+    try:
+        r = load("rents.json")
+        return r["towns"], r.get("prev_year", {}), (r["label"], r["url"])
+    except (FileNotFoundError, KeyError, json.JSONDecodeError):
+        return {}, {}, ("", "")
+
+
+RENTS, RENTS_PREV, RENT_SRC = load_rents()
 SMALL_SQM = 70  # "smaller condo": units up to 70 sqm (about 750 sqft)
 
 
