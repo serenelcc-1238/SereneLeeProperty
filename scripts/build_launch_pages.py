@@ -164,7 +164,7 @@ def render(x, slug, d, up, g, stations, hdb_pts, market, ura, ura_geo, meta_by_k
     ten = TENURE.get(x.get("tenure"), "Leasehold")
     ptype = PTYPE.get(x.get("ptype") or "condo", "Condominium")
     topq = quarter(x.get("top"))
-    street = title(up[1]) if up else ""
+    street = title(x["address"]) if x.get("address") else (title(up[1]) if up else "")
     facts = [("Developer", x.get("developer") or "–"), ("Type", ptype), ("Location", (street + ", " if street else "") + loc),
              ("Market segment", {"CCR": "Core Central Region (CCR)", "RCR": "Rest of Central Region (RCR)", "OCR": "Outside Central Region (OCR)"}.get(x.get("region"), x.get("region") or "–")),
              ("Tenure", ten), ("Expected completion (TOP)", topq or "To be advised"),
