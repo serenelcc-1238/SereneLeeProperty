@@ -27,6 +27,7 @@ PAGE = f"https://data.gov.sg/datasets/{DATASET}/view"
 SGT = timezone(timedelta(hours=8))
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/129.0 Safari/537.36")
+TOWN_ALIAS = {"CENTRAL": "CENTRAL AREA"}  # rent file name -> resale file name
 FT = {"1-RM": "1", "2-RM": "2", "3-RM": "3", "4-RM": "4", "5-RM": "5", "EXEC": "E"}
 
 
@@ -61,6 +62,7 @@ def build(rs):
     for r in rs:
         q = (r.get("quarter") or "").strip()
         town = (r.get("town") or "").strip().upper()
+        town = TOWN_ALIAS.get(town, town)
         ft = FT.get((r.get("flat_type") or "").strip().upper())
         v = (r.get("median_rent") or "").strip().replace(",", "")
         if not (q and town and ft) or not v.replace(".", "").isdigit():
