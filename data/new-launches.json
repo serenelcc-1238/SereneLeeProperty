@@ -1,6 +1,6 @@
 {
  "source": "https://propertyportal.era.com.sg/new-launches",
- "retrieved": "2026-10-19T08:27+08:00",
+ "retrieved": "2026-10-21T00:30+08:00",
  "pinned_skipped": [
   "THESERRARESIDENCES",
   "THOMSONRESERVE"
@@ -17,9 +17,19 @@
    "tenure": "leasehold_99",
    "developer": "CDL",
    "units": 570,
-   "available": 204,
+   "available": 203,
    "minPrice": 1503000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/lucerne_grand/media/c6ee6051b441b8332fed83e5c5866a02d58f6a0e.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/lucerne_grand/media/c6ee6051b441b8332fed83e5c5866a02d58f6a0e.jpg",
+   "slug": "/new-launch/lucerne-grand",
+   "ptype": "condo",
+   "mix": "2\u20134 bedroom",
+   "minArea": 624,
+   "maxArea": 1432,
+   "minPsf": 2251.41552734375,
+   "maxPsf": 2650.47509765625,
+   "address": "38 LAKESIDE DRIVE",
+   "latitude": 1.3432509899139404,
+   "longitude": 103.72021484375
   },
   {
    "name": "Amberwood At Holland",
@@ -34,7 +44,18 @@
    "units": 212,
    "available": 187,
    "minPrice": 2516000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/amberwood_at_holland/media/555d46fcde107d578d3b49f3bb6b76cc70f374a3.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/amberwood_at_holland/media/555d46fcde107d578d3b49f3bb6b76cc70f374a3.jpg",
+   "slug": "/new-launch/amberwood-at-holland",
+   "ptype": "condo",
+   "mix": "3\u20135 bedroom",
+   "minArea": 872,
+   "maxArea": 1572,
+   "minPsf": 2851.0205078125,
+   "maxPsf": 3150.055908203125,
+   "address": "52 HOLLAND LINK",
+   "streetName": "HOLLAND LINK",
+   "latitude": 1.3281813859939575,
+   "longitude": 103.78736114501953
   },
   {
    "name": "Dunearn House",
@@ -49,7 +70,17 @@
    "units": 380,
    "available": 140,
    "minPrice": 1475000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/dunearn_house/media/0600bd6189a41b332882fd05c62c152fcbf61037.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/dunearn_house/media/0600bd6189a41b332882fd05c62c152fcbf61037.jpg",
+   "slug": "/new-launch/dunearn-house",
+   "ptype": "condo",
+   "mix": "2\u20134 bedroom",
+   "minArea": 527,
+   "maxArea": 1378,
+   "minPsf": 2798.861572265625,
+   "maxPsf": 3386.61328125,
+   "address": "770 DUNEARN ROAD",
+   "latitude": 1.333330512046814,
+   "longitude": 103.79331970214844
   },
   {
    "name": "Lentor Gardens Residences",
@@ -64,7 +95,17 @@
    "units": 502,
    "available": 185,
    "minPrice": 1180650,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/lentor_gardens_residences/media/b4496dfa030f5a98ac223ca4a232a3e8eba9d6fe.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/lentor_gardens_residences/media/b4496dfa030f5a98ac223ca4a232a3e8eba9d6fe.jpg",
+   "slug": "/new-launch/lentor-gardens-residences",
+   "ptype": "condo",
+   "mix": "Studio + 2\u20135 bedroom",
+   "minArea": 463,
+   "maxArea": 1496,
+   "minPsf": 2049.7822265625,
+   "maxPsf": 2550,
+   "address": "80 LENTOR GARDENS",
+   "latitude": 1.3846265077590942,
+   "longitude": 103.8318099975586
   },
   {
    "name": "Duet @ Emily",
@@ -79,7 +120,18 @@
    "units": 16,
    "available": 16,
    "minPrice": 995000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/duet_%40_emily/media/8c6ac29ded4de4e7504d6d36c8d6fd5cd8d569b4.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/duet_%40_emily/media/8c6ac29ded4de4e7504d6d36c8d6fd5cd8d569b4.jpg",
+   "slug": "/new-launch/duet-emily",
+   "ptype": "condo",
+   "mix": "1\u20132 bedroom",
+   "minArea": 409,
+   "maxArea": 1335,
+   "minPsf": 2432.762939453125,
+   "maxPsf": 2792.176025390625,
+   "address": "2 MOUNT EMILY ROAD",
+   "streetName": "MOUNT EMILY ROAD",
+   "latitude": 1.3044145107269287,
+   "longitude": 103.84938049316406
   },
   {
    "name": "Hudson Place Residences",
@@ -94,7 +146,18 @@
    "units": 325,
    "available": 76,
    "minPrice": 1455000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/hudson_place_residences/media/61d910d8072287c2fc51d6354aa4a4dffaeddc35.png"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/hudson_place_residences/media/61d910d8072287c2fc51d6354aa4a4dffaeddc35.png",
+   "slug": "/new-launch/hudson-place-residences",
+   "ptype": "condo",
+   "mix": "2\u20136 bedroom",
+   "minArea": 646,
+   "maxArea": 2196,
+   "minPsf": 2252.322021484375,
+   "maxPsf": 2744.58203125,
+   "address": "20 MEDIA CIRCLE",
+   "streetName": "MEDIA CIRCLE",
+   "latitude": 1.2934058904647827,
+   "longitude": 103.79515838623047
   },
   {
    "name": "Vela Bay",
@@ -109,7 +172,17 @@
    "units": 515,
    "available": 129,
    "minPrice": 1254000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/vela_bay/media/6cce68e67e7d78e6b5f5842c16cff6d6d1ff8bc8.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/vela_bay/media/6cce68e67e7d78e6b5f5842c16cff6d6d1ff8bc8.jpg",
+   "slug": "/new-launch/vela-bay",
+   "ptype": "condo",
+   "mix": "1\u20135 bedroom",
+   "minArea": 484,
+   "maxArea": 1765,
+   "minPsf": 2533.78369140625,
+   "maxPsf": 3249.291748046875,
+   "address": "3 BAYSHORE WALK",
+   "latitude": 1.312077283859253,
+   "longitude": 103.94158935546875
   },
   {
    "name": "Pinery Residences",
@@ -124,7 +197,18 @@
    "units": 588,
    "available": 35,
    "minPrice": 1486000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/pinery_residences/media/369d4fdffd2c7d54fbe44f783bfb71af7c8955a7.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/pinery_residences/media/369d4fdffd2c7d54fbe44f783bfb71af7c8955a7.jpg",
+   "slug": "/new-launch/pinery-residences",
+   "ptype": "condo",
+   "mix": "2\u20135 bedroom",
+   "minArea": 624,
+   "maxArea": 1475,
+   "minPsf": 2340.157470703125,
+   "maxPsf": 2784.100341796875,
+   "address": "932 BEDOK RESERVOIR ROAD",
+   "streetName": "BEDOK RESERVOIR ROAD",
+   "latitude": 1.3439239263534546,
+   "longitude": 103.93920135498047
   },
   {
    "name": "River Modern",
@@ -139,7 +223,18 @@
    "units": 455,
    "available": 21,
    "minPrice": 1548000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/river_modern/media/87c56f21b21412c032db51aad23dfb57e1b6179b.png"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/river_modern/media/87c56f21b21412c032db51aad23dfb57e1b6179b.png",
+   "slug": "/new-launch/river-modern",
+   "ptype": "condo",
+   "mix": "2\u20134 bedroom",
+   "minArea": 538,
+   "maxArea": 1830,
+   "minPsf": 2877.323486328125,
+   "maxPsf": 3865.57373046875,
+   "address": "7 RIVER VALLEY GREEN",
+   "streetName": "RIVER VALLEY GREEN",
+   "latitude": 1.2931909561157227,
+   "longitude": 103.83479309082031
   },
   {
    "name": "Narra Residences",
@@ -154,7 +249,18 @@
    "units": 540,
    "available": 311,
    "minPrice": 998000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/narra_residences/media/9b923e6742f1421a6d1e9f2fd60aab493515a90c.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/narra_residences/media/9b923e6742f1421a6d1e9f2fd60aab493515a90c.jpg",
+   "slug": "/new-launch/narra-residences",
+   "ptype": "condo",
+   "mix": "Studio + 1\u20135 bedroom",
+   "minArea": 377,
+   "maxArea": 1679,
+   "minPsf": 1930.3675537109375,
+   "maxPsf": 3169.76123046875,
+   "address": "64 DAIRY FARM WALK",
+   "streetName": "DAIRY FARM WALK",
+   "latitude": 1.3675546646118164,
+   "longitude": 103.77490234375
   },
   {
    "name": "Newport Residences",
@@ -169,7 +275,18 @@
    "units": 246,
    "available": 41,
    "minPrice": 1298000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/newport_residences/media/90243a470878c6fa530a435e48c5edd6dbc2e986.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/newport_residences/media/90243a470878c6fa530a435e48c5edd6dbc2e986.jpg",
+   "slug": "/new-launch/newport-residences",
+   "ptype": "condo",
+   "mix": "1\u20134 bedroom",
+   "minArea": 431,
+   "maxArea": 12960,
+   "minPsf": 2746.347900390625,
+   "maxPsf": 8000,
+   "address": "80 ANSON ROAD",
+   "streetName": "ANSON ROAD",
+   "latitude": 1.2731882333755493,
+   "longitude": 103.84369659423828
   },
   {
    "name": "Coastal Cabana",
@@ -184,7 +301,18 @@
    "units": 748,
    "available": 114,
    "minPrice": 1438000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/coastal_cabana/media/c47832da1147f6e122873812606faa3581bd734a.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/coastal_cabana/media/c47832da1147f6e122873812606faa3581bd734a.jpg",
+   "slug": "/new-launch/coastal-cabana",
+   "ptype": "ec",
+   "mix": "3\u20135 bedroom",
+   "minArea": 872,
+   "maxArea": 1421,
+   "minPsf": 1304.7149658203125,
+   "maxPsf": 1887.4031982421875,
+   "address": "8 JALAN LOYANG BESAR",
+   "streetName": "JALAN LOYANG BESAR",
+   "latitude": 1.3768864870071411,
+   "longitude": 103.95731353759766
   },
   {
    "name": "The Sen",
@@ -199,7 +327,18 @@
    "units": 347,
    "available": 162,
    "minPrice": 993900,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/the_sen/media/34954e0ae98f0ad6e660c6dc63bf44d02e40a59b.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/the_sen/media/34954e0ae98f0ad6e660c6dc63bf44d02e40a59b.jpg",
+   "slug": "/new-launch/the-sen",
+   "ptype": "condo",
+   "mix": "1\u20134 bedroom",
+   "minArea": 452,
+   "maxArea": 1453,
+   "minPsf": 2198.893798828125,
+   "maxPsf": 2755.162353515625,
+   "address": "230 JALAN JURONG KECHIL",
+   "streetName": "JALAN JURONG KECHIL",
+   "latitude": 1.3468942642211914,
+   "longitude": 103.76786041259766
   },
   {
    "name": "Zyon Grand",
@@ -214,7 +353,18 @@
    "units": 706,
    "available": 69,
    "minPrice": 1298000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/zyon_grand/media/97833d621aec69c7df51dda772df94af6a7ae1e2.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/zyon_grand/media/97833d621aec69c7df51dda772df94af6a7ae1e2.jpg",
+   "slug": "/new-launch/zyon-grand",
+   "ptype": "condo",
+   "mix": "1\u20135 bedroom",
+   "minArea": 474,
+   "maxArea": 2756,
+   "minPsf": 2678.281005859375,
+   "maxPsf": 3991.291748046875,
+   "address": "5 KIM SENG ROAD",
+   "streetName": "ZION ROAD",
+   "latitude": 1.290572166442871,
+   "longitude": 103.83366394042969
   },
   {
    "name": "Penrith",
@@ -229,7 +379,18 @@
    "units": 462,
    "available": 3,
    "minPrice": 1501000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/penrith/media/fde7c130d8db685944d98ea8381d351a86fe299d.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/penrith/media/fde7c130d8db685944d98ea8381d351a86fe299d.jpg",
+   "slug": "/new-launch/penrith",
+   "ptype": "condo",
+   "mix": "2\u20134 bedroom",
+   "minArea": 614,
+   "maxArea": 1281,
+   "minPsf": 2444.62548828125,
+   "maxPsf": 3086.3193359375,
+   "address": "72 MARGARET DRIVE",
+   "streetName": "MARGARET DRIVE",
+   "latitude": 1.2957584857940674,
+   "longitude": 103.8086929321289
   },
   {
    "name": "Faber Residence",
@@ -244,7 +405,18 @@
    "units": 399,
    "available": 14,
    "minPrice": 1277000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/faber_residence/media/6abc21102ec791ba89a225fb4ea49e493dea9f84.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/faber_residence/media/6abc21102ec791ba89a225fb4ea49e493dea9f84.jpg",
+   "slug": "/new-launch/faber-residence",
+   "ptype": "condo",
+   "mix": "2\u20135 bedroom",
+   "minArea": 646,
+   "maxArea": 1485,
+   "minPsf": 1974.9058837890625,
+   "maxPsf": 2407.894775390625,
+   "address": "70 FABER WALK",
+   "streetName": "FABER WALK",
+   "latitude": 1.3225128650665283,
+   "longitude": 103.753173828125
   },
   {
    "name": "Artisan 8",
@@ -259,7 +431,18 @@
    "units": 34,
    "available": 16,
    "minPrice": 998000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/artisan_8/media/8109192b47378c73e4d8e8a690acf6249b302bbd.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/artisan_8/media/8109192b47378c73e4d8e8a690acf6249b302bbd.jpg",
+   "slug": "/new-launch/artisan-8",
+   "ptype": "condo",
+   "mix": "Studio + 1\u20135 bedroom",
+   "minArea": 280,
+   "maxArea": 2174,
+   "minPsf": 2104.083251953125,
+   "maxPsf": 4392.85693359375,
+   "address": "8 SIN MING ROAD",
+   "streetName": "SIN MING ROAD",
+   "latitude": 1.3537181615829468,
+   "longitude": 103.83612060546875
   },
   {
    "name": "Springleaf Residence",
@@ -274,7 +457,18 @@
    "units": 940,
    "available": 13,
    "minPrice": 860000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/springleaf_residence/media/a2525e60681536c98c84638f291033d3849f2bea.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/springleaf_residence/media/a2525e60681536c98c84638f291033d3849f2bea.jpg",
+   "slug": "/new-launch/springleaf-residence",
+   "ptype": "condo",
+   "mix": "1\u20135 bedroom",
+   "minArea": 388,
+   "maxArea": 1475,
+   "minPsf": 2005.692626953125,
+   "maxPsf": 2412.938720703125,
+   "address": "821 UPPER THOMSON ROAD",
+   "streetName": "UPPER THOMSON ROAD",
+   "latitude": 1.3961267471313477,
+   "longitude": 103.81781768798828
   },
   {
    "name": "River Green",
@@ -289,7 +483,18 @@
    "units": 524,
    "available": 26,
    "minPrice": 1178000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/river_green/media/d8112a8c91c52e41ff9c0c4c6e07270413229357.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/river_green/media/d8112a8c91c52e41ff9c0c4c6e07270413229357.jpg",
+   "slug": "/new-launch/river-green",
+   "ptype": "condo",
+   "mix": "1\u20134 bedroom",
+   "minArea": 420,
+   "maxArea": 980,
+   "minPsf": 2760.910888671875,
+   "maxPsf": 3681.887451171875,
+   "address": "11 RIVER VALLEY GREEN",
+   "streetName": "RIVER VALLEY GROVE",
+   "latitude": 1.29477059841156,
+   "longitude": 103.83320617675781
   },
   {
    "name": "Promenade Peak",
@@ -304,7 +509,18 @@
    "units": 596,
    "available": 155,
    "minPrice": 1417600,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/promenade_peak/media/8a813d46b2fc509b9d85114678d2f52116cc333d.png"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/promenade_peak/media/8a813d46b2fc509b9d85114678d2f52116cc333d.png",
+   "slug": "/new-launch/promenade-peak",
+   "ptype": "condo",
+   "mix": "1\u20135 bedroom",
+   "minArea": 527,
+   "maxArea": 4144,
+   "minPsf": 2689.943115234375,
+   "maxPsf": 3645.382080078125,
+   "address": "1 ZION PROMENADE",
+   "streetName": "ZION PROMENDADE",
+   "latitude": 1.2915700674057007,
+   "longitude": 103.83314514160156
   },
   {
    "name": "Canberra Crescent Residences",
@@ -319,7 +535,18 @@
    "units": 376,
    "available": 24,
    "minPrice": 880000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/canberra_crescent_residences/media/8bd08c1c92a388efabf9c5c3c55dd1bd68e986bd.png"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/canberra_crescent_residences/media/8bd08c1c92a388efabf9c5c3c55dd1bd68e986bd.png",
+   "slug": "/new-launch/canberra-crescent-residences",
+   "ptype": "condo",
+   "mix": "1\u20134 bedroom",
+   "minArea": 409,
+   "maxArea": 1324,
+   "minPsf": 1850.1290283203125,
+   "maxPsf": 2151.58935546875,
+   "address": "57 CANBERRA CRESCENT",
+   "streetName": "CANBERRA CRESCENT",
+   "latitude": 1.4499212503433228,
+   "longitude": 103.82939910888672
   },
   {
    "name": "Upperhouse At Orchard Boulevard",
@@ -332,9 +559,20 @@
    "tenure": "leasehold_99",
    "developer": "United Venture Development (No.7) Pte, Ltd,",
    "units": 301,
-   "available": 52,
+   "available": 51,
    "minPrice": 1504000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/upperhouse_at_orchard_boulevard/media/b8babf432bac8070f5ee50142589992cf692e61c.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/upperhouse_at_orchard_boulevard/media/b8babf432bac8070f5ee50142589992cf692e61c.jpg",
+   "slug": "/new-launch/upperhouse-at-orchard-boulevard",
+   "ptype": "condo",
+   "mix": "1\u20134 bedroom",
+   "minArea": 474,
+   "maxArea": 2056,
+   "minPsf": 3101.428466796875,
+   "maxPsf": 3918.287841796875,
+   "address": "22 ORCHARD BOULEVARD",
+   "streetName": "ORCHARD BOULEVARD",
+   "latitude": 1.3019959926605225,
+   "longitude": 103.82401275634766
   },
   {
    "name": "The Robertson Opus",
@@ -349,7 +587,18 @@
    "units": 348,
    "available": 135,
    "minPrice": 1288000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/the_robertson_opus/media/5e4d348731348b1eeb70bb84a4cf41a52fc53fd6.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/the_robertson_opus/media/5e4d348731348b1eeb70bb84a4cf41a52fc53fd6.jpg",
+   "slug": "/new-launch/the-robertson-opus",
+   "ptype": "condo",
+   "mix": "1\u20134 bedroom",
+   "minArea": 431,
+   "maxArea": 1539,
+   "minPsf": 2988.399169921875,
+   "maxPsf": 3671.289794921875,
+   "address": "9 UNITY STREET",
+   "streetName": "UNITY STREET",
+   "latitude": 1.2919255495071411,
+   "longitude": 103.84153747558594
   },
   {
    "name": "W Residences Marina View",
@@ -364,7 +613,18 @@
    "units": 683,
    "available": 667,
    "minPrice": 1778000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/w_residences_marina_view___singapore/media/3a2b9b09570056c0c979ac5c76700185fb3debf6.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/w_residences_marina_view___singapore/media/3a2b9b09570056c0c979ac5c76700185fb3debf6.jpg",
+   "slug": "/new-launch/w-residences-marina-view",
+   "ptype": "condo",
+   "mix": "1\u20135 bedroom",
+   "minArea": 538,
+   "maxArea": 5350,
+   "minPsf": 2607.27734375,
+   "maxPsf": 5086.5078125,
+   "address": "22 MARINA VIEW",
+   "streetName": "MARINA VIEW",
+   "latitude": 1.276658535003662,
+   "longitude": 103.8498306274414
   },
   {
    "name": "Ocho",
@@ -379,7 +639,18 @@
    "units": 20,
    "available": 18,
    "minPrice": 1483762,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/ocho/media/48214c9ed0d067ba06e7417ae94102bb730c128c.png"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/ocho/media/48214c9ed0d067ba06e7417ae94102bb730c128c.png",
+   "slug": "/new-launch/ocho",
+   "ptype": "condo",
+   "mix": "2\u20134 bedroom",
+   "minArea": 700,
+   "maxArea": 1205,
+   "minPsf": 1812.8905029296875,
+   "maxPsf": 2251.27294921875,
+   "address": "27 LORONG 32 GEYLANG",
+   "streetName": "LORONG 32 GEYLANG",
+   "latitude": 1.3131273984909058,
+   "longitude": 103.8871841430664
   },
   {
    "name": "One Marina Gardens",
@@ -394,7 +665,18 @@
    "units": 937,
    "available": 257,
    "minPrice": 1197953,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/one_marina_gardens/media/d3d26219ec4c05956035f85277acd2107f5bf74b.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/one_marina_gardens/media/d3d26219ec4c05956035f85277acd2107f5bf74b.jpg",
+   "slug": "/new-launch/one-marina-gardens",
+   "ptype": "condo",
+   "mix": "1\u20134 bedroom",
+   "minArea": 420,
+   "maxArea": 1647,
+   "minPsf": 2770.652099609375,
+   "maxPsf": 3231.32958984375,
+   "address": "5 MARINA GARDENS LANE",
+   "streetName": "MARINA GARDENS LANE",
+   "latitude": 1.2758005857467651,
+   "longitude": 103.8629379272461
   },
   {
    "name": "Aurea",
@@ -409,7 +691,18 @@
    "units": 188,
    "available": 114,
    "minPrice": 1771000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/aurea/media/d8841bdac74497f69f36376564557145a3bac9e4.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/aurea/media/d8841bdac74497f69f36376564557145a3bac9e4.jpg",
+   "slug": "/new-launch/aurea",
+   "ptype": "condo",
+   "mix": "2\u20136 bedroom",
+   "minArea": 635,
+   "maxArea": 8816,
+   "minPsf": 2663.93603515625,
+   "maxPsf": 3731.842529296875,
+   "address": "802 BEACH ROAD",
+   "streetName": "BEACH ROAD",
+   "latitude": 1.303072214126587,
+   "longitude": 103.86578369140625
   },
   {
    "name": "Parktown Residence",
@@ -424,7 +717,18 @@
    "units": 1193,
    "available": 23,
    "minPrice": 1225000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/parktown_residence/media/6655093f046889a2fc573212812a18597e2c365e.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/parktown_residence/media/6655093f046889a2fc573212812a18597e2c365e.jpg",
+   "slug": "/new-launch/parktown-residence",
+   "ptype": "condo",
+   "mix": "1\u20135 bedroom",
+   "minArea": 463,
+   "maxArea": 1679,
+   "minPsf": 2156.55419921875,
+   "maxPsf": 2606.02099609375,
+   "address": "9 TAMPINES STREET 62",
+   "streetName": "TAMPINES STREET 62",
+   "latitude": 1.3668484687805176,
+   "longitude": 103.93777465820312
   },
   {
    "name": "Elta",
@@ -439,7 +743,18 @@
    "units": 501,
    "available": 74,
    "minPrice": 1158000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/elta/media/09826e2cfbf3939c3b979f2656c7bb8e167b08cb.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/elta/media/09826e2cfbf3939c3b979f2656c7bb8e167b08cb.jpg",
+   "slug": "/new-launch/elta",
+   "ptype": "condo",
+   "mix": "1\u20135 bedroom",
+   "minArea": 506,
+   "maxArea": 1776,
+   "minPsf": 2206.0810546875,
+   "maxPsf": 2929.8056640625,
+   "address": "12 CLEMENTI AVENUE 1",
+   "streetName": "CLEMENTI AVENUE 1",
+   "latitude": 1.307556390762329,
+   "longitude": 103.76761627197266
   },
   {
    "name": "The Orie",
@@ -454,7 +769,18 @@
    "units": 777,
    "available": 33,
    "minPrice": 1280000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/the_orie/media/8bbdbac58d70873c7262bca5737d5bbffe214410.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/the_orie/media/8bbdbac58d70873c7262bca5737d5bbffe214410.jpg",
+   "slug": "/new-launch/the-orie",
+   "ptype": "condo",
+   "mix": "1\u20135 bedroom",
+   "minArea": 517,
+   "maxArea": 1453,
+   "minPsf": 2395.044677734375,
+   "maxPsf": 3064.189208984375,
+   "address": "12 LORONG 1 TOA PAYOH",
+   "streetName": "LORONG 1 TOA PAYOH",
+   "latitude": 1.3397067785263062,
+   "longitude": 103.85005950927734
   },
   {
    "name": "Bagnall Haus",
@@ -469,7 +795,18 @@
    "units": 113,
    "available": 3,
    "minPrice": 688000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/bagnall_haus/media/ffffb03cdc97d2c3981fc149bc6fb526852e0cc6.png"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/bagnall_haus/media/ffffb03cdc97d2c3981fc149bc6fb526852e0cc6.png",
+   "slug": "/new-launch/bagnall-haus",
+   "ptype": "condo",
+   "mix": "Studio + 1\u20135 bedroom",
+   "minArea": 172,
+   "maxArea": 1528,
+   "minPsf": 2353.061279296875,
+   "maxPsf": 4000,
+   "address": "815 UPPER EAST COAST ROAD",
+   "streetName": "UPPER EAST COAST ROAD",
+   "latitude": 1.3202755451202393,
+   "longitude": 103.954833984375
   },
   {
    "name": "The Collective At One Sophia",
@@ -484,7 +821,18 @@
    "units": 367,
    "available": 268,
    "minPrice": 1165000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/the_collective_at_one_sophia/media/468af17c4ea2e83fca9bd7c3d8c7d8c6a0951aec.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/the_collective_at_one_sophia/media/468af17c4ea2e83fca9bd7c3d8c7d8c6a0951aec.jpg",
+   "slug": "/new-launch/the-collective-at-one-sophia",
+   "ptype": "condo",
+   "mix": "1\u20133 bedroom",
+   "minArea": 431,
+   "maxArea": 1249,
+   "minPsf": 2675.392578125,
+   "maxPsf": 2997.382080078125,
+   "address": "1B SOPHIA ROAD",
+   "streetName": "SOPHIA ROAD",
+   "latitude": 1.3014122247695923,
+   "longitude": 103.84911346435547
   },
   {
    "name": "Nava Grove",
@@ -499,7 +847,18 @@
    "units": 552,
    "available": 1,
    "minPrice": 1388000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/nava_grove/media/5a400d4cba38dc01a3341200fd24657473b8ee22.png"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/nava_grove/media/5a400d4cba38dc01a3341200fd24657473b8ee22.png",
+   "slug": "/new-launch/nava-grove",
+   "ptype": "condo",
+   "mix": "2\u20135 bedroom",
+   "minArea": 624,
+   "maxArea": 1722,
+   "minPsf": 2210.10107421875,
+   "maxPsf": 2803.562255859375,
+   "address": "42 PINE GROVE",
+   "streetName": "PINE GROVE",
+   "latitude": 1.3197110891342163,
+   "longitude": 103.77510070800781
   },
   {
    "name": "Union Square Residences",
@@ -514,7 +873,18 @@
    "units": 366,
    "available": 99,
    "minPrice": 1280000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/union_square_residences/media/d829b82cc4f48cfba2af12e5f8eb1507afedaa69.png"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/union_square_residences/media/d829b82cc4f48cfba2af12e5f8eb1507afedaa69.png",
+   "slug": "/new-launch/union-square-residences",
+   "ptype": "condo",
+   "mix": "1\u20135 bedroom",
+   "minArea": 463,
+   "maxArea": 4833,
+   "minPsf": 2601.428466796875,
+   "maxPsf": 4528.8642578125,
+   "address": "28 HAVELOCK ROAD",
+   "streetName": "HAVELOCK ROAD",
+   "latitude": 1.287917971611023,
+   "longitude": 103.84349060058594
   },
   {
    "name": "Chuan Park",
@@ -529,7 +899,18 @@
    "units": 916,
    "available": 10,
    "minPrice": 1648276,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/chuan_park/media/402e1571e465ccf9def88e3aeb3dfe01937b10c9.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/chuan_park/media/402e1571e465ccf9def88e3aeb3dfe01937b10c9.jpg",
+   "slug": "/new-launch/chuan-park",
+   "ptype": "condo",
+   "mix": "Studio + 2\u20135 bedroom",
+   "minArea": 700,
+   "maxArea": 1841,
+   "minPsf": 2291.40380859375,
+   "maxPsf": 2791.571533203125,
+   "address": "250 LORONG CHUAN",
+   "streetName": "LORONG CHUAN",
+   "latitude": 1.3525131940841675,
+   "longitude": 103.86445617675781
   },
   {
    "name": "Meyer Blue",
@@ -544,7 +925,18 @@
    "units": 226,
    "available": 46,
    "minPrice": 2014000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/meyer_blue/media/e0f3d2086a7da5e4b7de5b0a6927d58ce4af9a09.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/meyer_blue/media/e0f3d2086a7da5e4b7de5b0a6927d58ce4af9a09.jpg",
+   "slug": "/new-launch/meyer-blue",
+   "ptype": "condo",
+   "mix": "2\u20135 bedroom",
+   "minArea": 667,
+   "maxArea": 2992,
+   "minPsf": 2982.872314453125,
+   "maxPsf": 3507.246337890625,
+   "address": "83 MEYER ROAD",
+   "streetName": "MEYER ROAD",
+   "latitude": 1.2965830564498901,
+   "longitude": 103.89168548583984
   },
   {
    "name": "8@BT",
@@ -559,7 +951,18 @@
    "units": 160,
    "available": 35,
    "minPrice": 1437000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/8%40bt/media/f44fdc6b37d4ab527c5f7c49ec8d05b6d74c0539.png"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/8%40bt/media/f44fdc6b37d4ab527c5f7c49ec8d05b6d74c0539.png",
+   "slug": "/new-launch/8-bt",
+   "ptype": "condo",
+   "mix": "1\u20134 bedroom",
+   "minArea": 517,
+   "maxArea": 1593,
+   "minPsf": 2508.474609375,
+   "maxPsf": 3332.077880859375,
+   "address": "8 BUKIT TIMAH LINK",
+   "streetName": "BUKIT TIMAH LINK",
+   "latitude": 1.3413714170455933,
+   "longitude": 103.77690887451172
   },
   {
    "name": "Sora",
@@ -574,7 +977,18 @@
    "units": 440,
    "available": 199,
    "minPrice": 996000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/sora/media/34bd6182645b65d1e33192002ae8428c863d8e4c.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/sora/media/34bd6182645b65d1e33192002ae8428c863d8e4c.jpg",
+   "slug": "/new-launch/sora",
+   "ptype": "condo",
+   "mix": "1\u20135 bedroom",
+   "minArea": 538,
+   "maxArea": 1938,
+   "minPsf": 1851.3011474609375,
+   "maxPsf": 2666.666748046875,
+   "address": "78 YUAN CHING ROAD",
+   "streetName": "YUAN CHING ROAD",
+   "latitude": 1.3343082666397095,
+   "longitude": 103.7254409790039
   },
   {
    "name": "Kassia",
@@ -589,7 +1003,18 @@
    "units": 276,
    "available": 40,
    "minPrice": 885000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/kassia/media/f202dd43b4437e5a03f2edf204fba5262fdee5d8.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/kassia/media/f202dd43b4437e5a03f2edf204fba5262fdee5d8.jpg",
+   "slug": "/new-launch/kassia",
+   "ptype": "condo",
+   "mix": "1\u20134 bedroom",
+   "minArea": 474,
+   "maxArea": 1345,
+   "minPsf": 1823.4398193359375,
+   "maxPsf": 2223.628662109375,
+   "address": "39 FLORA DRIVE",
+   "streetName": "FLORA DRIVE",
+   "latitude": 1.3570963144302368,
+   "longitude": 103.96549987792969
   },
   {
    "name": "The Hillshore",
@@ -604,7 +1029,17 @@
    "units": 59,
    "available": 44,
    "minPrice": 1600000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/the_hillshore/media/78eaa1319cb0e7018a676e04d271a7b44c1493b2.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/the_hillshore/media/78eaa1319cb0e7018a676e04d271a7b44c1493b2.jpg",
+   "slug": "/new-launch/the-hillshore",
+   "ptype": "condo",
+   "mix": "2\u20134 bedroom",
+   "minArea": 743,
+   "maxArea": 2185,
+   "minPsf": 2153.43212890625,
+   "maxPsf": 2825.20703125,
+   "address": "292 PASIR PANJANG ROAD",
+   "latitude": 1.2867411375045776,
+   "longitude": 103.7801513671875
   },
   {
    "name": "Ardor Residence",
@@ -619,7 +1054,18 @@
    "units": 35,
    "available": 1,
    "minPrice": 2158000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/ardor_residence/media/06a80502cce99ff41612a34b39d0df76a7cf1519.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/ardor_residence/media/06a80502cce99ff41612a34b39d0df76a7cf1519.jpg",
+   "slug": "/new-launch/ardor-residence",
+   "ptype": "condo",
+   "mix": "2\u20134 bedroom",
+   "minArea": 861,
+   "maxArea": 1776,
+   "minPsf": 2180.94482421875,
+   "maxPsf": 2680.340576171875,
+   "address": "181 HAIG ROAD",
+   "streetName": "HAIG ROAD",
+   "latitude": 1.3064640760421753,
+   "longitude": 103.89944458007812
   },
   {
    "name": "Lentoria",
@@ -632,9 +1078,20 @@
    "tenure": "leasehold_99",
    "developer": "TID Residential Pte.Ltd",
    "units": 267,
-   "available": 14,
+   "available": 13,
    "minPrice": 1198000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/lentoria/media/5f6b1977bec139f7fd6f88dfd6e33ee034a22915.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/lentoria/media/5f6b1977bec139f7fd6f88dfd6e33ee034a22915.jpg",
+   "slug": "/new-launch/lentoria",
+   "ptype": "condo",
+   "mix": "1\u20134 bedroom",
+   "minArea": 538,
+   "maxArea": 1345,
+   "minPsf": 2001.068359375,
+   "maxPsf": 2788.46142578125,
+   "address": "38 LENTOR HILLS ROAD",
+   "streetName": "LENTOR HILLS ROAD",
+   "latitude": 1.3819657564163208,
+   "longitude": 103.8345718383789
   },
   {
    "name": "The Arcady At Boon Keng",
@@ -649,7 +1106,18 @@
    "units": 172,
    "available": 55,
    "minPrice": 1418000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/the_arcady_at_boon_keng/media/1e4feae880cbf15ddced5bd7acc9219ac6bbf794.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/the_arcady_at_boon_keng/media/1e4feae880cbf15ddced5bd7acc9219ac6bbf794.jpg",
+   "slug": "/new-launch/the-arcady-at-boon-keng",
+   "ptype": "condo",
+   "mix": "1\u20134 bedroom",
+   "minArea": 527,
+   "maxArea": 2583,
+   "minPsf": 2419.11767578125,
+   "maxPsf": 2879.05615234375,
+   "address": "2 SAINT BARNABAS LANE",
+   "streetName": "SAINT BARNABAS LANE",
+   "latitude": 1.3232738971710205,
+   "longitude": 103.86384582519531
   },
   {
    "name": "J'Den",
@@ -664,7 +1132,18 @@
    "units": 368,
    "available": 4,
    "minPrice": 1401000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/j%27den/media/bfade88c145594ec12e0e03f792515dbdcff52f8.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/j%27den/media/bfade88c145594ec12e0e03f792515dbdcff52f8.jpg",
+   "slug": "/new-launch/j-den",
+   "ptype": "condo",
+   "mix": "1\u20134 bedroom",
+   "minArea": 527,
+   "maxArea": 1485,
+   "minPsf": 2211.9931640625,
+   "maxPsf": 2832.518310546875,
+   "address": "2 JURONG EAST CENTRAL 1",
+   "streetName": "JURONG EAST CENTRAL 1",
+   "latitude": 1.3333555459976196,
+   "longitude": 103.74018096923828
   },
   {
    "name": "TMW Maxwell",
@@ -679,7 +1158,18 @@
    "units": 324,
    "available": 318,
    "minPrice": 1316000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/tmw_maxwell/media/8ba0825a3cf21703b9d1c733729c4483ce4f5786.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/tmw_maxwell/media/8ba0825a3cf21703b9d1c733729c4483ce4f5786.jpg",
+   "slug": "/new-launch/tmw-maxwell",
+   "ptype": "condo",
+   "mix": "1\u20132 bedroom",
+   "minArea": 474,
+   "maxArea": 883,
+   "minPsf": 2639.864013671875,
+   "maxPsf": 3580.168701171875,
+   "address": "31 TRAS STREET",
+   "streetName": "TRAS STREET",
+   "latitude": 1.2790424823760986,
+   "longitude": 103.84465789794922
   },
   {
    "name": "Terra Hill",
@@ -694,7 +1184,18 @@
    "units": 270,
    "available": 17,
    "minPrice": 1563000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/terra_hill/media/e66b2fd886c9bc9dff82851ad0dfdda1387e7e88.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/terra_hill/media/e66b2fd886c9bc9dff82851ad0dfdda1387e7e88.jpg",
+   "slug": "/new-launch/terra-hill",
+   "ptype": "condo",
+   "mix": "2\u20135 bedroom",
+   "minArea": 624,
+   "maxArea": 3035,
+   "minPsf": 1933.3333740234375,
+   "maxPsf": 2948.78564453125,
+   "address": "22B YEW SIANG ROAD",
+   "streetName": "YEW SIANG ROAD",
+   "latitude": 1.2789230346679688,
+   "longitude": 103.7926025390625
   },
   {
    "name": "Canninghill Piers",
@@ -709,7 +1210,18 @@
    "units": 696,
    "available": 4,
    "minPrice": 1317000,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/canninghill_piers/media/9b1ea023a0e78fec2bcf86049dc3004eab6a2390.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/canninghill_piers/media/9b1ea023a0e78fec2bcf86049dc3004eab6a2390.jpg",
+   "slug": "/new-launch/canninghill-piers",
+   "ptype": "condo",
+   "mix": "Studio + 1\u20135 bedroom",
+   "minArea": 409,
+   "maxArea": 8956,
+   "minPsf": 2491.06689453125,
+   "maxPsf": 3578.34765625,
+   "address": "5 CLARKE QUAY",
+   "streetName": "CLARKE QUAY",
+   "latitude": 1.291553258895874,
+   "longitude": 103.84467315673828
   },
   {
    "name": "Wynwood Grand",
@@ -724,7 +1236,16 @@
    "units": 420,
    "available": null,
    "minPrice": null,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/woodland_drive_17_gls/media/177856c21e3b27c434e2a32ab40228183b6b1b5a.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/woodland_drive_17_gls/media/177856c21e3b27c434e2a32ab40228183b6b1b5a.jpg",
+   "slug": "/new-launch/wynwood-grand",
+   "ptype": "condo",
+   "mix": "",
+   "minArea": null,
+   "maxArea": null,
+   "minPsf": null,
+   "maxPsf": null,
+   "latitude": 1.4259804202285815,
+   "longitude": 103.79132793173679
   },
   {
    "name": "One Chuan Grove",
@@ -739,7 +1260,16 @@
    "units": 1055,
    "available": null,
    "minPrice": null,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/chuan_grove_gls/media/7adc6dd5a2b006452c569c68f767a474943e320f.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/chuan_grove_gls/media/7adc6dd5a2b006452c569c68f767a474943e320f.jpg",
+   "slug": "/new-launch/one-chuan-grove",
+   "ptype": "condo",
+   "mix": "",
+   "minArea": null,
+   "maxArea": null,
+   "minPsf": null,
+   "maxPsf": null,
+   "latitude": 1.3517439658305814,
+   "longitude": 103.85938676051663
   },
   {
    "name": "The River Opus",
@@ -754,7 +1284,16 @@
    "units": 400,
    "available": null,
    "minPrice": null,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/the_river_opus/media/7f66c6d6356ada4f728141c7c552be6d88a048c3.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/the_river_opus/media/7f66c6d6356ada4f728141c7c552be6d88a048c3.jpg",
+   "slug": "/new-launch/the-river-opus",
+   "ptype": "condo",
+   "mix": "",
+   "minArea": null,
+   "maxArea": null,
+   "minPsf": null,
+   "maxPsf": null,
+   "latitude": 1.2931583215203921,
+   "longitude": 103.82687897240646
   },
   {
    "name": "Sembawang Road GLS",
@@ -769,7 +1308,16 @@
    "units": 265,
    "available": null,
    "minPrice": null,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/sembawang_road_gls/media/c98812f0b73978e08ea36e60d28abcc434e3342d.png"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/sembawang_road_gls/media/c98812f0b73978e08ea36e60d28abcc434e3342d.png",
+   "slug": "/new-launch/sembawang-road-gls",
+   "ptype": "condo",
+   "mix": "",
+   "minArea": null,
+   "maxArea": null,
+   "minPsf": null,
+   "maxPsf": null,
+   "latitude": 1.436572400833431,
+   "longitude": 103.82620331120123
   },
   {
    "name": "Solano Grand",
@@ -784,7 +1332,16 @@
    "units": 295,
    "available": null,
    "minPrice": null,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/senja_close_gls/media/2c056e84bc67d326cef4fe84809a034f93ade06a.jpg"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/senja_close_gls/media/2c056e84bc67d326cef4fe84809a034f93ade06a.jpg",
+   "slug": "/new-launch/solano-grand",
+   "ptype": "condo",
+   "mix": "",
+   "minArea": null,
+   "maxArea": null,
+   "minPsf": null,
+   "maxPsf": null,
+   "latitude": 1.3893900543240472,
+   "longitude": 103.7623771119608
   },
   {
    "name": "One Leonie Residences",
@@ -799,7 +1356,17 @@
    "units": 37,
    "available": null,
    "minPrice": null,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/one_leonie_residences/media/29479769a24d3ce27788b22fe39a90df1b5ee3b0.png"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/one_leonie_residences/media/29479769a24d3ce27788b22fe39a90df1b5ee3b0.png",
+   "slug": "/new-launch/one-leonie-residences",
+   "ptype": "condo",
+   "mix": "",
+   "minArea": null,
+   "maxArea": null,
+   "minPsf": null,
+   "maxPsf": null,
+   "streetName": "LEONIE HILL",
+   "latitude": 1.29964942021409,
+   "longitude": 103.83237746013651
   },
   {
    "name": "Upper Thomson Residences",
@@ -814,7 +1381,18 @@
    "units": 595,
    "available": null,
    "minPrice": null,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/upper_thomson_residences/media/f57458da136a27490a31853b7a559607d9f64046.png"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/upper_thomson_residences/media/f57458da136a27490a31853b7a559607d9f64046.png",
+   "slug": "/new-launch/upper-thomson-residences",
+   "ptype": "condo",
+   "mix": "",
+   "minArea": null,
+   "maxArea": null,
+   "minPsf": null,
+   "maxPsf": null,
+   "address": "18 LENTOR CENTRAL",
+   "streetName": "UPPER THOMSON ROAD",
+   "latitude": 1.3858058452606201,
+   "longitude": 103.83234405517578
   },
   {
    "name": "Keppel Bay Plot 6",
@@ -829,7 +1407,16 @@
    "units": 86,
    "available": null,
    "minPrice": null,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/keppel_bay_plot_6/media/5c4cc8d6a941d40cfc39bac8d215ea1f8b4fa519.png"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/keppel_bay_plot_6/media/5c4cc8d6a941d40cfc39bac8d215ea1f8b4fa519.png",
+   "slug": "/new-launch/keppel-bay-plot-6",
+   "ptype": "condo",
+   "mix": "",
+   "minArea": null,
+   "maxArea": null,
+   "minPsf": null,
+   "maxPsf": null,
+   "latitude": 1.2640754343512965,
+   "longitude": 103.81281869543763
   },
   {
    "name": "Chencharu Close GLS",
@@ -844,7 +1431,16 @@
    "units": 875,
    "available": null,
    "minPrice": null,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/chencharu_close_gls/media/9dba1dd13f7433bcd381d2bef4ed1fa0f7e44c80.png"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/chencharu_close_gls/media/9dba1dd13f7433bcd381d2bef4ed1fa0f7e44c80.png",
+   "slug": "/new-launch/chencharu-close-gls",
+   "ptype": "condo",
+   "mix": "",
+   "minArea": null,
+   "maxArea": null,
+   "minPsf": null,
+   "maxPsf": null,
+   "latitude": 1.4165660383314316,
+   "longitude": 103.82863040749669
   },
   {
    "name": "Miltonia Close",
@@ -859,7 +1455,16 @@
    "units": 430,
    "available": null,
    "minPrice": null,
-   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/miltonia_close/media/42a898b48fc0a734f80312b57358954af50cbf54.png"
+   "image": "https://salesplus-public-asset-prd.s3.ap-southeast-1.amazonaws.com/projects/miltonia_close/media/42a898b48fc0a734f80312b57358954af50cbf54.png",
+   "slug": "/new-launch/miltonia-close",
+   "ptype": "condo",
+   "mix": "",
+   "minArea": null,
+   "maxArea": null,
+   "minPsf": null,
+   "maxPsf": null,
+   "latitude": 1.4177225,
+   "longitude": 103.849782
   }
  ]
 }
