@@ -88,7 +88,8 @@ def main():
 
     home = ("Home", SITE + "/")
     n_bc = n_ds = 0
-    pages = sorted(glob.glob(os.path.join(ROOT, "*.html"))) + sorted(glob.glob(os.path.join(ROOT, "hdb", "*", "*.html")))
+    pages = sorted(glob.glob(os.path.join(ROOT, "*.html"))) + sorted(glob.glob(os.path.join(ROOT, "hdb", "*", "*.html"))) \
+        + sorted(glob.glob(os.path.join(ROOT, "new-launch", "*.html")))
     for path in pages:
         name = os.path.basename(path)
         rel = os.path.relpath(path, ROOT).replace(os.sep, "/")
@@ -103,7 +104,9 @@ def main():
         add = []
 
         # ---------------- breadcrumbs
-        if slug.startswith("hdb/"):  # block page: Home > Town Guides > Town > Blk
+        if slug.startswith("new-launch/"):
+            add.append(block("breadcrumb", crumbs([home, ("New Launches", SITE + "/new-launches"), (page_title(h), url)])))
+        elif slug.startswith("hdb/"):  # block page: Home > Town Guides > Town > Blk
             tslug = slug.split("/")[1]
             tname = title(towns[tslug][0]) if tslug in towns else tslug.title()
             add.append(block("breadcrumb", crumbs([home, ("Town Guides", SITE + "/town-guide"), (tname, f"{SITE}/{tslug}"),

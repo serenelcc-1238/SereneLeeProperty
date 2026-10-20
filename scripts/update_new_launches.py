@@ -193,6 +193,11 @@ def region_lookup():
 
 
 # ------------------------------------------------------------ rendering
+def launch_slug(name):
+    """Address of the project's own page: /new-launch/<slug> (built by build_launch_pages.py)."""
+    return "/new-launch/" + re.sub(r"[^a-z0-9]+", "-", smart_title(name).lower()).strip("-")
+
+
 def card(x, region, today, compact=False):
     u = x.get("unitSummary") or {}
     name = smart_title(x["name"])
@@ -239,7 +244,7 @@ def card(x, region, today, compact=False):
         return (f'      <div class="launch-card">\n'
                 f'        <div class="launch-thumb"><img src="{esc(img)}" alt="{esc(alt)}" loading="lazy"><span class="launch-status">{esc(status)}</span></div>\n'
                 f'        <div class="launch-body">\n'
-                f'          <div class="launch-name">{esc(name)}</div>\n'
+                f'          <div class="launch-name"><a href="{launch_slug(x["name"])}">{esc(name)}</a></div>\n'
                 f'          <div class="launch-meta">{esc(loc)} &middot; TOP {topq or "TBA"}</div>\n'
                 f'          <div class="launch-price">{"Avail Units &amp; Prices - check with Serene" if selling else price}</div>\n'
                 f'        </div>\n'
@@ -248,15 +253,32 @@ def card(x, region, today, compact=False):
             f'data-launch="{ld}" data-status="{x["_status"]}" data-ptype="{ptype}">\n'
             f'        <div class="launch-thumb"><img src="{esc(img)}" alt="{esc(alt)}" loading="lazy"><span class="launch-status">{esc(status)}</span></div>\n'
             f'        <div class="launch-body">\n'
-            f'          <div class="launch-name">{esc(name)}</div>\n'
+            f'          <div class="launch-name"><a href="{launch_slug(x["name"])}">{esc(name)}</a></div>\n'
             f'          <div class="launch-meta">{meta1}</div>\n'
             f'          <div class="launch-meta" style="margin-top:-4px;">{meta2}</div>\n'
             + ('' if selling else f'          <div class="launch-price">{price}</div>\n')
             + (f'          <p class="launch-desc" style="font-size:.85rem;color:var(--muted);margin:6px 0 10px;">{detail}</p>\n' if detail else
                '          <p class="launch-desc" style="font-size:.85rem;color:var(--muted);margin:6px 0 10px;">Unit mix and prices to be announced at launch.</p>\n')
+            + f'          <a href="{launch_slug(x["name"])}" class="launch-more">Project details, nearby prices and MRT &rarr;</a>\n'
             + f'          <a href="{href}" target="_blank" rel="noopener" class="btn btn-gold btn-block">{cta_txt}</a>\n'
             f'        </div>\n'
             f'      </div>\n')
+
+
+def extra(x):
+    """Details kept for the project pages (build_launch_pages.py)."""
+    u = x.get("unitSummary") or {}
+    subs = u.get("propertySubTypes") or []
+    out = {"slug": launch_slug(x["name"]),
+           "ptype": "landed" if x.get("propertyType") == "Landed" else ("ec" if "Executive Condominium" in subs else "condo"),
+           "mix": bedrooms(u.get("bedroomTypes")), "minArea": u.get("minArea"), "maxArea": u.get("maxArea"),
+           "minPsf": u.get("minPsf"), "maxPsf": u.get("maxPsf")}
+    # Location fields, if ERA's feed has them (names vary), so pages can show MRT and nearby prices.
+    for k in ("address", "street", "streetName", "postalCode", "postcode", "latitude", "longitude", "lat", "lng",
+              "location", "coordinates", "geoLocation"):
+        if x.get(k) not in (None, "", [], {}):
+            out[k] = x[k]
+    return out
 
 
 def replace_between(text, start, end, new, label):
@@ -345,7 +367,8 @@ def main(items=None, today=None):
             "region": region(x)[0], "region_source": region(x)[1], "launchDate": x["launchDate"], "top": x.get("top"),
             "tenure": x.get("tenureCategory"), "developer": smart_title(x.get("developer") or ""),
             "units": x.get("numberOfUnits"), "available": (x.get("unitSummary") or {}).get("numberOfAvailableUnits"),
-            "minPrice": (x.get("unitSummary") or {}).get("minPrice"), "image": x.get("mainImage")} for x in listing]
+            "minPrice": (x.get("unitSummary") or {}).get("minPrice"), "image": x.get("mainImage"),
+            **extra(x)} for x in listing]
     os.makedirs(os.path.join(ROOT, "data"), exist_ok=True)
     json.dump({"source": ERA_PAGE, "retrieved": datetime.now(SGT).isoformat(timespec="minutes"),
                "pinned_skipped": sorted(pinned), "projects": rec},

@@ -643,6 +643,8 @@ def main():
     picker = picker_html(market)
     import build_block_pages  # block pages first, so town pages can list them
     BLOCKS.update(build_block_pages.build_all(head, header, footer))
+    import build_launch_pages
+    build_launch_pages.build_all(head, header, footer)
     stats = []
     for town, v in market["hdb"]["towns"].items():
         if not os.path.exists(os.path.join(D, "hdb", v["file"] + ".json")):

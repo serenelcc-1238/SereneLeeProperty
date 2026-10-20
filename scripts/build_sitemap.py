@@ -33,7 +33,7 @@ def git_date(path):
 
 def main():
     urls = []
-    for path in sorted(glob.glob(os.path.join(ROOT, "*.html"))) + sorted(glob.glob(os.path.join(ROOT, "hdb", "*", "*.html"))):
+    for path in sorted(glob.glob(os.path.join(ROOT, "*.html"))) + sorted(glob.glob(os.path.join(ROOT, "hdb", "*", "*.html"))) + sorted(glob.glob(os.path.join(ROOT, "new-launch", "*.html"))):
         name = os.path.relpath(path, ROOT).replace(os.sep, "/")
         if name in SKIP:
             continue

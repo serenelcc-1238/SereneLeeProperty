@@ -891,3 +891,7 @@ a.home-mm-more{text-decoration:none;}
   .agent-card .ac-acts{width:100%;}
   .agent-card .ac-acts .btn{width:100%;}
 }
+.launch-name a{color:inherit;text-decoration:none}
+.launch-name a:hover{text-decoration:underline}
+.launch-more{display:block;font-size:.84rem;font-weight:600;color:var(--navy-900);margin:0 0 10px;text-decoration:none}
+.launch-more:hover{text-decoration:underline}

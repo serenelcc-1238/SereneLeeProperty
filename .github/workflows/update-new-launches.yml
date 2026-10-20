@@ -29,12 +29,15 @@ jobs:
       - name: Pull ERA new launch listings and rewrite the pages
         run: python scripts/update_new_launches.py
 
+      - name: Rebuild project pages (one per launch)
+        run: python3 scripts/build_town_pages.py && python3 scripts/add_schema.py
+
       - name: Save to the repo
         id: commit
         run: |
           git config user.name "new-launches-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add new-launches.html index.html data/new-launches.json
+          git add -A new-launches.html index.html data/new-launches.json new-launch *.html hdb
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "No change in listings."
