@@ -101,7 +101,7 @@
       <strong>Monthly North HDB report</strong>
       <p>Woodlands, Sembawang &amp; Yishun resale prices in your inbox, once a month. Free.</p>
       <form id="igMail"><input type="email" id="igEmail" placeholder="Your email" required><button class="btn btn-gold" type="submit">Join</button></form>
-      <div class="ig-ok" id="igOk">&#10003; You're in. Look out for the next report.</div>
+      <div class="ig-ok" id="igOk">&#10003; You're in. Check your inbox to confirm your email.</div>
     </div>
   </div>
 
@@ -117,6 +117,9 @@
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em))return;
     fetch("https://script.google.com/macros/s/AKfycbzxomLsd_yvi8pEaXvHK3qddAPdnX7889wnjU4i5AoxXIv7dQv7h973bZ9gwQq_1dk/exec",{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},
       body:JSON.stringify({formType:"subscribe",email:em,source:"/ig · Monthly North HDB report",page:location.href})}).catch(function(){});
+    // Also add to Kit (form "Newsletter site", tag north-hdb-report) so the monthly email can be sent from Kit.
+    var kb=new URLSearchParams();kb.append("email_address",em);kb.append("tags[]","24833032");
+    fetch("https://app.kit.com/forms/9982876/subscriptions",{method:"POST",mode:"no-cors",body:kb}).catch(function(){});
     track("ig_hub_subscribe",{});f.style.display="none";document.getElementById("igOk").classList.add("show");});
 })();
 </script>

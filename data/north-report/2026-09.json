@@ -1,0 +1,141 @@
+{
+ "month": "2026-09",
+ "label": "September 2026",
+ "compare": "2025-09",
+ "data_to": "2026-10",
+ "complete": true,
+ "total": 348,
+ "total_ly": 377,
+ "towns": [
+  {
+   "town": "Woodlands",
+   "slug": "woodlands",
+   "sold": 147,
+   "sold_ly": 153,
+   "ft": {
+    "3": {
+     "n": 19,
+     "median": 388000,
+     "n_ly": 13,
+     "median_ly": 468000
+    },
+    "4": {
+     "n": 73,
+     "median": 535000,
+     "n_ly": 68,
+     "median_ly": 570000.0
+    },
+    "5": {
+     "n": 34,
+     "median": 652500.0,
+     "n_ly": 52,
+     "median_ly": 680000.0
+    },
+    "E": {
+     "n": 18,
+     "median": 877500.0,
+     "n_ly": 18,
+     "median_ly": 944000.0
+    }
+   },
+   "data_to": "2026-10",
+   "top": {
+    "block": "818",
+    "street": "Woodlands St 82",
+    "type": "Executive flat",
+    "storey": "4-6",
+    "sqm": 177.0,
+    "price": 1170000
+   }
+  },
+  {
+   "town": "Sembawang",
+   "slug": "sembawang",
+   "sold": 75,
+   "sold_ly": 88,
+   "ft": {
+    "3": {
+     "n": 5,
+     "median": 500000,
+     "n_ly": 9,
+     "median_ly": 510000
+    },
+    "4": {
+     "n": 36,
+     "median": 620000.0,
+     "n_ly": 40,
+     "median_ly": 626500.0
+    },
+    "5": {
+     "n": 26,
+     "median": 622500.0,
+     "n_ly": 26,
+     "median_ly": 684000.0
+    },
+    "E": {
+     "n": 4,
+     "median": 757500.0,
+     "n_ly": 6,
+     "median_ly": 731000.0
+    }
+   },
+   "data_to": "2026-10",
+   "top": {
+    "block": "126C",
+    "street": "Canberra St",
+    "type": "5-room flat",
+    "storey": "7-9",
+    "sqm": 116.0,
+    "price": 868000
+   }
+  },
+  {
+   "town": "Yishun",
+   "slug": "yishun",
+   "sold": 126,
+   "sold_ly": 136,
+   "ft": {
+    "3": {
+     "n": 26,
+     "median": 446500.0,
+     "n_ly": 31,
+     "median_ly": 433000
+    },
+    "4": {
+     "n": 57,
+     "median": 528000,
+     "n_ly": 72,
+     "median_ly": 578000.0
+    },
+    "5": {
+     "n": 27,
+     "median": 690000,
+     "n_ly": 21,
+     "median_ly": 690000
+    },
+    "E": {
+     "n": 8,
+     "median": 920000.0,
+     "n_ly": 7,
+     "median_ly": 910000
+    }
+   },
+   "data_to": "2026-10",
+   "top": {
+    "block": "666",
+    "street": "Yishun Ave 4",
+    "type": "multi-generation flat",
+    "storey": "10-12",
+    "sqm": 151.0,
+    "price": 1212000
+   }
+  }
+ ],
+ "highlights": [
+  "348 HDB flats resold across the three towns in September 2026 (down 8% on September 2025). Woodlands was busiest with 147.",
+  "Biggest 4-room move: Yishun median $528k, down 8.7% on a year ago (57 deals vs 72). Medians mix flats of different ages, so check your own block.",
+  "Top sale: a multi-generation flat at Blk 666 Yishun Ave 4, Yishun (floor 10-12, 151 sqm) for $1,212,000."
+ ],
+ "image": "https://sereneleeproperty.com/assets/email/north-report-2026-09.jpg",
+ "utm": "utm_source=email&utm_medium=newsletter&utm_campaign=north-2026-09"
+}

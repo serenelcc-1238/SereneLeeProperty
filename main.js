@@ -302,6 +302,14 @@ document.addEventListener('DOMContentLoaded', function () {
       subscribeBtn.disabled = true;
       subscribeBtn.textContent = 'Subscribing...';
 
+      // Monthly North HDB report readers also go to Kit (form "Newsletter site", tag north-hdb-report).
+      if (source.indexOf('North HDB report') > -1) {
+        var kb = new URLSearchParams();
+        kb.append('email_address', email);
+        kb.append('tags[]', '24833032');
+        fetch('https://app.kit.com/forms/9982876/subscriptions', { method: 'POST', mode: 'no-cors', body: kb }).catch(function () {});
+      }
+
       fetch(SUBSCRIBE_WEBHOOK_URL, {
         method: 'POST',
         mode: 'no-cors',

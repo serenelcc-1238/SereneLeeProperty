@@ -1,0 +1,204 @@
+{
+ "subject": "North HDB resale: September 2026 (348 flats sold)",
+ "preview_text": "Biggest 4-room move: Yishun median $528k, down 8.7% on a year ago (57 deals vs 72). Medians mix flats of different ages, so check your own b",
+ "content_tree": [
+  {
+   "type": "heading",
+   "level": 1,
+   "children": [
+    {
+     "text": "North HDB resale: September 2026"
+    }
+   ]
+  },
+  {
+   "type": "paragraph",
+   "children": [
+    {
+     "text": "Hi there,"
+    }
+   ]
+  },
+  {
+   "type": "paragraph",
+   "children": [
+    {
+     "text": "Here's what HDB flats in Woodlands, Sembawang and Yishun resold for in September 2026, straight from HDB's official data."
+    }
+   ]
+  },
+  {
+   "type": "image",
+   "src": "https://sereneleeproperty.com/assets/email/north-report-2026-09.jpg",
+   "alt": "North HDB resale report September 2026: flats sold and median prices for Woodlands, Sembawang and Yishun",
+   "href": "https://sereneleeproperty.com/market-map?region=North&utm_source=email&utm_medium=newsletter&utm_campaign=north-2026-09",
+   "fullWidth": true
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "children": [
+    {
+     "text": "3 things to know"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "children": [
+    {
+     "type": "list_item",
+     "children": [
+      {
+       "text": "348 HDB flats resold across the three towns in September 2026 (down 8% on September 2025). Woodlands was busiest with 147."
+      }
+     ]
+    },
+    {
+     "type": "list_item",
+     "children": [
+      {
+       "text": "Biggest 4-room move: Yishun median $528k, down 8.7% on a year ago (57 deals vs 72). Medians mix flats of different ages, so check your own block."
+      }
+     ]
+    },
+    {
+     "type": "list_item",
+     "children": [
+      {
+       "text": "Top sale: a multi-generation flat at Blk 666 Yishun Ave 4, Yishun (floor 10-12, 151 sqm) for $1,212,000."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "children": [
+    {
+     "text": "What's your flat worth?"
+    }
+   ]
+  },
+  {
+   "type": "paragraph",
+   "children": [
+    {
+     "text": "Town medians mix flats of different ages and sizes. For your own block, and what you could move to next, get a free personal plan from me."
+    }
+   ]
+  },
+  {
+   "type": "button",
+   "href": "https://sereneleeproperty.com/flat-report?utm_source=email&utm_medium=newsletter&utm_campaign=north-2026-09",
+   "children": [
+    {
+     "text": "Get My Free Flat Report"
+    }
+   ],
+   "backgroundColor": "#C9A227",
+   "color": "#0B2A4A",
+   "roundedCornerOption": "small",
+   "size": "large",
+   "align": "center"
+  },
+  {
+   "type": "paragraph",
+   "children": [
+    {
+     "text": "Town guides: "
+    },
+    {
+     "type": "link",
+     "href": "https://sereneleeproperty.com/woodlands?utm_source=email&utm_medium=newsletter&utm_campaign=north-2026-09",
+     "children": [
+      {
+       "text": "Woodlands"
+      }
+     ]
+    },
+    {
+     "text": " · "
+    },
+    {
+     "type": "link",
+     "href": "https://sereneleeproperty.com/sembawang?utm_source=email&utm_medium=newsletter&utm_campaign=north-2026-09",
+     "children": [
+      {
+       "text": "Sembawang"
+      }
+     ]
+    },
+    {
+     "text": " · "
+    },
+    {
+     "type": "link",
+     "href": "https://sereneleeproperty.com/yishun?utm_source=email&utm_medium=newsletter&utm_campaign=north-2026-09",
+     "children": [
+      {
+       "text": "Yishun"
+      }
+     ]
+    },
+    {
+     "text": " · "
+    },
+    {
+     "type": "link",
+     "href": "https://sereneleeproperty.com/right-sizing-north?utm_source=email&utm_medium=newsletter&utm_campaign=north-2026-09",
+     "children": [
+      {
+       "text": "Right-sizing guide"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "paragraph",
+   "children": [
+    {
+     "text": "Questions? Just reply to this email or "
+    },
+    {
+     "type": "link",
+     "href": "https://wa.me/6580868568?text=Hi%20Serene%2C%20I%20read%20your%20North%20HDB%20report.",
+     "children": [
+      {
+       "text": "WhatsApp me"
+      }
+     ]
+    },
+    {
+     "text": "."
+    }
+   ]
+  },
+  {
+   "type": "paragraph",
+   "children": [
+    {
+     "text": "Serene Lee"
+    }
+   ]
+  },
+  {
+   "type": "divider",
+   "color": "#E6E2D8"
+  },
+  {
+   "type": "paragraph",
+   "children": [
+    {
+     "text": "Serene Lee · ERA Realty Network Pte Ltd (L3002382K) · CEA Reg. R027578Z · +65 8086 8568. Figures are past HDB resale transactions (data.gov.sg), registered in the month shown; they are not a valuation.",
+     "fontSize": 12,
+     "color": "#6B7280"
+    }
+   ]
+  }
+ ],
+ "tag_id": 24833032,
+ "email_template_id": 5567270
+}
