@@ -53,7 +53,8 @@ document.addEventListener('DOMContentLoaded', function () {
   var links = document.getElementById('navLinks');
   if (toggle && links) {
     toggle.addEventListener('click', function () {
-      links.classList.toggle('open');
+      var isOpen = links.classList.toggle('open');
+      document.body.classList.toggle('nav-open', isOpen);
     });
   }
   var yearEl = document.getElementById('year');

@@ -126,6 +126,8 @@ header{
     flex-direction:column;gap:0;padding:8px 0;box-shadow:0 12px 24px rgba(11,42,74,.08);
   }
   .nav-links.open{display:flex;}
+  .nav-links.open{max-height:calc(100vh - 80px);max-height:calc(100dvh - 80px);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+  body.nav-open .fab-wa,body.nav-open .chatbot-fab{display:none;}
   .nav-links{align-items:stretch;}
   .nav-links a{padding:12px 24px;border-bottom:1px solid var(--cream-2);}
   .nav-toggle{display:block;}
