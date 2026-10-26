@@ -304,7 +304,7 @@ document.addEventListener('DOMContentLoaded', function () {
       subscribeBtn.textContent = 'Subscribing...';
 
       // Monthly North HDB report readers also go to Serene's Kit form (set KIT_NORTH_FORM_ID; blank = off).
-      var KIT_NORTH_FORM_ID = '';
+      var KIT_NORTH_FORM_ID = '10097574';
       if (KIT_NORTH_FORM_ID && source.indexOf('North HDB report') > -1) {
         var kb = new URLSearchParams();
         kb.append('email_address', email);
