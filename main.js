@@ -303,12 +303,19 @@ document.addEventListener('DOMContentLoaded', function () {
       subscribeBtn.disabled = true;
       subscribeBtn.textContent = 'Subscribing...';
 
-      // Monthly North HDB report readers also go to Serene's Kit form (set KIT_NORTH_FORM_ID; blank = off).
+      // Monthly North HDB report readers also go to Serene's Kit form "North HDB report".
+      // Sent as a normal form post into a hidden frame (same as Kit's no-JavaScript fallback),
+      // so Kit treats it like its own form and emails the confirmation link.
       var KIT_NORTH_FORM_ID = '10097574';
       if (KIT_NORTH_FORM_ID && source.indexOf('North HDB report') > -1) {
-        var kb = new URLSearchParams();
-        kb.append('email_address', email);
-        fetch('https://app.kit.com/forms/' + KIT_NORTH_FORM_ID + '/subscriptions', { method: 'POST', mode: 'no-cors', body: kb }).catch(function () {});
+        var fr = document.getElementById('kitFrame');
+        if (!fr) { fr = document.createElement('iframe'); fr.name = fr.id = 'kitFrame'; fr.style.display = 'none'; document.body.appendChild(fr); }
+        var kf = document.createElement('form');
+        kf.method = 'post'; kf.target = 'kitFrame';
+        kf.action = 'https://app.kit.com/forms/' + KIT_NORTH_FORM_ID + '/subscriptions';
+        var ki = document.createElement('input'); ki.type = 'hidden'; ki.name = 'email_address'; ki.value = email;
+        kf.appendChild(ki); kf.style.display = 'none'; document.body.appendChild(kf); kf.submit();
+        setTimeout(function () { kf.remove(); }, 5000);
       }
 
       fetch(SUBSCRIBE_WEBHOOK_URL, {
