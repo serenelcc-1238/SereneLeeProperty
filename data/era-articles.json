@@ -1,6 +1,20 @@
 {
- "retrieved": "2026-10-19T09:09+08:00",
+ "retrieved": "2026-10-26T09:06+08:00",
  "articles": [
+  {
+   "category": "PressRelease",
+   "title": "3Q 2026 URA Real Estate Statistics: Prices Continue to Climb Despite Lower Transactions in Quarter; Fuelled by Landed and OCR (Non-Landed) Market Segments",
+   "slug": "commentary-on-uras-quarterly-report-3q2026",
+   "published": "2026-10-23T02:08:33Z",
+   "url": "https://www.era.com.sg/press-release/commentary-on-uras-quarterly-report-3q2026"
+  },
+  {
+   "category": "PressRelease",
+   "title": "3Q 2026 HDB Quarterly Report: More HDB Flats Change Hands as Resale Prices Continue to Soften",
+   "slug": "commentary-on-hdb-quarterly-report-3q2026",
+   "published": "2026-10-23T01:35:17Z",
+   "url": "https://www.era.com.sg/press-release/commentary-on-hdb-quarterly-report-3q2026"
+  },
   {
    "category": "Blog",
    "title": "Where Are The Opportunities In Singapore’s Property Market?",
@@ -91,20 +105,6 @@
    "slug": "thomson-reserve-bishan",
    "published": "2026-10-01T03:56:27Z",
    "url": "https://www.era.com.sg/blogs/thomson-reserve-bishan"
-  },
-  {
-   "category": "PressRelease",
-   "title": "Commentary on 3Q 2026 URA Flash Estimates",
-   "slug": "commentary-on-3q-2026-ura-flash-estimates",
-   "published": "2026-10-01T02:54:55Z",
-   "url": "https://www.era.com.sg/press-release/commentary-on-3q-2026-ura-flash-estimates"
-  },
-  {
-   "category": "PressRelease",
-   "title": "Commentary on 3Q 2026 HDB Flash Estimates",
-   "slug": "commentary-on-3q-2026-hdb-flash-estimates",
-   "published": "2026-10-01T02:49:46Z",
-   "url": "https://www.era.com.sg/press-release/commentary-on-3q-2026-hdb-flash-estimates"
   },
   {
    "category": "Blog",
