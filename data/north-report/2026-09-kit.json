@@ -197,8 +197,17 @@
      "color": "#6B7280"
     }
    ]
+  },
+  {
+   "type": "paragraph",
+   "children": [
+    {
+     "text": "This document contains AI-assisted analysis provided for general informational purposes only. It does not constitute formal legal, financial, or certified property valuation advice. Recipients shall not rely on this information unless they have independently verified this information to their satisfaction.",
+     "fontSize": 12,
+     "color": "#6B7280",
+     "italic": true
+    }
+   ]
   }
- ],
- "tag_id": 24833032,
- "email_template_id": 5567270
+ ]
 }

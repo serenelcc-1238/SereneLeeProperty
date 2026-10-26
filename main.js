@@ -303,12 +303,12 @@ document.addEventListener('DOMContentLoaded', function () {
       subscribeBtn.disabled = true;
       subscribeBtn.textContent = 'Subscribing...';
 
-      // Monthly North HDB report readers also go to Kit (form "Newsletter site", tag north-hdb-report).
-      if (source.indexOf('North HDB report') > -1) {
+      // Monthly North HDB report readers also go to Serene's Kit form (set KIT_NORTH_FORM_ID; blank = off).
+      var KIT_NORTH_FORM_ID = '';
+      if (KIT_NORTH_FORM_ID && source.indexOf('North HDB report') > -1) {
         var kb = new URLSearchParams();
         kb.append('email_address', email);
-        kb.append('tags[]', '24833032');
-        fetch('https://app.kit.com/forms/9982876/subscriptions', { method: 'POST', mode: 'no-cors', body: kb }).catch(function () {});
+        fetch('https://app.kit.com/forms/' + KIT_NORTH_FORM_ID + '/subscriptions', { method: 'POST', mode: 'no-cors', body: kb }).catch(function () {});
       }
 
       fetch(SUBSCRIBE_WEBHOOK_URL, {

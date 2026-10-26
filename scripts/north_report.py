@@ -20,6 +20,8 @@ TOWNS = ["woodlands", "sembawang", "yishun"]
 FT = {"2": "2-room", "3": "3-room", "4": "4-room", "5": "5-room", "E": "Executive", "M": "Multi-gen"}
 SITE = "https://sereneleeproperty.com"
 SGT = timezone(timedelta(hours=8))
+# Required verbatim by ERA AI Usage Governance Policy v1.0 for AI-assisted analytical reports.
+AI_DISCLAIMER = ("This document contains AI-assisted analysis provided for general informational purposes only. It does not constitute formal legal, financial, or certified property valuation advice. Recipients shall not rely on this information unless they have independently verified this information to their satisfaction.")
 
 
 def last_full_month():
@@ -106,6 +108,7 @@ def build(m):
     render_card(out, os.path.join(ROOT, img_rel))
     kit = kit_tree(out)
     json.dump(kit, open(os.path.join(ROOT, "data", "north-report", m + "-kit.json"), "w"), indent=1, ensure_ascii=False)
+    open(os.path.join(ROOT, "assets", "email", f"north-report-{m}.html"), "w").write(email_html(out, kit))
     return out, kit
 
 
@@ -201,11 +204,41 @@ def kit_tree(o):
         P(T("Serene Lee · ERA Realty Network Pte Ltd (L3002382K) · CEA Reg. R027578Z · +65 8086 8568. "
             "Figures are past HDB resale transactions (data.gov.sg), registered in the month shown; they are not a valuation.",
             fontSize=12, color="#6B7280")),
+        P(T(AI_DISCLAIMER, fontSize=12, color="#6B7280", italic=True)),
     ]
     subject = f"North HDB resale: {o['label']} ({o['total']} flats sold)"
     preview = f"Woodlands, Sembawang & Yishun: flats sold, median prices and the month's top sale."
     return {"subject": subject, "preview_text": preview, "content_tree": tree,
-            "tag_id": 24833032, "email_template_id": 5567270}
+            }
+
+
+def email_html(o, kit):
+    """Paste-ready version: Serene opens it in a browser, selects all, copies, and pastes into a new Kit broadcast."""
+    u = o["utm"]; e = html.escape
+    lis = "".join(f"<li>{e(h)}</li>" for h in o["highlights"])
+    a = lambda href, t: f'<a href="{href}" style="color:#0b2a4a">{t}</a>'
+    return f"""<!doctype html><html><head><meta charset="utf-8"><meta name="robots" content="noindex">
+<title>Email: North HDB resale {e(o['label'])}</title></head>
+<body style="max-width:640px;margin:24px auto;padding:0 16px;font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55">
+<div style="background:#fff8e1;border:1px solid #c9a227;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:22px">
+<b>For Serene (don't copy this box):</b> Subject: <b>{e(kit['subject'])}</b><br>Preview text: {e(kit['preview_text'])}<br>
+Copy everything below the line into a new Kit broadcast. Send to: subscribers of your North HDB report form.</div>
+<hr>
+<h1 style="font-size:24px;color:#0b2a4a">North HDB resale: {e(o['label'])}</h1>
+<p>Hi there,</p>
+<p>Here's what HDB flats in Woodlands, Sembawang and Yishun resold for in {e(o['label'])}, straight from HDB's official data.</p>
+<p><a href="{SITE}/market-map?region=North&amp;{u}"><img src="{o['image']}" alt="North HDB resale report {e(o['label'])}" style="width:100%;max-width:600px;border-radius:8px"></a></p>
+<h2 style="font-size:19px;color:#0b2a4a">3 things to know</h2><ul>{lis}</ul>
+<h2 style="font-size:19px;color:#0b2a4a">What's your flat worth?</h2>
+<p>Town medians mix flats of different ages and sizes. For your own block, and what you could move to next, get a free personal plan from me.</p>
+<p><a href="{SITE}/flat-report?{u}" style="display:inline-block;background:#c9a227;color:#0b2a4a;font-weight:bold;padding:12px 22px;border-radius:6px;text-decoration:none">Get My Free Flat Report</a></p>
+<p>Town guides: {a(f"{SITE}/woodlands?{u}","Woodlands")} · {a(f"{SITE}/sembawang?{u}","Sembawang")} · {a(f"{SITE}/yishun?{u}","Yishun")} · {a(f"{SITE}/right-sizing-north?{u}","Right-sizing guide")}</p>
+<p>Questions? Just reply to this email or {a("https://wa.me/6580868568?text=Hi%20Serene%2C%20I%20read%20your%20North%20HDB%20report.","WhatsApp me")}.</p>
+<p>Serene Lee</p>
+<hr style="border:none;border-top:1px solid #e6e2d8">
+<p style="font-size:12px;color:#6b7280">Serene Lee · ERA Realty Network Pte Ltd (L3002382K) · CEA Reg. R027578Z · +65 8086 8568. Figures are past HDB resale transactions (data.gov.sg), registered in the month shown; they are not a valuation.</p>
+<p style="font-size:12px;color:#6b7280;font-style:italic">{e(AI_DISCLAIMER)}</p>
+</body></html>"""
 
 
 if __name__ == "__main__":
