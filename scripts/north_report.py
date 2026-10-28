@@ -138,7 +138,7 @@ def build(m):
     out = {"month": m, "label": month_label(m), "compare": ly, "data_to": data_to, "complete": data_to > m,
            "national": nat, "top_sale": {"desc": deal_desc(top), "price": top[10]}, "top5": top5, "focus": focus,
            "highlights": hl, "image": f"{SITE}/{img_rel}", "utm": utm,
-           "subject": f"HDB resale in {month_label(m)}: {nat['sold']:,} flats sold, {nat['million']} at $1M+",
+           "subject": f"Singapore Property Updates, {month_label(m)}: {nat['sold']:,} HDB resales, {nat['million']} at $1M+",
            "preview_text": f"Singapore's busiest towns, million-dollar flats and a closer look at {focus['town']}."}
     os.makedirs(os.path.join(ROOT, "data", "north-report"), exist_ok=True)
     json.dump(out, open(os.path.join(ROOT, "data", "north-report", m + ".json"), "w"), indent=1)
@@ -196,7 +196,7 @@ td{{padding:8px 0;border-bottom:1px solid #f0eee8}}
 .up{{color:#1d7a46;font-size:14px;font-weight:700}} .dn{{color:#b42318;font-size:14px;font-weight:700}}
 .foot{{margin-top:22px;font-size:15px;color:#55657a;display:flex;justify-content:space-between;gap:20px}}
 </style></head><body>
-<div class="top"><div><div class="eb">Singapore HDB resale report</div><h1>{o['label']}</h1></div>
+<div class="top"><div><div class="eb">Singapore Property Updates</div><h1>{o['label']}</h1></div>
 <div class="brand"><b>Serene Lee</b><br>ERA Realty · CEA R027578Z<br>sereneleeproperty.com</div></div>
 <div class="grid">
 <div class="col"><div class="lbl">Islandwide</div><h2>Singapore</h2>
@@ -227,13 +227,13 @@ def email_html(o):
     lis = "".join(f"<li>{e(h)}</li>" for h in o["highlights"])
     a = lambda href, t: f'<a href="{href}" style="color:#0b2a4a">{t}</a>'
     return f"""<!doctype html><html><head><meta charset="utf-8"><meta name="robots" content="noindex">
-<title>Email: Singapore HDB resale {e(o['label'])}</title></head>
+<title>Email: Singapore Property Updates {e(o['label'])}</title></head>
 <body style="max-width:640px;margin:24px auto;padding:0 16px;font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55">
 <div style="background:#fff8e1;border:1px solid #c9a227;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:22px">
 <b>For Serene (don't copy this box):</b> Subject: <b>{e(o['subject'])}</b><br>Preview text: {e(o['preview_text'])}<br>
-Copy everything below the line into a new Kit broadcast. Send to: subscribers of your property report form. Check the figures before sending.</div>
+Copy everything below the line into a new Kit broadcast. Send to: subscribers of your Singapore Property Updates form. Check the figures before sending.</div>
 <hr>
-<h1 style="font-size:24px;color:#0b2a4a">Singapore HDB resale: {e(o['label'])}</h1>
+<h1 style="font-size:24px;color:#0b2a4a">Singapore Property Updates: {e(o['label'])}</h1>
 <p>Hi there,</p>
 <p>Here's what happened in Singapore's HDB resale market in {e(o['label'])}, straight from HDB's official data, plus a closer look at {e(f['town'])}.</p>
 <p><a href="{SITE}/market-map?{u}"><img src="{o['image']}" alt="Singapore HDB resale report {e(o['label'])}: flats sold, median prices, top 5 towns and {e(f['town'])}" style="width:100%;max-width:600px;border-radius:8px"></a></p>
