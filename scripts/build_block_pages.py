@@ -322,7 +322,7 @@ def render_block(town, tname, tfile, street, blk, rows, g, stations, tmed, rents
 <section class="cta-banner"><div class="container cta-banner">
   <h2>Own a flat in {esc(name)}?</h2>
   <div class="btns">
-    <a href="/flat-report?blk={esc(blk)}&amp;street={esc(st_t).replace(" ", "%20")}&amp;ft={main_ft}&amp;utm_source=site&amp;utm_medium=block_page" class="btn btn-gold">Get My Free Flat Report</a>
+    <a href="/flat-report?blk={esc(blk)}&amp;street={esc(st_t).replace(" ", "%20")}&amp;ft={main_ft}&amp;utm_source=site&amp;utm_medium=block_page" class="btn btn-gold">Get My Free Property Report</a>
     <a href="{wa}" target="_blank" rel="noopener" class="btn bk-wa" style="background:#fff;color:var(--navy-900);">Get a Free Valuation</a>
   </div>
 </div></section>

@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Free Flat Report: What's My HDB Flat Worth? | Serene Lee</title>
+<title>Free Property Report: What's My HDB Flat Worth? | Serene Lee</title>
 <meta name="description" content="See what flats in your HDB block sold for, then get a free personal plan: selling range, cash and CPF after sale, and what you can move to.">
 <link rel="canonical" href="https://sereneleeproperty.com/flat-report">
-<meta property="og:title" content="Free Flat Report: What's My HDB Flat Worth? | Serene Lee">
+<meta property="og:title" content="Free Property Report: What's My HDB Flat Worth? | Serene Lee">
 <meta property="og:description" content="See what flats in your HDB block sold for, then get a free personal plan: selling range, cash and CPF after sale, and what you can move to.">
 <meta property="og:image" content="https://sereneleeproperty.com/assets/serene-photo.jpg">
 <meta property="og:url" content="https://sereneleeproperty.com/flat-report">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Free Flat Report: What's My HDB Flat Worth? | Serene Lee">
+<meta name="twitter:title" content="Free Property Report: What's My HDB Flat Worth? | Serene Lee">
 <meta name="twitter:description" content="See what flats in your HDB block sold for, then get a free personal plan: selling range, cash and CPF after sale, and what you can move to.">
 <meta name="twitter:image" content="https://sereneleeproperty.com/assets/serene-photo.jpg">
 <script type="application/ld+json">
@@ -46,7 +46,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
-<script type="application/ld+json" data-schema="breadcrumb">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://sereneleeproperty.com/"},{"@type":"ListItem","position":2,"name":"Free Flat Report: What's My HDB Flat Worth?","item":"https://sereneleeproperty.com/flat-report"}]}</script>
+<script type="application/ld+json" data-schema="breadcrumb">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://sereneleeproperty.com/"},{"@type":"ListItem","position":2,"name":"Free Property Report: What's My HDB Flat Worth?","item":"https://sereneleeproperty.com/flat-report"}]}</script>
 </head>
 <body>
 
@@ -64,7 +64,7 @@
       <div class="nav-dropdown">
         <button type="button" class="nav-dropdown-toggle active">Plan Your Move <span class="caret">&#9662;</span></button>
         <div class="nav-dropdown-menu">
-          <a href="/flat-report" class="active">Free Flat Report</a>
+          <a href="/flat-report" class="active">Free Property Report</a>
           <a href="/calculator">Affordability Calculator</a>
           <a href="/upgrade-checklist">Upgrade Checklist</a>
           <a href="/town-guide">Town Guides</a>
@@ -127,7 +127,7 @@
 </style>
 
 <section class="page-hero container fr-wrap" style="padding-bottom:6px;">
-  <span class="eyebrow">Free Flat Report</span>
+  <span class="eyebrow">Free property report of your unit</span>
   <h1 style="font-size:2rem;max-width:700px;">What is my HDB flat worth, and what can I move to?</h1>
   <p style="color:var(--muted);max-width:640px;">See what flats in your block actually sold for, in seconds. Then get a free personal plan from Serene: your likely selling range, cash and CPF after the sale, and the homes that fit your budget.</p>
   <ul class="fr-steps"><li>1. Check your block (instant)</li><li>2. Get your personal plan (free, on WhatsApp)</li></ul>
@@ -289,11 +289,11 @@
     const goal=$("frGoal").value,when=$("frWhen").value,L=last||{};
     const flat=L.blk?`Blk ${L.blk} ${L.street}${L.town?" ("+L.town+")":""}, ${TYPES[L.ft]||""}`:"(block not entered)";
     const median=L.median?` · block median 12m ${money(L.median)} (${L.n12} deals)`:"";
-    const topic=`Free Flat Report · ${flat} · ${goal} · ${when}${median}`;
+    const topic=`Free Property Report · ${flat} · ${goal} · ${when}${median}`;
     const src="flat-report"+(P.get("utm_source")?" · "+P.get("utm_source"):"")+(P.get("utm_campaign")?" · "+P.get("utm_campaign"):"");
     fetch(WEBHOOK,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify({source:src,name,phone,email:"",topic})}).catch(()=>{});
     track("flat_report_requested",{goal,timeline:when,has_block:!!L.blk,found:!!L.found,town:L.town||""});
-    const msg=`Hi Serene, I'd like my free Flat Report.\nName: ${name}\nFlat: ${flat}\nPlan: ${goal} (${when})`;
+    const msg=`Hi Serene, I'd like my free Property Report.\nName: ${name}\nFlat: ${flat}\nPlan: ${goal} (${when})`;
     const wa="https://wa.me/6580868568?text="+encodeURIComponent(msg);
     $("frWaAgain").href=wa; $("frDone").classList.add("show"); $("frSend").disabled=true; $("frSend").textContent="Sent ✓";
     window.open(wa,"_blank");

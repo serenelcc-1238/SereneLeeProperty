@@ -353,7 +353,7 @@ Copy everything below the line into a new Kit broadcast. Send to: subscribers of
 {launch_html(o)}
 <h2 style="font-size:19px;color:#0b2a4a">What's your flat worth?</h2>
 <p>Town medians mix flats of different ages and sizes. For your own block, and what you could move to next, get a free personal plan from me.</p>
-<p><a href="{SITE}/flat-report?{u}" style="display:inline-block;background:#c9a227;color:#0b2a4a;font-weight:bold;padding:12px 22px;border-radius:6px;text-decoration:none">Get My Free Flat Report</a></p>
+<p><a href="{SITE}/flat-report?{u}" style="display:inline-block;background:#c9a227;color:#0b2a4a;font-weight:bold;padding:12px 22px;border-radius:6px;text-decoration:none">Get My Free Property Report</a></p>
 <p>More: {a(f"{SITE}/{f['slug']}?{u}", e(f['town']) + " town guide")} · {a(f"{SITE}/town-guide?{u}", "All town guides")} · {a(f"{SITE}/million-dollar-hdb?{u}", "$1M HDB tracker")} · {a(f"{SITE}/new-launches?{u}", "New launches")}</p>
 <p>Questions? Just reply to this email or {a("https://wa.me/6580868568?text=Hi%20Serene%2C%20I%20read%20your%20property%20report.","WhatsApp me")}.</p>
 <p>Serene Lee</p>
