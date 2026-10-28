@@ -1,9 +1,9 @@
-name: Monthly North HDB report
+name: Monthly HDB resale report
 
 # 6th of every month, 9:00am Singapore time (01:00 UTC): builds last month's
-# Woodlands / Sembawang / Yishun report (image card + Kit email content) and deploys
-# the image so the email can show it. A scheduled Claude task then drafts the email
-# in Kit for Serene to review and send. Run by hand from the Actions tab with a month
+# islandwide HDB resale report (image card + paste-ready email page) and deploys it
+# so the email can show it. A scheduled Claude task then sends Serene the link to
+# paste into Kit and send. Run by hand from the Actions tab with a month
 # (YYYY-MM) to rebuild one.
 on:
   schedule:
@@ -45,13 +45,13 @@ jobs:
       - name: Save to the repo
         id: commit
         run: |
-          git config user.name "north-report-bot"
+          git config user.name "hdb-report-bot"
           git config user.email "actions@users.noreply.github.com"
           git add -A data/north-report assets/email
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
-            git commit -m "North HDB report: $(ls -t data/north-report/*-kit.json | head -1 | xargs basename | cut -c1-7)"
+            git commit -m "HDB resale report: $(ls -t data/north-report/*.json | head -1 | xargs basename | cut -c1-7)"
             git pull --rebase origin main
             git push
             echo "changed=true" >> "$GITHUB_OUTPUT"
