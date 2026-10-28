@@ -303,11 +303,11 @@ document.addEventListener('DOMContentLoaded', function () {
       subscribeBtn.disabled = true;
       subscribeBtn.textContent = 'Subscribing...';
 
-      // Monthly North HDB report readers also go to Serene's Kit form "North HDB report".
+      // Monthly property report readers also go to Serene's Kit form (form 10097574).
       // Sent as a normal form post into a hidden frame (same as Kit's no-JavaScript fallback),
       // so Kit treats it like its own form and emails the confirmation link.
       var KIT_NORTH_FORM_ID = '10097574';
-      if (KIT_NORTH_FORM_ID && source.indexOf('North HDB report') > -1) {
+      if (KIT_NORTH_FORM_ID && source.indexOf('Property report') > -1) {
         var fr = document.getElementById('kitFrame');
         if (!fr) { fr = document.createElement('iframe'); fr.name = fr.id = 'kitFrame'; fr.style.display = 'none'; document.body.appendChild(fr); }
         var kf = document.createElement('form');
