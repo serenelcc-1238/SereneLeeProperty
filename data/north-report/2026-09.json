@@ -114,8 +114,66 @@
   "208 flats sold for $1 million or more (vs 172 a year earlier). Top sale: a 5-room flat at Blk 1C Cantonment Rd, Central Area (floor 19-21, 107 sqm) for $1,720,000.",
   "Town in focus, Woodlands: 147 resales; 4-room median $535k, down 6.1% on a year ago (73 deals vs 68). Medians mix flats of different ages, so check your own block."
  ],
+ "private": {
+  "month": "2026-08",
+  "label": "August 2026",
+  "new_units": 187,
+  "resales": 1136,
+  "psf": 1727.7145748972387,
+  "top_new": {
+   "project": "Dunearn House",
+   "units": 19
+  },
+  "ly": {
+   "new_units": 2296,
+   "resales": 1302,
+   "psf": 1688.3405915305448,
+   "top_new": {
+    "project": "Springleaf Residence",
+    "units": 876
+   }
+  }
+ },
+ "private_highlights": [
+  "1,136 condo and EC resales in August 2026 (down 13% on a year ago); median $1,728 psf, up 2.3%.",
+  "Developers sold 187 new private homes in August 2026; the most at Dunearn House (19 units)."
+ ],
+ "launches": {
+  "launched": [
+   {
+    "name": "Amberwood At Holland",
+    "district": "D10",
+    "date": "2026-09-26",
+    "status": "selling",
+    "url": "/new-launch/amberwood-at-holland"
+   }
+  ],
+  "coming": [
+   {
+    "name": "Lucerne Grand",
+    "district": "D22",
+    "date": "2026-10-03",
+    "status": "selling",
+    "url": "/new-launch/lucerne-grand"
+   },
+   {
+    "name": "The Serra Residences",
+    "district": "",
+    "date": "2026-10-16",
+    "status": null,
+    "url": "/blog-post-serra-residences-preview"
+   },
+   {
+    "name": "Thomson Reserve",
+    "district": "",
+    "date": "2026-10-31",
+    "status": null,
+    "url": "/blog-post-thomson-reserve-preview"
+   }
+  ]
+ },
  "image": "https://sereneleeproperty.com/assets/email/north-report-2026-09.jpg",
  "utm": "utm_source=email&utm_medium=newsletter&utm_campaign=hdb-2026-09",
  "subject": "Singapore Property Updates, September 2026: 2,243 HDB resales, 208 at $1M+",
- "preview_text": "Singapore's busiest towns, million-dollar flats and a closer look at Woodlands."
+ "preview_text": "HDB resale, private homes and new launches, plus a closer look at Woodlands."
 }

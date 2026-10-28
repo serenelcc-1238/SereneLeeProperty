@@ -85,6 +85,57 @@ def deal_desc(r):
     return f"a {t} at Blk {r[3]} {r[2].title()}, {r[1]} (floor {r[6]}-{r[6]+2}, {r[7]:.0f} sqm) for ${r[10]:,.0f}"
 
 
+def prev_month(m):
+    y, mo = map(int, m.split("-"))
+    return f"{y-1}-12" if mo == 1 else f"{y}-{mo-1:02d}"
+
+
+def private_stats(m):
+    """URA caveats for month m (condo/EC/landed). Rows: [month, sale_type(1 new,2 sub,3 resale), sqm, floor, price, units, type]."""
+    y, mo = map(int, m.split("-"))
+    ly = f"{y-1}-{mo:02d}"
+    rows = []
+    for f in glob.glob(os.path.join(ROOT, "data", "ura", "d*.json")):
+        for proj, rs in json.load(open(f)).items():
+            for r in rs:
+                rows.append((proj.split("|")[0], *r))
+    if not rows:
+        return None
+    def one(mm):
+        cur = [r for r in rows if r[1] == mm]
+        res = [r for r in cur if r[2] == 3 and r[7] in ("C", "E") and r[6] == 1 and r[3]]
+        psf = [r[5] / (r[3] * 10.7639) for r in res]
+        new = [r for r in cur if r[2] == 1]
+        by = {}
+        for r in new:
+            by[r[0]] = by.get(r[0], 0) + r[6]
+        topnew = max(by.items(), key=lambda kv: kv[1]) if by else None
+        return {"new_units": sum(r[6] for r in new), "resales": len(res), "psf": st.median(psf) if psf else None,
+                "top_new": {"project": topnew[0].title(), "units": topnew[1]} if topnew else None}
+    a, b = one(m), one(ly)
+    return {"month": m, "label": month_label(m), **a, "ly": b}
+
+
+def launch_stats(m):
+    """New launches from ERA's listings (data/new-launches.json) plus Serene's pinned write-ups. No prices shown."""
+    try:
+        d = json.load(open(os.path.join(ROOT, "data", "new-launches.json")))
+    except Exception:
+        return None
+    import re
+    items = [{"name": p["name"], "district": (p.get("district") or "").upper(), "date": p.get("launchDate") or "",
+              "status": p.get("status"), "url": p.get("slug") or "/new-launches"} for p in d.get("projects", [])]
+    for f in glob.glob(os.path.join(ROOT, "scripts", "home-pinned", "*.html")):
+        raw = open(f).read()
+        g = lambda k: (re.search(rf'{k}="([^"]*)"', raw) or [None, ""])[1]
+        nm = html.unescape(g("data-era-name")).title()
+        if nm and not any(i["name"].lower() == nm.lower() for i in items):
+            items.append({"name": nm, "district": "", "date": g("data-launch"), "status": None, "url": g("href")})
+    launched = sorted([i for i in items if i["date"][:7] == m], key=lambda i: i["date"])
+    nxt = sorted([i for i in items if i["date"][:7] > m], key=lambda i: i["date"])[:3]
+    return {"launched": launched, "coming": nxt}
+
+
 def build(m):
     y, mo = map(int, m.split("-"))
     ly = f"{y-1}-{mo:02d}"
@@ -132,14 +183,27 @@ def build(m):
             line += f", {updown(fch, 1)} on a year ago ({f4['n']} deals vs {f4['n_ly']})"
     hl.append(line + ". Medians mix flats of different ages, so check your own block.")
 
+    pm = prev_month(m)  # caveats for the latest month are still being lodged, so private uses the month before
+    priv = private_stats(pm)
+    launches = launch_stats(m)
+    phl = []
+    if priv:
+        c1 = pct(priv["resales"], priv["ly"]["resales"])
+        c2 = pct(priv["psf"], priv["ly"]["psf"])
+        phl.append(f"{priv['resales']:,} condo and EC resales in {priv['label']}"
+                   + (f" ({updown(c1)} on a year ago)" if c1 is not None else "")
+                   + (f"; median ${priv['psf']:,.0f} psf" + (f", {updown(c2, 1)}" if c2 is not None else "") if priv["psf"] else "") + ".")
+        if priv["new_units"]:
+            phl.append(f"Developers sold {priv['new_units']:,} new private homes in {priv['label']}"
+                       + (f"; the most at {priv['top_new']['project']} ({priv['top_new']['units']} units)" if priv["top_new"] else "") + ".")
     camp = f"hdb-{m}"
     utm = f"utm_source=email&utm_medium=newsletter&utm_campaign={camp}"
     img_rel = f"assets/email/north-report-{m}.jpg"
     out = {"month": m, "label": month_label(m), "compare": ly, "data_to": data_to, "complete": data_to > m,
            "national": nat, "top_sale": {"desc": deal_desc(top), "price": top[10]}, "top5": top5, "focus": focus,
-           "highlights": hl, "image": f"{SITE}/{img_rel}", "utm": utm,
+           "highlights": hl, "private": priv, "private_highlights": phl, "launches": launches, "image": f"{SITE}/{img_rel}", "utm": utm,
            "subject": f"Singapore Property Updates, {month_label(m)}: {nat['sold']:,} HDB resales, {nat['million']} at $1M+",
-           "preview_text": f"Singapore's busiest towns, million-dollar flats and a closer look at {focus['town']}."}
+           "preview_text": f"HDB resale, private homes and new launches, plus a closer look at {focus['town']}."}
     os.makedirs(os.path.join(ROOT, "data", "north-report"), exist_ok=True)
     json.dump(out, open(os.path.join(ROOT, "data", "north-report", m + ".json"), "w"), indent=1)
     render_card(out, os.path.join(ROOT, img_rel))
@@ -170,6 +234,26 @@ def sub(a, b):
     return "" if c is None else ("▲ " if c >= 0 else "▼ ") + f"{abs(c):.0f}% vs a year ago"
 
 
+def second_row(o):
+    p, L = o.get("private"), o.get("launches")
+    if not p and not L:
+        return ""
+    pc = ""
+    if p:
+        c1, c2 = pct(p["resales"], p["ly"]["resales"]), pct(p["psf"], p["ly"]["psf"])
+        pc = f"""<div class="col"><div class="lbl">Private homes &middot; {p['label']}</div><h2>Condo &amp; EC</h2>
+<div class="row3"><div><div class="big2">{p['resales']:,}</div><div class="sub">resales{('<br>' + sub(p['resales'], p['ly']['resales'])) if c1 is not None else ''}</div></div>
+<div><div class="big2">${p['psf']:,.0f}</div><div class="sub">median psf (resale){('<br>' + sub(p['psf'], p['ly']['psf'])) if c2 is not None else ''}</div></div>
+<div><div class="big2">{p['new_units']:,}</div><div class="sub">new homes sold<br>by developers</div></div></div></div>"""
+    lc = ""
+    if L:
+        li = "".join(f"<tr><td>{html.escape(i['name'])}</td><td class='r n'>{html.escape(i['district'])}</td><td class='r'>Launched {datetime.strptime(i['date'],'%Y-%m-%d').strftime('%-d %b')}</td></tr>" for i in L["launched"][:3])
+        li += "".join(f"<tr><td>{html.escape(i['name'])}</td><td class='r n'>{html.escape(i['district'])}</td><td class='r n'>Expected {datetime.strptime(i['date'],'%Y-%m-%d').strftime('%b %Y')}</td></tr>" for i in L["coming"][:max(0, 4 - len(L['launched'][:3]))])
+        lc = f"""<div class="col"><div class="lbl">New launches</div><h2>Launched &amp; coming up</h2>
+<table style="margin-top:10px">{li}</table><div class="sub" style="margin-top:10px">Available units &amp; prices: check with Serene</div></div>"""
+    return f'<div class="grid2">{pc}{lc}</div>'
+
+
 def render_card(o, path):
     n, f = o["national"], o["focus"]
     t5 = "".join(f'<tr><td>{i}. {html.escape(t["town"])}</td><td class="r"><b>{t["sold"]}</b></td><td class="r n">{k(t["median4"]) if t["median4"] else "–"}</td></tr>'
@@ -194,6 +278,9 @@ th{{text-align:left;font-size:13px;color:#55657a;text-transform:uppercase;letter
 td{{padding:8px 0;border-bottom:1px solid #f0eee8}}
 .r{{text-align:right}} .n{{color:#55657a}}
 .up{{color:#1d7a46;font-size:14px;font-weight:700}} .dn{{color:#b42318;font-size:14px;font-weight:700}}
+.grid2{{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px}}
+.row3{{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}}
+.big2{{font-size:36px;font-weight:800}}
 .foot{{margin-top:22px;font-size:15px;color:#55657a;display:flex;justify-content:space-between;gap:20px}}
 </style></head><body>
 <div class="top"><div><div class="eb">Singapore Property Updates</div><h1>{o['label']}</h1></div>
@@ -207,7 +294,8 @@ td{{padding:8px 0;border-bottom:1px solid #f0eee8}}
 <div class="col focus"><div class="lbl">Town in focus</div><h2>{html.escape(f['town'])}</h2>
 <div class="big">{f['sold']}<small> flats sold</small></div><div class="sub">{sub(f['sold'], f['sold_ly'])}</div>{ft_table(f['ft'])}</div>
 </div>
-<div class="foot"><span>Median resale prices; ▲▼ = change vs {month_label(o['compare'])} (shown when both months have 5+ deals).</span><span>Source: HDB resale flat prices, data.gov.sg</span></div>
+{second_row(o)}
+<div class="foot"><span>▲▼ = change vs the same month a year earlier (HDB: shown when both months have 5+ deals).</span><span>Sources: HDB (data.gov.sg), URA caveats, ERA listings</span></div>
 </body></html>"""
     from playwright.sync_api import sync_playwright
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -219,6 +307,29 @@ td{{padding:8px 0;border-bottom:1px solid #f0eee8}}
         pg.wait_for_timeout(300)
         pg.screenshot(path=path, full_page=True, type="jpeg", quality=88)
         b.close()
+
+
+def private_html(o):
+    if not o.get("private_highlights"):
+        return ""
+    lis = "".join(f"<li>{html.escape(h)}</li>" for h in o["private_highlights"])
+    return (f'<h2 style="font-size:19px;color:#0b2a4a">Private homes</h2><ul>{lis}</ul>'
+            f'<p style="font-size:13px;color:#6b7280">From URA caveats for {html.escape(o["private"]["label"])}, the latest full month (caveats are lodged a few weeks after each sale).</p>')
+
+
+def launch_html(o):
+    L = o.get("launches")
+    if not L or not (L["launched"] or L["coming"]):
+        return ""
+    u = o["utm"]
+    def li(i, when):
+        url = i["url"] if i["url"].startswith("http") else SITE + i["url"]
+        d = f" ({html.escape(i['district'])})" if i["district"] else ""
+        return f'<li><a href="{url}?{u}" style="color:#0b2a4a">{html.escape(i["name"])}</a>{d}: {when}</li>'
+    items = "".join(li(i, "launched " + datetime.strptime(i["date"], "%Y-%m-%d").strftime("%-d %b")) for i in L["launched"])
+    items += "".join(li(i, "expected " + datetime.strptime(i["date"], "%Y-%m-%d").strftime("%b %Y")) for i in L["coming"])
+    return (f'<h2 style="font-size:19px;color:#0b2a4a">New launches</h2><ul>{items}</ul>'
+            f'<p>Available units and prices change daily. <a href="https://wa.me/6580868568?text=Hi%20Serene%2C%20I%27d%20like%20the%20available%20units%20and%20prices%20for%20new%20launches." style="color:#0b2a4a">WhatsApp me for the latest</a> or see <a href="{SITE}/new-launches?{u}" style="color:#0b2a4a">all new launches</a>.</p>')
 
 
 def email_html(o):
@@ -235,9 +346,11 @@ Copy everything below the line into a new Kit broadcast. Send to: subscribers of
 <hr>
 <h1 style="font-size:24px;color:#0b2a4a">Singapore Property Updates: {e(o['label'])}</h1>
 <p>Hi there,</p>
-<p>Here's what happened in Singapore's HDB resale market in {e(o['label'])}, straight from HDB's official data, plus a closer look at {e(f['town'])}.</p>
+<p>Here's your Singapore property round-up for {e(o['label'])}: HDB resale from HDB's official data, private homes from URA, and new launches, plus a closer look at {e(f['town'])}.</p>
 <p><a href="{SITE}/market-map?{u}"><img src="{o['image']}" alt="Singapore HDB resale report {e(o['label'])}: flats sold, median prices, top 5 towns and {e(f['town'])}" style="width:100%;max-width:600px;border-radius:8px"></a></p>
-<h2 style="font-size:19px;color:#0b2a4a">3 things to know</h2><ul>{lis}</ul>
+<h2 style="font-size:19px;color:#0b2a4a">HDB resale: 3 things to know</h2><ul>{lis}</ul>
+{private_html(o)}
+{launch_html(o)}
 <h2 style="font-size:19px;color:#0b2a4a">What's your flat worth?</h2>
 <p>Town medians mix flats of different ages and sizes. For your own block, and what you could move to next, get a free personal plan from me.</p>
 <p><a href="{SITE}/flat-report?{u}" style="display:inline-block;background:#c9a227;color:#0b2a4a;font-weight:bold;padding:12px 22px;border-radius:6px;text-decoration:none">Get My Free Flat Report</a></p>
@@ -245,7 +358,7 @@ Copy everything below the line into a new Kit broadcast. Send to: subscribers of
 <p>Questions? Just reply to this email or {a("https://wa.me/6580868568?text=Hi%20Serene%2C%20I%20read%20your%20property%20report.","WhatsApp me")}.</p>
 <p>Serene Lee</p>
 <hr style="border:none;border-top:1px solid #e6e2d8">
-<p style="font-size:12px;color:#6b7280">Serene Lee · ERA Realty Network Pte Ltd (L3002382K) · CEA Reg. R027578Z · +65 8086 8568. Figures are past HDB resale transactions (data.gov.sg), registered in the month shown; they are not a valuation.</p>
+<p style="font-size:12px;color:#6b7280">Serene Lee · ERA Realty Network Pte Ltd (L3002382K) · CEA Reg. R027578Z · +65 8086 8568. Figures are past transactions from HDB (data.gov.sg) and URA caveats, and launch details from ERA's listings; they are not a valuation.</p>
 <p style="font-size:12px;color:#6b7280;font-style:italic">{e(AI_DISCLAIMER)}</p>
 </body></html>"""
 
@@ -254,4 +367,5 @@ if __name__ == "__main__":
     month = sys.argv[1] if len(sys.argv) > 1 else last_full_month()
     o = build(month)
     print(json.dumps({"month": o["label"], "complete": o["complete"], "subject": o["subject"],
-                      "focus": o["focus"]["town"], "highlights": o["highlights"], "image": o["image"]}, indent=1))
+                      "focus": o["focus"]["town"], "highlights": o["highlights"], "private": o["private_highlights"],
+                      "launches": o["launches"], "image": o["image"]}, indent=1))
