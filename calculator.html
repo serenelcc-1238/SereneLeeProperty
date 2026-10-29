@@ -547,8 +547,20 @@ function updateIncomeTotal(){
   const bVariable = num('b-variable');
   const cbVariable = hasCobuyer.checked ? num('cb-variable') : 0;
   const assessable = (bIncome + cbIncome) + ((bVariable + cbVariable) / 12) * 0.70;
-  document.getElementById('incomeTotalDisplay').innerHTML = `Total Monthly Assessable Income <strong>${fmt(assessable)}</strong>`;
+  let html = `Total Monthly Assessable Income <strong>${fmt(assessable)}</strong>`;
+  // New EC: household income ceiling check (HDB counts the full average monthly
+  // income, bonus included, not the 70% figure banks use).
+  const isEC = ((document.querySelector('input[name="ptype"]:checked') || {}).value) === 'ec';
+  if (isEC) {
+    const full = (bIncome + cbIncome) + (bVariable + cbVariable) / 12;
+    const cls = full > 18000 ? 'ec-over' : (full > 16000 ? 'ec-mid' : 'ec-ok');
+    const msg = full > 18000 ? 'above the New EC income ceiling: not eligible'
+      : (full > 16000 ? 'eligible only for EC launches on land tenders closing on/after 24 Aug 2026 ($18,000 ceiling)' : 'within the New EC income ceiling');
+    html += `<div class="ec-ceiling ${cls}">Household income for EC ceiling: <strong>${fmt(full)}/month</strong> (bonus included in full), ${msg}.</div>`;
+  }
+  document.getElementById('incomeTotalDisplay').innerHTML = html;
 }
+document.querySelectorAll('input[name="ptype"]').forEach(r => r.addEventListener('change', updateIncomeTotal));
 ['b-income','cb-income','b-variable','cb-variable'].forEach(id => {
   document.getElementById(id).addEventListener('input', updateIncomeTotal);
 });
@@ -749,10 +761,29 @@ document.getElementById('calcForm').addEventListener('submit', function(e){
 
   const bIncome = num('b-income');
   const bAge = num('b-age');
+  const DEFAULT_ERR = 'Please fill in at least your monthly income and age to continue.';
   if (!bIncome || !bAge){
+    errorEl.textContent = DEFAULT_ERR;
     errorEl.classList.add('show');
     return;
   }
+  // New EC eligibility: household income ceiling ($18,000 for EC land tenders
+  // closing on/after 24 Aug 2026, $16,000 for earlier ones) and at least one
+  // Singapore Citizen buyer. Above the ceiling, no result is shown.
+  if (((document.querySelector('input[name="ptype"]:checked') || {}).value) === 'ec') {
+    const withCB = hasCobuyer.checked;
+    const fullIncome = bIncome + (withCB ? num('cb-income') : 0) + (num('b-variable') + (withCB ? num('cb-variable') : 0)) / 12;
+    const ecErr = fullIncome > 18000
+      ? `Your household income of ${fmt(fullIncome)}/month (bonus included) is above the New EC income ceiling of S$18,000/month (S$16,000 for older EC launches), so you aren't eligible to buy a new EC. A resale EC (after its 5-year MOP) or a private condo has no income ceiling. Switch to Resale HDB above, or WhatsApp Serene to explore options.`
+      : (!absdInfo().anySC ? 'A new EC needs at least one Singapore Citizen buyer, so a PR-only household isn\'t eligible. Switch to Resale HDB above, or WhatsApp Serene to explore options.' : '');
+    if (ecErr) {
+      errorEl.textContent = ecErr;
+      errorEl.classList.add('show');
+      document.getElementById('resultsPanel').classList.remove('show');
+      return;
+    }
+  }
+  errorEl.textContent = DEFAULT_ERR;
   errorEl.classList.remove('show');
 
   const hasCB = hasCobuyer.checked;

@@ -928,3 +928,7 @@ a.home-mm-more{text-decoration:none;}
 .scenario-card-title .card-sub b{color:var(--gold-dark);font-weight:800;}
 #scn1Title,#targetTitle{display:block;}
 @media(max-width:600px){.loan-compare.lc-3 th:first-child,.loan-compare.lc-3 td.lc-label{width:34%;}.loan-compare.lc-3 td.lc-num{font-size:.76rem;padding-left:10px;}.loan-compare.lc-3 th{white-space:nowrap;}}
+.ec-ceiling{margin-top:6px;font-size:.8rem;font-weight:500;line-height:1.4;}
+.ec-ceiling.ec-over{color:var(--danger);}
+.ec-ceiling.ec-mid{color:#9a6b00;}
+.ec-ceiling.ec-ok{color:#2e7d4f;}
