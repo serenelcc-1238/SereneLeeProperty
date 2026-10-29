@@ -254,7 +254,26 @@
         <div class="divider"></div>
         <div id="incomeBasisNote" class="hdb-note"></div>
 
-        <div class="scenario-grid scenario-grid-single">
+        <div class="scenario-grid scenario-grid-single" id="scenarioGrid">
+          <div class="scenario-card" id="targetScenarioCard" style="display:none;">
+            <div class="scenario-card-title" id="targetTitle">Your Target Price</div>
+            <div class="scenario-line"><span>Target Purchase Price</span><strong id="targetPriceDisplayEl">S$0</strong></div>
+            <div class="scenario-line"><span>Loan Amount</span><strong id="targetLoanEl">S$0</strong></div>
+            <div class="scenario-line"><span>Monthly Instalment</span><strong id="targetMonthlyEl">S$0</strong></div>
+            <div class="scenario-line"><span id="targetDownpaymentLabel">Downpayment Required (25%)</span><strong id="targetDownpaymentEl">S$0</strong></div>
+            <div class="scenario-line absd-line" id="targetABSDRow" style="display:none;"><span id="targetABSDLabel">ABSD</span><strong id="targetABSDEl">S$0</strong></div>
+            <details class="scenario-details">
+              <summary class="scenario-line scenario-summary"><span>Upfront Costs (Stamp Duty + Fees) <em class="tap-hint">tap for breakdown</em></span><strong id="targetCostsEl">S$0</strong></summary>
+              <div class="scenario-line"><span>Buyer Stamp Duty (BSD)</span><strong id="targetBSDEl">S$0</strong></div>
+              <div class="scenario-line"><span>Legal &amp; Resale Fees</span><strong id="targetFeesEl">S$0</strong></div>
+              <div class="scenario-line"><span>Total Cash/CPF Needed</span><strong id="targetTotalNeededEl">S$0</strong></div>
+            </details>
+            <div class="scenario-line"><span>Your Cash + CPF Available</span><strong id="targetFundsEl">S$0</strong></div>
+            <div class="scenario-line split-line"><span>Cash needed / you have</span><strong id="targetCashSplitEl">S$0</strong></div>
+            <div class="scenario-line split-line"><span>CPF OA used / you have</span><strong id="targetCpfSplitEl">S$0</strong></div>
+            <div class="scenario-line scenario-line-highlight"><span id="targetGapLabelEl">Shortfall</span><strong id="targetGapEl">S$0</strong></div><div class="scenario-line split-line peak-line"><span>Peak cash needed / you have<small id="targetPeakBreak"></small></span><strong id="targetPeakEl">S$0</strong></div><div class="scenario-note split-note" id="targetFloatNote"></div>
+            <div class="scenario-note" id="targetMsrNote" style="display:none;"></div>
+          </div>
           <div class="scenario-card">
             <div class="scenario-card-title" id="scn1Title">Based on Income (MSR)</div>
             <div class="scenario-line"><span id="scn1PriceLabel">Max HDB Purchase Price</span><strong id="scn1PriceEl">S$0</strong></div>
@@ -270,8 +289,8 @@
             </details>
             <div class="scenario-line"><span>Your Cash + CPF Available</span><strong id="scn1FundsEl">S$0</strong></div>
             <div class="scenario-line split-line"><span>Cash needed / you have</span><strong id="scn1CashSplitEl">S$0</strong></div>
-            <div class="scenario-line split-line"><span>CPF OA used / you have</span><strong id="scn1CpfSplitEl">S$0</strong></div><div class="scenario-line split-line peak-line"><span>Peak cash needed / you have<small id="scn1PeakBreak"></small></span><strong id="scn1PeakEl">S$0</strong></div>
-            <div class="scenario-line scenario-line-highlight"><span id="scn1GapLabelEl">Shortfall</span><strong id="scn1GapEl">S$0</strong></div><div class="scenario-note split-note" id="scn1FloatNote"></div>
+            <div class="scenario-line split-line"><span>CPF OA used / you have</span><strong id="scn1CpfSplitEl">S$0</strong></div>
+            <div class="scenario-line scenario-line-highlight"><span id="scn1GapLabelEl">Shortfall</span><strong id="scn1GapEl">S$0</strong></div><div class="scenario-line split-line peak-line"><span>Peak cash needed / you have<small id="scn1PeakBreak"></small></span><strong id="scn1PeakEl">S$0</strong></div><div class="scenario-note split-note" id="scn1FloatNote"></div>
           </div>
           <div class="scenario-card" id="scenario2Card" style="display:none;">
             <div class="scenario-card-title" id="scn2Title">Scenario 2 — Based on Cash/CPF on hand</div>
@@ -289,8 +308,8 @@
               </details>
               <div class="scenario-line"><span>Your Cash + CPF Available</span><strong id="scn2FundsEl">S$0</strong></div>
               <div class="scenario-line split-line"><span>Cash needed / you have</span><strong id="scn2CashSplitEl">S$0</strong></div>
-              <div class="scenario-line split-line"><span>CPF OA used / you have</span><strong id="scn2CpfSplitEl">S$0</strong></div><div class="scenario-line split-line peak-line"><span>Peak cash needed / you have<small id="scn2PeakBreak"></small></span><strong id="scn2PeakEl">S$0</strong></div>
-              <div class="scenario-line scenario-line-highlight"><span id="scn2GapLabelEl">Shortfall</span><strong id="scn2GapEl">S$0</strong></div><div class="scenario-note split-note" id="scn2FloatNote"></div>
+              <div class="scenario-line split-line"><span>CPF OA used / you have</span><strong id="scn2CpfSplitEl">S$0</strong></div>
+              <div class="scenario-line scenario-line-highlight"><span id="scn2GapLabelEl">Shortfall</span><strong id="scn2GapEl">S$0</strong></div><div class="scenario-line split-line peak-line"><span>Peak cash needed / you have<small id="scn2PeakBreak"></small></span><strong id="scn2PeakEl">S$0</strong></div><div class="scenario-note split-note" id="scn2FloatNote"></div>
               <div class="scenario-note" id="scn2MsrNote" style="display:none;"></div>
               <div class="scenario-note" id="scn2CashFloorNote" style="display:none;"></div>
             </div>
@@ -298,25 +317,6 @@
           </div>
         </div>
 
-        <div class="scenario-card scenario-card-wide" id="targetScenarioCard" style="display:none;">
-          <div class="scenario-card-title">Your Target Purchase Price</div>
-          <div class="scenario-line"><span>Target Purchase Price</span><strong id="targetPriceDisplayEl">S$0</strong></div>
-          <div class="scenario-line"><span>Loan Amount</span><strong id="targetLoanEl">S$0</strong></div>
-          <div class="scenario-line"><span>Monthly Instalment</span><strong id="targetMonthlyEl">S$0</strong></div>
-          <div class="scenario-line"><span id="targetDownpaymentLabel">Downpayment Required (25%)</span><strong id="targetDownpaymentEl">S$0</strong></div>
-          <div class="scenario-line absd-line" id="targetABSDRow" style="display:none;"><span id="targetABSDLabel">ABSD</span><strong id="targetABSDEl">S$0</strong></div>
-          <details class="scenario-details">
-            <summary class="scenario-line scenario-summary"><span>Upfront Costs (Stamp Duty + Fees) <em class="tap-hint">tap for breakdown</em></span><strong id="targetCostsEl">S$0</strong></summary>
-            <div class="scenario-line"><span>Buyer Stamp Duty (BSD)</span><strong id="targetBSDEl">S$0</strong></div>
-            <div class="scenario-line"><span>Legal &amp; Resale Fees</span><strong id="targetFeesEl">S$0</strong></div>
-            <div class="scenario-line"><span>Total Cash/CPF Needed</span><strong id="targetTotalNeededEl">S$0</strong></div>
-          </details>
-          <div class="scenario-line"><span>Your Cash + CPF Available</span><strong id="targetFundsEl">S$0</strong></div>
-          <div class="scenario-line split-line"><span>Cash needed / you have</span><strong id="targetCashSplitEl">S$0</strong></div>
-          <div class="scenario-line split-line"><span>CPF OA used / you have</span><strong id="targetCpfSplitEl">S$0</strong></div><div class="scenario-line split-line peak-line"><span>Peak cash needed / you have<small id="targetPeakBreak"></small></span><strong id="targetPeakEl">S$0</strong></div>
-          <div class="scenario-line scenario-line-highlight"><span id="targetGapLabelEl">Shortfall</span><strong id="targetGapEl">S$0</strong></div><div class="scenario-note split-note" id="targetFloatNote"></div>
-          <div class="scenario-note" id="targetMsrNote" style="display:none;"></div>
-        </div>
 
         <div class="scenario-card scenario-card-wide" id="loanCompareCard" style="display:none;">
           <div class="scenario-card-title">HDB Loan vs Bank Loan, at standard rates</div>
@@ -967,9 +967,10 @@ document.getElementById('calcForm').addEventListener('submit', function(e){
 
   /* --- Render Scenario 1 (Income/MSR) card --- */
   const propNoun = propertyType === 'hdb' ? 'HDB' : 'EC';
-  document.getElementById('scn1Title').textContent = usesHdbLoan
-    ? 'Based on Income (MSR)'
-    : 'Based on Income (MSR & TDSR)';
+  const loanName = usesHdbLoan ? 'HDB Loan' : 'Bank Loan';
+  document.getElementById('scn1Title').innerHTML = `Our Guided Max Price<span class="card-sub">Based on your income (${usesHdbLoan ? 'MSR 30%' : 'MSR 30% / TDSR 55%'}) · <b>${loanName}</b></span>`;
+  document.getElementById('targetTitle').innerHTML = `Your Target Price<span class="card-sub">What you asked about · <b>${loanName}</b></span>`;
+  document.getElementById('scenarioGrid').classList.toggle('scenario-grid-single', !targetPrice);
   document.getElementById('scn1PriceLabel').textContent = `Max ${propNoun} Purchase Price`;
   document.getElementById('scn1PriceEl').textContent = fmt(scn1Price);
   document.getElementById('scn1LoanEl').textContent = fmt(scn1Loan);
@@ -1262,8 +1263,8 @@ document.getElementById('calcForm').addEventListener('submit', function(e){
    rendered heights after each render and set both to the taller of the two. */
 function equalizeScenarioTitles(){
   const t1 = document.getElementById('scn1Title');
-  const t2 = document.getElementById('scn2Title');
-  if (!t1 || !t2 || !t2.offsetParent) return;
+  const t2 = document.getElementById('targetTitle');
+  if (!t1 || !t2 || !t2.offsetParent) { if (t1) t1.style.height = 'auto'; return; }
   t1.style.height = 'auto';
   t2.style.height = 'auto';
   // Force layout so the heights below reflect the reset above, not stale values.
@@ -1381,7 +1382,7 @@ function generatePdf(lead){
        Your Target Price only if the buyer stated one. --- */
     const scenarios = [
       {
-        title: 'Based on Income',
+        title: 'Our Guided Max Price',
         price: lastResults.scn1Price, loan: lastResults.scn1Loan, monthly: lastResults.scn1Monthly,
         downpayment: lastResults.scn1Downpayment, bsd: lastResults.scn1BSD, absd: lastResults.scn1ABSD || 0, cashNeed: lastResults.scn1CashNeed, cpfUsed: lastResults.scn1CpfUsed, fees: lastResults.fixedCashCpfFees,
         totalNeeded: lastResults.scn1Downpayment + lastResults.scn1BSD + (lastResults.scn1ABSD || 0) + lastResults.fixedCashCpfFees,
@@ -1401,7 +1402,7 @@ function generatePdf(lead){
       msrCapped: lastResults.scn2MsrCapped
     });
     if (lastResults.targetPrice) {
-      scenarios.push({
+      scenarios.unshift({
         title: 'Your Target Price',
         price: lastResults.targetPrice, loan: lastResults.targetLoan, monthly: lastResults.targetMonthly,
         downpayment: lastResults.targetDownpayment, bsd: lastResults.targetBSD, absd: lastResults.targetABSD || 0, cashNeed: lastResults.targetCashNeed, cpfUsed: lastResults.targetCpfUsed, fees: lastResults.fixedCashCpfFees,

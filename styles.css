@@ -920,3 +920,6 @@ a.home-mm-more{text-decoration:none;}
 .peak-line small{display:block;font-weight:400;color:var(--muted);font-size:.74rem;margin-top:2px;}
 .peak-line strong.gap-shortfall{color:var(--danger);}
 .scenario-grid.scenario-grid-single{grid-template-columns:1fr;max-width:560px;margin-left:auto;margin-right:auto;}
+.scenario-card-title .card-sub{display:block;font-size:.74rem;font-weight:500;color:var(--muted);margin-top:3px;}
+.scenario-card-title .card-sub b{color:var(--gold-dark);font-weight:800;}
+#scn1Title,#targetTitle{display:block;}
