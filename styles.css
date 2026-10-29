@@ -913,3 +913,6 @@ a.home-mm-more{text-decoration:none;}
 .split-line span{color:var(--navy);font-weight:600;}
 .split-note{margin-top:6px;font-style:normal;}
 .split-line strong.gap-shortfall{color:var(--danger);}
+.peak-line{background:var(--cream-2);padding-left:6px;padding-right:6px;border-radius:6px;}
+.peak-line small{display:block;font-weight:400;color:var(--muted);font-size:.74rem;margin-top:2px;}
+.peak-line strong.gap-shortfall{color:var(--danger);}

@@ -237,7 +237,7 @@
         <div class="field">
           <label for="legal-fee">Estimated legal / conveyancing fee (SGD)</label>
           <input type="number" id="legal-fee" min="0" step="100" value="1000">
-          <div class="hint" id="legalFeeHint">Defaults to ~S$1,000 for HDB's in-house legal service (Concessionary Loan) or ~S$2,500 for a private solicitor (Bank Loan requires one) — adjust here for your own quote.</div>
+          <div class="hint" id="legalFeeHint">Defaults to ~S$1,000 for HDB's in-house legal service (Concessionary Loan) or ~S$3,000 for a private solicitor (Bank Loan requires one) — adjust here for your own quote.</div>
         </div>
 
         <div class="field">
@@ -270,7 +270,7 @@
             </details>
             <div class="scenario-line"><span>Your Cash + CPF Available</span><strong id="scn1FundsEl">S$0</strong></div>
             <div class="scenario-line split-line"><span>Cash needed / you have</span><strong id="scn1CashSplitEl">S$0</strong></div>
-            <div class="scenario-line split-line"><span>CPF OA used / you have</span><strong id="scn1CpfSplitEl">S$0</strong></div>
+            <div class="scenario-line split-line"><span>CPF OA used / you have</span><strong id="scn1CpfSplitEl">S$0</strong></div><div class="scenario-line split-line peak-line"><span>Peak cash needed / you have<small id="scn1PeakBreak"></small></span><strong id="scn1PeakEl">S$0</strong></div>
             <div class="scenario-line scenario-line-highlight"><span id="scn1GapLabelEl">Shortfall</span><strong id="scn1GapEl">S$0</strong></div><div class="scenario-note split-note" id="scn1FloatNote"></div>
           </div>
           <div class="scenario-card" id="scenario2Card">
@@ -289,7 +289,7 @@
               </details>
               <div class="scenario-line"><span>Your Cash + CPF Available</span><strong id="scn2FundsEl">S$0</strong></div>
               <div class="scenario-line split-line"><span>Cash needed / you have</span><strong id="scn2CashSplitEl">S$0</strong></div>
-              <div class="scenario-line split-line"><span>CPF OA used / you have</span><strong id="scn2CpfSplitEl">S$0</strong></div>
+              <div class="scenario-line split-line"><span>CPF OA used / you have</span><strong id="scn2CpfSplitEl">S$0</strong></div><div class="scenario-line split-line peak-line"><span>Peak cash needed / you have<small id="scn2PeakBreak"></small></span><strong id="scn2PeakEl">S$0</strong></div>
               <div class="scenario-line scenario-line-highlight"><span id="scn2GapLabelEl">Shortfall</span><strong id="scn2GapEl">S$0</strong></div><div class="scenario-note split-note" id="scn2FloatNote"></div>
               <div class="scenario-note" id="scn2MsrNote" style="display:none;"></div>
               <div class="scenario-note" id="scn2CashFloorNote" style="display:none;"></div>
@@ -313,7 +313,7 @@
           </details>
           <div class="scenario-line"><span>Your Cash + CPF Available</span><strong id="targetFundsEl">S$0</strong></div>
           <div class="scenario-line split-line"><span>Cash needed / you have</span><strong id="targetCashSplitEl">S$0</strong></div>
-          <div class="scenario-line split-line"><span>CPF OA used / you have</span><strong id="targetCpfSplitEl">S$0</strong></div>
+          <div class="scenario-line split-line"><span>CPF OA used / you have</span><strong id="targetCpfSplitEl">S$0</strong></div><div class="scenario-line split-line peak-line"><span>Peak cash needed / you have<small id="targetPeakBreak"></small></span><strong id="targetPeakEl">S$0</strong></div>
           <div class="scenario-line scenario-line-highlight"><span id="targetGapLabelEl">Shortfall</span><strong id="targetGapEl">S$0</strong></div><div class="scenario-note split-note" id="targetFloatNote"></div>
           <div class="scenario-note" id="targetMsrNote" style="display:none;"></div>
         </div>
@@ -673,7 +673,7 @@ legalFeeInput.addEventListener('input', () => { legalFeeTouched = true; });
 function refreshLegalFeeDefault(){
   if (legalFeeTouched) return;
   const { ptype, loantype } = currentPtypeLoantype();
-  legalFeeInput.value = (ptype === 'hdb' && loantype === 'hdbloan') ? 1000 : 2500;
+  legalFeeInput.value = (ptype === 'hdb' && loantype === 'hdbloan') ? 1000 : 3000;
 }
 
 ['b-age','cb-age','b-income','cb-income','b-variable','cb-variable'].forEach(id => document.getElementById(id).addEventListener('input', refreshTenureDefault));
@@ -714,6 +714,15 @@ function renderSplit(k, cashNeed, cashHave, cpfUsed, cpfHave, duty, isHdb){
   const pEl = document.getElementById(k + 'CpfSplitEl');
   cEl.textContent = fmt(cashNeed) + ' / ' + fmt(cashHave);
   cEl.classList.toggle('gap-shortfall', cashNeed > cashHave + 0.5);
+  // Peak cash: the cash downpayment plus stamp duty (BSD/ABSD), which is paid in
+  // cash first and only reimbursed from CPF at completion. Stamp duty already
+  // counted in cashNeed (because CPF couldn't cover it) isn't double-counted.
+  const dutyBridged = Math.min(duty, cpfUsed);
+  const peak = cashNeed + dutyBridged;
+  const kEl = document.getElementById(k + 'PeakEl');
+  kEl.textContent = fmt(peak) + ' / ' + fmt(cashHave);
+  kEl.classList.toggle('gap-shortfall', peak > cashHave + 0.5);
+  document.getElementById(k + 'PeakBreak').textContent = ` = downpayment cash ${fmt(cashNeed)} + BSD/ABSD ${fmt(dutyBridged)} (CPF reimburses at completion)`;
   pEl.textContent = fmt(cpfUsed) + ' / ' + fmt(cpfHave);
   // HDB resale: stamp duty is paid at the resale completion appointment, from
   // CPF OA by default (HDB). Private/EC: due within 14 days of exercising the
@@ -1167,7 +1176,7 @@ document.getElementById('calcForm').addEventListener('submit', function(e){
       const rr = rate / 12, nn = tenure * 12;
       const loanCap = room > 0 ? room * (1 - Math.pow(1 + rr, -nn)) / rr : 0;
       const incomePrice = loanCap / 0.75;
-      const fees = (hdb ? 1000 : 2500) + HDB_RESALE_FEE;
+      const fees = (hdb ? 1000 : 3000) + HDB_RESALE_FEE;
       const cashMin = hdb ? 0 : MIN_CASH_PCT;
       const byCash = cashMin > 0 ? cashOnHand / cashMin : Infinity;
       const byFunds = solveMaxPriceFromFunds(cashOnHand + totalOA, 0.75, loanCap, fees);
