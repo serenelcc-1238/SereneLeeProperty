@@ -900,7 +900,10 @@ a.home-mm-more{text-decoration:none;}
 
 /* Calculator: HDB loan vs bank loan comparison */
 .loan-compare-wrap{overflow-x:auto;margin-top:6px;}
-.loan-compare{width:100%;border-collapse:collapse;font-size:.88rem;min-width:420px;}
+.loan-compare{width:100%;border-collapse:collapse;font-size:.88rem;table-layout:fixed;}
+.loan-compare th,.loan-compare td{word-wrap:break-word;}
+.loan-compare th:first-child,.loan-compare td:first-child{width:42%;}
+@media(max-width:600px){.loan-compare{font-size:.78rem;}.loan-compare th,.loan-compare td{padding:7px 5px;}}
 .loan-compare th{background:var(--navy);color:#fff;text-align:right;padding:9px 10px;font-weight:700;}
 .loan-compare th:first-child{text-align:left;}
 .loan-compare td{padding:8px 10px;border-bottom:1px dashed var(--line);text-align:right;}
@@ -916,3 +919,4 @@ a.home-mm-more{text-decoration:none;}
 .peak-line{background:var(--cream-2);padding-left:6px;padding-right:6px;border-radius:6px;}
 .peak-line small{display:block;font-weight:400;color:var(--muted);font-size:.74rem;margin-top:2px;}
 .peak-line strong.gap-shortfall{color:var(--danger);}
+.scenario-grid.scenario-grid-single{grid-template-columns:1fr;max-width:560px;margin-left:auto;margin-right:auto;}
