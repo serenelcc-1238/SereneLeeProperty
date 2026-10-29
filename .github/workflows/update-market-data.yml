@@ -18,11 +18,11 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0  # full history: sitemap lastmod dates come from git
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -61,7 +61,7 @@ jobs:
           fi
 
       # A push made by this workflow does not trigger deploy.yml, so deploy here.
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         if: steps.commit.outputs.changed == 'true'
         with:
           node-version: 22

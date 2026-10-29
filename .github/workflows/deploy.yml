@@ -6,14 +6,14 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0  # full history: sitemap lastmod dates come from git
       - name: Rebuild town pages from the latest data
         run: python3 scripts/build_town_pages.py && python3 scripts/add_schema.py
       - name: Rebuild sitemap (picks up new pages automatically)
         run: python3 scripts/build_sitemap.py
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
       - run: npm install
