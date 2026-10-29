@@ -709,7 +709,7 @@ let lastResults = null; // stashed for PDF / lead payload
    (bank loan) plus anything CPF OA can't cover; "CPF OA used" = the rest of the
    downpayment, stamp duties and fees. Stamp duties are paid in cash within 14
    days and reimbursed from CPF later, so that temporary cash is called out. */
-function renderSplit(k, cashNeed, cashHave, cpfUsed, cpfHave, duty, isHdb){
+function renderSplit(k, cashNeed, cashHave, cpfUsed, cpfHave, duty, isHdb, fees){
   const cEl = document.getElementById(k + 'CashSplitEl');
   const pEl = document.getElementById(k + 'CpfSplitEl');
   cEl.textContent = fmt(cashNeed) + ' / ' + fmt(cashHave);
@@ -717,12 +717,12 @@ function renderSplit(k, cashNeed, cashHave, cpfUsed, cpfHave, duty, isHdb){
   // Peak cash: the cash downpayment plus stamp duty (BSD/ABSD), which is paid in
   // cash first and only reimbursed from CPF at completion. Stamp duty already
   // counted in cashNeed (because CPF couldn't cover it) isn't double-counted.
-  const dutyBridged = Math.min(duty, cpfUsed);
+  const dutyBridged = Math.min(duty + (fees || 0), cpfUsed);
   const peak = cashNeed + dutyBridged;
   const kEl = document.getElementById(k + 'PeakEl');
   kEl.textContent = fmt(peak) + ' / ' + fmt(cashHave);
   kEl.classList.toggle('gap-shortfall', peak > cashHave + 0.5);
-  document.getElementById(k + 'PeakBreak').textContent = ` = downpayment cash ${fmt(cashNeed)} + BSD/ABSD ${fmt(dutyBridged)} (CPF reimburses at completion)`;
+  document.getElementById(k + 'PeakBreak').textContent = ` = downpayment cash ${fmt(cashNeed)} + BSD/ABSD and legal/resale fees ${fmt(dutyBridged)} (CPF reimburses at completion)`;
   pEl.textContent = fmt(cpfUsed) + ' / ' + fmt(cpfHave);
   // HDB resale: stamp duty is paid at the resale completion appointment, from
   // CPF OA by default (HDB). Private/EC: due within 14 days of exercising the
@@ -1000,7 +1000,7 @@ document.getElementById('calcForm').addEventListener('submit', function(e){
      Always computed and shown, even if the buyer left Cash on hand blank —
      in that case it just runs on CPF alone (cash treated as $0), same as
      Scenario 1 already does for its own Funds Available / Shortfall line. */
-  renderSplit('scn1', scn1CashNeeded, cashOnHand, scn1CpfApplied, totalOA, scn1BSD + scn1ABSD, propertyType === 'hdb');
+  renderSplit('scn1', scn1CashNeeded, cashOnHand, scn1CpfApplied, totalOA, scn1BSD + scn1ABSD, propertyType === 'hdb', fixedCashCpfFees);
   const scn2Content = document.getElementById('scn2Content');
   const scn2Placeholder = document.getElementById('scn2Placeholder');
   scn2Content.style.display = 'block';
@@ -1010,7 +1010,7 @@ document.getElementById('calcForm').addEventListener('submit', function(e){
   document.getElementById('scn2LoanEl').textContent = fmt(scn2Loan);
   document.getElementById('scn2MonthlyEl').textContent = fmt(scn2Monthly);
   document.getElementById('scn2DownpaymentLabel').textContent = scn2MsrCapped
-    ? `Cash/CPF for Financing Gap (${Math.round(scn2Downpayment/scn2Price*100)}%)`
+    ? `Downpayment ${Math.round(scn2Downpayment/scn2Price*100)}% (loan capped at ${fmt(maxLoanQuantum)} by your income)`
     : `Downpayment Required (${(downpaymentPct*100).toFixed(0)}%)`;
   document.getElementById('scn2DownpaymentEl').textContent = fmt(scn2Downpayment);
   document.getElementById('scn2CostsEl').textContent = fmt(scn2BSD + scn2ABSD + fixedCashCpfFees);
@@ -1032,7 +1032,7 @@ document.getElementById('calcForm').addEventListener('submit', function(e){
     scn2GapEl.textContent = fmt(Math.max(0, scn2FundsAvailable - (scn2Downpayment + scn2BSD + scn2ABSD + fixedCashCpfFees)));
     scn2GapEl.classList.remove('gap-shortfall');
   }
-  renderSplit('scn2', scn2CashNeeded, cashOnHand, scn2CpfApplied, totalOA, scn2BSD + scn2ABSD, propertyType === 'hdb');
+  renderSplit('scn2', scn2CashNeeded, cashOnHand, scn2CpfApplied, totalOA, scn2BSD + scn2ABSD, propertyType === 'hdb', fixedCashCpfFees);
   const scn2MsrNote = document.getElementById('scn2MsrNote');
   if (scn2MsrCapped) {
     scn2MsrNote.style.display = 'block';
@@ -1060,7 +1060,7 @@ document.getElementById('calcForm').addEventListener('submit', function(e){
     document.getElementById('targetLoanEl').textContent = fmt(targetLoan);
     document.getElementById('targetMonthlyEl').textContent = fmt(targetMonthly);
     document.getElementById('targetDownpaymentLabel').textContent = targetMsrCapped
-      ? `Cash/CPF for Financing Gap (${Math.round(targetDownpayment/targetPrice*100)}%)`
+      ? `Downpayment ${Math.round(targetDownpayment/targetPrice*100)}% (loan capped at ${fmt(maxLoanQuantum)} by your income)`
       : `Downpayment Required (${(downpaymentPct*100).toFixed(0)}%)`;
     document.getElementById('targetDownpaymentEl').textContent = fmt(targetDownpayment);
     document.getElementById('targetCostsEl').textContent = fmt(targetBSD + targetABSD + fixedCashCpfFees);
@@ -1082,7 +1082,7 @@ document.getElementById('calcForm').addEventListener('submit', function(e){
       targetGapEl.textContent = fmt(Math.max(0, targetFundsAvailable - (targetDownpayment + targetBSD + targetABSD + fixedCashCpfFees)));
       targetGapEl.classList.remove('gap-shortfall');
     }
-    renderSplit('target', targetCashNeedV, cashProvided ? cashOnHand : 0, targetCpfUsedV, totalOA, targetBSD + targetABSD, propertyType === 'hdb');
+    renderSplit('target', targetCashNeedV, cashProvided ? cashOnHand : 0, targetCpfUsedV, totalOA, targetBSD + targetABSD, propertyType === 'hdb', fixedCashCpfFees);
     const targetMsrNote = document.getElementById('targetMsrNote');
     if (targetMsrCapped) {
       targetMsrNote.style.display = 'block';
@@ -1100,13 +1100,13 @@ document.getElementById('calcForm').addEventListener('submit', function(e){
      Otherwise, fall back to whichever of Scenario 1 / Scenario 2 is lower —
      same logic as before the Target Price scenario existed. */
   const recommendedScenario = cashBinding ? 'Scenario 2' : 'Scenario 1';
-  const scn1PeakGap = scn1CashNeeded + Math.min(scn1BSD + scn1ABSD, scn1CpfApplied) - cashOnHand;
+  const scn1PeakGap = scn1CashNeeded + Math.min(scn1BSD + scn1ABSD + fixedCashCpfFees, scn1CpfApplied) - cashOnHand;
   const heroPrice = targetIsSurplus ? targetPrice : maxPrice;
   document.getElementById('recommendationLabel').textContent = targetIsSurplus
     ? `Recommended: Your Target Price of ${fmt(targetPrice)} (sufficient cash/CPF to cover it)`
     : (cashBinding
         ? `Recommended: ${recommendedScenario} (Cash/CPF is your binding constraint${cashProvided ? '' : ' — CPF only, cash on hand not entered'})`
-        : `Based on your income (${usesHdbLoan ? 'MSR 30%' : 'MSR 30% / TDSR 55%'})` + (scn1PeakGap > 0.5 ? ` · you'd need ${fmt(scn1PeakGap)} more cash at this price, incl. stamp duty until CPF reimburses it` : ''));
+        : `Based on your income (${usesHdbLoan ? 'MSR 30%' : 'MSR 30% / TDSR 55%'})` + (scn1PeakGap > 0.5 ? ` · you'd need ${fmt(scn1PeakGap)} more cash at this price, incl. stamp duty and legal fees until CPF reimburses them` : ''));
   document.getElementById('resHeroPriceLabel').textContent = targetIsSurplus
     ? (propertyType === 'hdb' ? 'Your target HDB purchase price' : 'Your target EC purchase price')
     : (propertyType === 'hdb' ? 'Estimated maximum HDB purchase price' : 'Estimated maximum EC purchase price');
@@ -1191,7 +1191,7 @@ document.getElementById('calcForm').addEventListener('submit', function(e){
       const price = Math.max(0, Math.min(incomePrice, byCash, byFunds));
       const loan = Math.min(price * 0.75, loanCap);
       const monthly = loanCap > 0 ? loanCap * rr / (1 - Math.pow(1 + rr, -nn)) : 0;
-      const peakCash = incomePrice * cashMin + dutyAmount(incomePrice);
+      const peakCash = incomePrice * cashMin + dutyAmount(incomePrice) + fees;
       return { peakCash, rate, tenure, loanCap, incomePrice, price, loan, monthly, cashMin, limit: price + 0.5 < incomePrice ? 'Cash/CPF' : 'Income' };
     };
     const H = opt(true), B = opt(false);
@@ -1208,7 +1208,7 @@ document.getElementById('calcForm').addEventListener('submit', function(e){
       row('Max price (on income)', fmt(H.incomePrice), fmt(B.incomePrice)) +
       row('Monthly instalment', fmt(H.monthly), fmt(B.monthly)) +
       row('Minimum cash downpayment', 'None (all CPF allowed)', '5% of price') +
-      row('Peak cash needed (cash downpayment + BSD/ABSD until CPF reimburses)', fmt(H.peakCash), fmt(B.peakCash), true) + '</tbody>';
+      row('Peak cash needed (cash downpayment + BSD/ABSD + legal fees until CPF reimburses)', fmt(H.peakCash), fmt(B.peakCash), true) + '</tbody>';
     document.getElementById('loanCompareNote').textContent = 'Bank loan figures use the 4% stress rate banks must apply when assessing your loan; your actual bank rate is usually lower, so the real instalment will be lower too. Both columns use 75% loan-to-value and default legal fees.';
     compareCard.style.display = 'block';
   } else {
