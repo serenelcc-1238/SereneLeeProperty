@@ -897,3 +897,13 @@ a.home-mm-more{text-decoration:none;}
 .launch-name a:hover{text-decoration:underline}
 .launch-more{display:block;font-size:.84rem;font-weight:600;color:var(--navy-900);margin:0 0 10px;text-decoration:none}
 .launch-more:hover{text-decoration:underline}
+
+/* Calculator: HDB loan vs bank loan comparison */
+.loan-compare-wrap{overflow-x:auto;margin-top:6px;}
+.loan-compare{width:100%;border-collapse:collapse;font-size:.88rem;min-width:420px;}
+.loan-compare th{background:var(--navy);color:#fff;text-align:right;padding:9px 10px;font-weight:700;}
+.loan-compare th:first-child{text-align:left;}
+.loan-compare td{padding:8px 10px;border-bottom:1px dashed var(--line);text-align:right;}
+.loan-compare td:first-child{text-align:left;color:var(--muted);}
+.loan-compare tr.lc-bold td{font-weight:800;color:var(--navy);background:var(--cream-2);}
+.loan-compare td.lc-warn{text-align:left;color:#c0392b;font-weight:600;}
