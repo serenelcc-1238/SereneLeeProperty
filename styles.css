@@ -912,3 +912,4 @@ a.home-mm-more{text-decoration:none;}
 .absd-line strong{color:var(--navy);}
 .split-line span{color:var(--navy);font-weight:600;}
 .split-note{margin-top:6px;font-style:normal;}
+.split-line strong.gap-shortfall{color:var(--danger);}
