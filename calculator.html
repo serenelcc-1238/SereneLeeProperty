@@ -473,7 +473,7 @@ function bsdAmount(price){
      - buying a second property and selling the first within 6 months -> ABSD
        paid upfront, then refunded by IRAS after the sale.
    (Co-buyer is treated as a spouse for these remissions.) Private/EC: stamp duty due within 14 days of the OTP/S&P, usually cash first,
-   reimbursed from CPF later. HDB resale: paid at the completion appointment, from CPF by default. */
+   reimbursed from CPF later. HDB resale: due within 14 days of HDB's in-principle approval letter (IRAS BSD FAQ). */
 const ABSD_RATES = { SC: [0, 0.20, 0.30], PR: [0.05, 0.30, 0.35] };
 let ABSD_RATE_NOW = 0;
 function selVal(id, dflt){ const el = document.getElementById(id); return (el && el.value) || dflt; }
@@ -719,7 +719,7 @@ function renderSplit(k, cashNeed, cashHave, cpfUsed, cpfHave, duty, isHdb){
   // CPF OA by default (HDB). Private/EC: due within 14 days of exercising the
   // OTP or signing the S&P, usually cash first, reimbursed from CPF later (CPF Board).
   document.getElementById(k + 'FloatNote').textContent = isHdb
-    ? `Cash flow: up to S$5,000 option + exercise fee is paid in cash upfront (part of the downpayment). The ${fmt(duty)} stamp duty is paid at the HDB resale completion appointment, from CPF OA by default.`
+    ? `Cash flow: up to S$5,000 option + exercise fee is paid in cash upfront (part of the downpayment). The ${fmt(duty)} stamp duty is due within 14 days of HDB's approval letter (IRAS). It can come from CPF OA; if CPF isn't ready in time, pay cash first and get it reimbursed from CPF at completion.`
     : `Cash flow: the ${fmt(duty)} stamp duty is due within 14 days of signing the S&P, usually paid in cash first and reimbursed from CPF OA later.`;
 }
 
@@ -1111,7 +1111,7 @@ document.getElementById('calcForm').addEventListener('submit', function(e){
     + (!targetIsSurplus && cashBinding ? ` Your final estimate above is capped by your cash on hand rather than your income.` : '')
     + ` Purchase price and loan figures above are net of Buyer Stamp Duty${propertyType === 'hdb' ? ', the HDB resale application fee,' : ' and'} and your stated legal/conveyancing fee, all assumed payable from cash/CPF OA. `
     + (absd.rate > 0 || absd.nominal > 0
-        ? ` ABSD is included at ${(absd.rate*100).toFixed(0)}%${absd.note ? ' (' + absd.note + ')' : ''}${absd.rate === 0 && absd.nominal > 0 ? ' instead of ' + (absd.nominal*100).toFixed(0) + '%' : ''}.${propertyType === 'hdb' ? ' For an HDB resale flat, stamp duties are paid at the resale completion appointment, from CPF OA by default.' : ' Stamp duties are due within 14 days of signing the S&P, usually paid in cash first and reimbursed from CPF OA later, so keep that cash ready.'}`
+        ? ` ABSD is included at ${(absd.rate*100).toFixed(0)}%${absd.note ? ' (' + absd.note + ')' : ''}${absd.rate === 0 && absd.nominal > 0 ? ' instead of ' + (absd.nominal*100).toFixed(0) + '%' : ''}.${propertyType === 'hdb' ? ' For an HDB resale flat, stamp duties are due within 14 days of HDB\'s in-principle approval letter (IRAS); CPF OA can be used, or cash first with CPF reimbursement at completion.' : ' Stamp duties are due within 14 days of signing the S&P, usually paid in cash first and reimbursed from CPF OA later, so keep that cash ready.'}`
         : ` No ABSD applies (Singapore Citizen buying a first residential property).`)
     + ` CPF withdrawal (Valuation) limits are not modeled.`;
 
@@ -1445,7 +1445,7 @@ function generatePdf(lead){
     y += 2;
 
     doc.setFontSize(9);
-    const disclaimer = 'This is an illustrative estimate based on public MAS/CPF formulas only. It is not a bank loan approval, mortgage advice, or financial advice. Buyer Stamp Duty, Additional Buyer\'s Stamp Duty (where applicable), HDB resale application fee, and legal/conveyancing fee are deducted from cash/CPF as shown; for an HDB resale flat, stamp duties are paid at completion from CPF OA by default; for an EC, they are due within 14 days of the S&P, usually in cash first, then reimbursed from CPF. CPF withdrawal limits are not modeled. Actual eligibility is determined by your bank/HDB and CPF Board based on your full financial profile. Speak with Serene to get a proper affordability assessment.';
+    const disclaimer = 'This is an illustrative estimate based on public MAS/CPF formulas only. It is not a bank loan approval, mortgage advice, or financial advice. Buyer Stamp Duty, Additional Buyer\'s Stamp Duty (where applicable), HDB resale application fee, and legal/conveyancing fee are deducted from cash/CPF as shown; for an HDB resale flat, stamp duties are due within 14 days of HDB\'s approval letter, payable from CPF OA or cash first then reimbursed; for an EC, they are due within 14 days of the S&P, usually in cash first, then reimbursed from CPF. CPF withdrawal limits are not modeled. Actual eligibility is determined by your bank/HDB and CPF Board based on your full financial profile. Speak with Serene to get a proper affordability assessment.';
     const split = doc.splitTextToSize(disclaimer, availableW);
     doc.text(split, marginLeft, y);
 
