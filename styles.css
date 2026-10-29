@@ -907,3 +907,6 @@ a.home-mm-more{text-decoration:none;}
 .loan-compare td:first-child{text-align:left;color:var(--muted);}
 .loan-compare tr.lc-bold td{font-weight:800;color:var(--navy);background:var(--cream-2);}
 .loan-compare td.lc-warn{text-align:left;color:#c0392b;font-weight:600;}
+
+.scenario-summary .tap-hint{display:block;font-style:normal;font-size:.72rem;color:var(--gold-dark,#8a6d1c);font-weight:600;}
+.absd-line strong{color:var(--navy);}

@@ -261,9 +261,10 @@
             <div class="scenario-line"><span>Max Loan Amount</span><strong id="scn1LoanEl">S$0</strong></div>
             <div class="scenario-line"><span>Monthly Instalment</span><strong id="scn1MonthlyEl">S$0</strong></div>
             <div class="scenario-line"><span id="scn1DownpaymentLabel">Downpayment Required (25%)</span><strong id="scn1DownpaymentEl">S$0</strong></div>
+            <div class="scenario-line absd-line" id="scn1ABSDRow" style="display:none;"><span id="scn1ABSDLabel">ABSD</span><strong id="scn1ABSDEl">S$0</strong></div>
             <details class="scenario-details">
-              <summary class="scenario-line scenario-summary"><span>Upfront Costs (Stamp Duty + Fees)</span><strong id="scn1CostsEl">S$0</strong></summary>
-              <div class="scenario-line"><span>Buyer Stamp Duty (BSD)</span><strong id="scn1BSDEl">S$0</strong></div><div class="scenario-line scn1-absd-line"><span id="scn1ABSDLabel">Additional Buyer's Stamp Duty (ABSD)</span><strong id="scn1ABSDEl">S$0</strong></div>
+              <summary class="scenario-line scenario-summary"><span>Upfront Costs (Stamp Duty + Fees) <em class="tap-hint">tap for breakdown</em></span><strong id="scn1CostsEl">S$0</strong></summary>
+              <div class="scenario-line"><span>Buyer Stamp Duty (BSD)</span><strong id="scn1BSDEl">S$0</strong></div>
               <div class="scenario-line"><span>Legal &amp; Resale Fees</span><strong id="scn1FeesEl">S$0</strong></div>
               <div class="scenario-line"><span>Total Cash/CPF Needed</span><strong id="scn1TotalNeededEl">S$0</strong></div>
             </details>
@@ -277,9 +278,10 @@
               <div class="scenario-line"><span>Resulting Loan Amount</span><strong id="scn2LoanEl">S$0</strong></div>
               <div class="scenario-line"><span>Monthly Instalment</span><strong id="scn2MonthlyEl">S$0</strong></div>
               <div class="scenario-line"><span id="scn2DownpaymentLabel">Downpayment Required (25%)</span><strong id="scn2DownpaymentEl">S$0</strong></div>
+              <div class="scenario-line absd-line" id="scn2ABSDRow" style="display:none;"><span id="scn2ABSDLabel">ABSD</span><strong id="scn2ABSDEl">S$0</strong></div>
               <details class="scenario-details">
-                <summary class="scenario-line scenario-summary"><span>Upfront Costs (Stamp Duty + Fees)</span><strong id="scn2CostsEl">S$0</strong></summary>
-                <div class="scenario-line"><span>Buyer Stamp Duty (BSD)</span><strong id="scn2BSDEl">S$0</strong></div><div class="scenario-line scn2-absd-line"><span id="scn2ABSDLabel">Additional Buyer's Stamp Duty (ABSD)</span><strong id="scn2ABSDEl">S$0</strong></div>
+                <summary class="scenario-line scenario-summary"><span>Upfront Costs (Stamp Duty + Fees) <em class="tap-hint">tap for breakdown</em></span><strong id="scn2CostsEl">S$0</strong></summary>
+                <div class="scenario-line"><span>Buyer Stamp Duty (BSD)</span><strong id="scn2BSDEl">S$0</strong></div>
                 <div class="scenario-line"><span>Legal &amp; Resale Fees</span><strong id="scn2FeesEl">S$0</strong></div>
                 <div class="scenario-line"><span>Total Cash/CPF Needed</span><strong id="scn2TotalNeededEl">S$0</strong></div>
               </details>
@@ -298,9 +300,10 @@
           <div class="scenario-line"><span>Loan Amount</span><strong id="targetLoanEl">S$0</strong></div>
           <div class="scenario-line"><span>Monthly Instalment</span><strong id="targetMonthlyEl">S$0</strong></div>
           <div class="scenario-line"><span id="targetDownpaymentLabel">Downpayment Required (25%)</span><strong id="targetDownpaymentEl">S$0</strong></div>
+          <div class="scenario-line absd-line" id="targetABSDRow" style="display:none;"><span id="targetABSDLabel">ABSD</span><strong id="targetABSDEl">S$0</strong></div>
           <details class="scenario-details">
-            <summary class="scenario-line scenario-summary"><span>Upfront Costs (Stamp Duty + Fees)</span><strong id="targetCostsEl">S$0</strong></summary>
-            <div class="scenario-line"><span>Buyer Stamp Duty (BSD)</span><strong id="targetBSDEl">S$0</strong></div><div class="scenario-line target-absd-line"><span id="targetABSDLabel">Additional Buyer's Stamp Duty (ABSD)</span><strong id="targetABSDEl">S$0</strong></div>
+            <summary class="scenario-line scenario-summary"><span>Upfront Costs (Stamp Duty + Fees) <em class="tap-hint">tap for breakdown</em></span><strong id="targetCostsEl">S$0</strong></summary>
+            <div class="scenario-line"><span>Buyer Stamp Duty (BSD)</span><strong id="targetBSDEl">S$0</strong></div>
             <div class="scenario-line"><span>Legal &amp; Resale Fees</span><strong id="targetFeesEl">S$0</strong></div>
             <div class="scenario-line"><span>Total Cash/CPF Needed</span><strong id="targetTotalNeededEl">S$0</strong></div>
           </details>
@@ -936,7 +939,8 @@ document.getElementById('calcForm').addEventListener('submit', function(e){
   document.getElementById('scn1CostsEl').textContent = fmt(scn1BSD + scn1ABSD + fixedCashCpfFees);
   document.getElementById('scn1BSDEl').textContent = fmt(scn1BSD);
   document.getElementById('scn1ABSDEl').textContent = fmt(scn1ABSD) + (absd.refundable && scn1ABSD > 0 ? ' (refundable)' : '');
-  document.getElementById('scn1ABSDLabel').textContent = `Additional Buyer's Stamp Duty (ABSD ${(absd.rate*100).toFixed(0)}%)`;
+  document.getElementById('scn1ABSDRow').style.display = scn1ABSD > 0 ? '' : 'none';
+  document.getElementById('scn1ABSDLabel').textContent = `ABSD ${(absd.rate*100).toFixed(0)}% (included in upfront costs below)`;
   document.getElementById('scn1FeesEl').textContent = fmt(fixedCashCpfFees);
   document.getElementById('scn1TotalNeededEl').textContent = fmt(scn1Downpayment + scn1BSD + scn1ABSD + fixedCashCpfFees);
   document.getElementById('scn1FundsEl').textContent = fmt(scn1FundsAvailable) + (cashProvided ? '' : ' (CPF only — cash on hand not entered)');
@@ -971,7 +975,8 @@ document.getElementById('calcForm').addEventListener('submit', function(e){
   document.getElementById('scn2CostsEl').textContent = fmt(scn2BSD + scn2ABSD + fixedCashCpfFees);
   document.getElementById('scn2BSDEl').textContent = fmt(scn2BSD);
   document.getElementById('scn2ABSDEl').textContent = fmt(scn2ABSD) + (absd.refundable && scn2ABSD > 0 ? ' (refundable)' : '');
-  document.getElementById('scn2ABSDLabel').textContent = `Additional Buyer's Stamp Duty (ABSD ${(absd.rate*100).toFixed(0)}%)`;
+  document.getElementById('scn2ABSDRow').style.display = scn2ABSD > 0 ? '' : 'none';
+  document.getElementById('scn2ABSDLabel').textContent = `ABSD ${(absd.rate*100).toFixed(0)}% (included in upfront costs below)`;
   document.getElementById('scn2FeesEl').textContent = fmt(fixedCashCpfFees);
   document.getElementById('scn2TotalNeededEl').textContent = fmt(scn2Downpayment + scn2BSD + scn2ABSD + fixedCashCpfFees);
   document.getElementById('scn2FundsEl').textContent = fmt(scn2FundsAvailable) + (cashProvided ? '' : ' (CPF only — cash on hand not entered)');
@@ -1019,7 +1024,8 @@ document.getElementById('calcForm').addEventListener('submit', function(e){
     document.getElementById('targetCostsEl').textContent = fmt(targetBSD + targetABSD + fixedCashCpfFees);
     document.getElementById('targetBSDEl').textContent = fmt(targetBSD);
     document.getElementById('targetABSDEl').textContent = fmt(targetABSD) + (absd.refundable && targetABSD > 0 ? ' (refundable)' : '');
-    document.getElementById('targetABSDLabel').textContent = `Additional Buyer's Stamp Duty (ABSD ${(absd.rate*100).toFixed(0)}%)`;
+    document.getElementById('targetABSDRow').style.display = targetABSD > 0 ? '' : 'none';
+    document.getElementById('targetABSDLabel').textContent = `ABSD ${(absd.rate*100).toFixed(0)}% (included in upfront costs below)`;
     document.getElementById('targetFeesEl').textContent = fmt(fixedCashCpfFees);
     document.getElementById('targetTotalNeededEl').textContent = fmt(targetDownpayment + targetBSD + targetABSD + fixedCashCpfFees);
     document.getElementById('targetFundsEl').textContent = fmt(targetFundsAvailable) + (cashProvided ? '' : ' (CPF only — cash on hand not entered)');
