@@ -269,7 +269,9 @@
               <div class="scenario-line"><span>Total Cash/CPF Needed</span><strong id="scn1TotalNeededEl">S$0</strong></div>
             </details>
             <div class="scenario-line"><span>Your Cash + CPF Available</span><strong id="scn1FundsEl">S$0</strong></div>
-            <div class="scenario-line scenario-line-highlight"><span id="scn1GapLabelEl">Shortfall</span><strong id="scn1GapEl">S$0</strong></div>
+            <div class="scenario-line split-line"><span>Cash needed / you have</span><strong id="scn1CashSplitEl">S$0</strong></div>
+            <div class="scenario-line split-line"><span>CPF OA used / you have</span><strong id="scn1CpfSplitEl">S$0</strong></div>
+            <div class="scenario-line scenario-line-highlight"><span id="scn1GapLabelEl">Shortfall</span><strong id="scn1GapEl">S$0</strong></div><div class="scenario-note split-note" id="scn1FloatNote"></div>
           </div>
           <div class="scenario-card" id="scenario2Card">
             <div class="scenario-card-title" id="scn2Title">Scenario 2 — Based on Cash/CPF on hand</div>
@@ -286,7 +288,9 @@
                 <div class="scenario-line"><span>Total Cash/CPF Needed</span><strong id="scn2TotalNeededEl">S$0</strong></div>
               </details>
               <div class="scenario-line"><span>Your Cash + CPF Available</span><strong id="scn2FundsEl">S$0</strong></div>
-              <div class="scenario-line scenario-line-highlight"><span id="scn2GapLabelEl">Shortfall</span><strong id="scn2GapEl">S$0</strong></div>
+              <div class="scenario-line split-line"><span>Cash needed / you have</span><strong id="scn2CashSplitEl">S$0</strong></div>
+              <div class="scenario-line split-line"><span>CPF OA used / you have</span><strong id="scn2CpfSplitEl">S$0</strong></div>
+              <div class="scenario-line scenario-line-highlight"><span id="scn2GapLabelEl">Shortfall</span><strong id="scn2GapEl">S$0</strong></div><div class="scenario-note split-note" id="scn2FloatNote"></div>
               <div class="scenario-note" id="scn2MsrNote" style="display:none;"></div>
               <div class="scenario-note" id="scn2CashFloorNote" style="display:none;"></div>
             </div>
@@ -308,7 +312,9 @@
             <div class="scenario-line"><span>Total Cash/CPF Needed</span><strong id="targetTotalNeededEl">S$0</strong></div>
           </details>
           <div class="scenario-line"><span>Your Cash + CPF Available</span><strong id="targetFundsEl">S$0</strong></div>
-          <div class="scenario-line scenario-line-highlight"><span id="targetGapLabelEl">Shortfall</span><strong id="targetGapEl">S$0</strong></div>
+          <div class="scenario-line split-line"><span>Cash needed / you have</span><strong id="targetCashSplitEl">S$0</strong></div>
+          <div class="scenario-line split-line"><span>CPF OA used / you have</span><strong id="targetCpfSplitEl">S$0</strong></div>
+          <div class="scenario-line scenario-line-highlight"><span id="targetGapLabelEl">Shortfall</span><strong id="targetGapEl">S$0</strong></div><div class="scenario-note split-note" id="targetFloatNote"></div>
           <div class="scenario-note" id="targetMsrNote" style="display:none;"></div>
         </div>
 
@@ -699,6 +705,21 @@ updateCitizenUI();
 
 let lastResults = null; // stashed for PDF / lead payload
 
+/* Cash vs CPF split for one scenario card. "Cash needed" = the 5% cash slice
+   (bank loan) plus anything CPF OA can't cover; "CPF OA used" = the rest of the
+   downpayment, stamp duties and fees. Stamp duties are paid in cash within 14
+   days and reimbursed from CPF later, so that temporary cash is called out. */
+function renderSplit(k, cashNeed, cashHave, cpfUsed, cpfHave, duty, isHdb){
+  const cEl = document.getElementById(k + 'CashSplitEl');
+  const pEl = document.getElementById(k + 'CpfSplitEl');
+  cEl.textContent = fmt(cashNeed) + ' / ' + fmt(cashHave);
+  cEl.classList.toggle('gap-shortfall', cashNeed > cashHave + 0.5);
+  pEl.textContent = fmt(cpfUsed) + ' / ' + fmt(cpfHave);
+  document.getElementById(k + 'FloatNote').textContent =
+    `Cash flow: the ${fmt(duty)} stamp duty is paid in cash within 14 days and reimbursed from CPF OA later`
+    + (isHdb ? ', and up to S$5,000 option + exercise fee is paid in cash upfront (part of the downpayment).' : '.');
+}
+
 /* A bank loan needs at least 5% of the price in actual cash. When cash + CPF
    together cover everything but the cash slice is short, say so plainly, so it
    doesn't read as if the whole cash + CPF pot falls short. */
@@ -900,7 +921,7 @@ document.getElementById('calcForm').addEventListener('submit', function(e){
      the buyer chose rather than one solved for. Computed here (before the
      recommendation banner) because the recommendation now checks whether
      the target price comes out to a cash/CPF surplus. */
-  let targetABSD = 0;
+  let targetABSD = 0, targetCashNeedV = 0, targetCpfUsedV = 0;
   let targetLoan = null, targetMonthly = null, targetBSD = null, targetDownpayment = null,
       targetFundsAvailable = null, targetGap = null, targetMsrCapped = false;
   if (targetPrice) {
@@ -919,6 +940,8 @@ document.getElementById('calcForm').addEventListener('submit', function(e){
     const targetCpfApplied = Math.min(totalOA, targetCpfOrCash);
     targetFundsAvailable = (cashProvided ? cashOnHand : 0) + totalOA;
     targetGap = (targetMinCash + (targetCpfOrCash - targetCpfApplied)) - (cashProvided ? cashOnHand : 0);
+    targetCashNeedV = targetMinCash + (targetCpfOrCash - targetCpfApplied);
+    targetCpfUsedV = targetCpfApplied;
   }
   // Surplus (or breakeven) on cash/CPF at the target price is what makes it the
   // recommendation — per Serene: propose the target price itself if it's a
@@ -960,6 +983,7 @@ document.getElementById('calcForm').addEventListener('submit', function(e){
      Always computed and shown, even if the buyer left Cash on hand blank —
      in that case it just runs on CPF alone (cash treated as $0), same as
      Scenario 1 already does for its own Funds Available / Shortfall line. */
+  renderSplit('scn1', scn1CashNeeded, cashOnHand, scn1CpfApplied, totalOA, scn1BSD + scn1ABSD, propertyType === 'hdb');
   const scn2Content = document.getElementById('scn2Content');
   const scn2Placeholder = document.getElementById('scn2Placeholder');
   scn2Content.style.display = 'block';
@@ -991,6 +1015,7 @@ document.getElementById('calcForm').addEventListener('submit', function(e){
     scn2GapEl.textContent = fmt(Math.max(0, scn2FundsAvailable - (scn2Downpayment + scn2BSD + scn2ABSD + fixedCashCpfFees)));
     scn2GapEl.classList.remove('gap-shortfall');
   }
+  renderSplit('scn2', scn2CashNeeded, cashOnHand, scn2CpfApplied, totalOA, scn2BSD + scn2ABSD, propertyType === 'hdb');
   const scn2MsrNote = document.getElementById('scn2MsrNote');
   if (scn2MsrCapped) {
     scn2MsrNote.style.display = 'block';
@@ -1040,6 +1065,7 @@ document.getElementById('calcForm').addEventListener('submit', function(e){
       targetGapEl.textContent = fmt(Math.max(0, targetFundsAvailable - (targetDownpayment + targetBSD + targetABSD + fixedCashCpfFees)));
       targetGapEl.classList.remove('gap-shortfall');
     }
+    renderSplit('target', targetCashNeedV, cashProvided ? cashOnHand : 0, targetCpfUsedV, totalOA, targetBSD + targetABSD, propertyType === 'hdb');
     const targetMsrNote = document.getElementById('targetMsrNote');
     if (targetMsrCapped) {
       targetMsrNote.style.display = 'block';
@@ -1172,6 +1198,8 @@ document.getElementById('calcForm').addEventListener('submit', function(e){
     absdRatePct: (absd.rate*100).toFixed(0), absdRefundable: absd.refundable, absdNote: absd.note,
     buyerCitizenship: absd.profiles[0], cobuyerCitizenship: absd.profiles[1] || null, propertiesOwned: absd.pc,
     scn1ABSD, scn2ABSD, targetABSD,
+    scn1CashNeed: scn1CashNeeded, scn1CpfUsed: scn1CpfApplied, scn2CashNeed: scn2CashNeeded, scn2CpfUsed: scn2CpfApplied,
+    targetCashNeed: targetCashNeedV, targetCpfUsed: targetCpfUsedV, totalOA,
     maxLoanAmount: loanQuantumAtMaxPrice, maxLoanAmountLow: loanQuantumAtMaxPrice*0.9,
     maxPrice, maxPriceLow: maxPrice*0.9, monthlyMortgage: monthlyAtMaxPrice,
     totalCashNeeded, downpaymentTotal, downpaymentPct: (downpaymentPct*100).toFixed(0), cpfApplied, tenureYears, targetPrice,
@@ -1334,7 +1362,7 @@ function generatePdf(lead){
       {
         title: 'Scenario 1 (Income)',
         price: lastResults.scn1Price, loan: lastResults.scn1Loan, monthly: lastResults.scn1Monthly,
-        downpayment: lastResults.scn1Downpayment, bsd: lastResults.scn1BSD, absd: lastResults.scn1ABSD || 0, fees: lastResults.fixedCashCpfFees,
+        downpayment: lastResults.scn1Downpayment, bsd: lastResults.scn1BSD, absd: lastResults.scn1ABSD || 0, cashNeed: lastResults.scn1CashNeed, cpfUsed: lastResults.scn1CpfUsed, fees: lastResults.fixedCashCpfFees,
         totalNeeded: lastResults.scn1Downpayment + lastResults.scn1BSD + (lastResults.scn1ABSD || 0) + lastResults.fixedCashCpfFees,
         funds: lastResults.scn1FundsAvailable, gap: lastResults.scn1Gap,
         recommended: !lastResults.targetIsSurplus && !lastResults.cashBinding
@@ -1345,7 +1373,7 @@ function generatePdf(lead){
     scenarios.push({
       title: 'Scenario 2 (Cash/CPF)',
       price: lastResults.scn2Price, loan: lastResults.scn2Loan, monthly: lastResults.scn2Monthly,
-      downpayment: lastResults.scn2Downpayment, bsd: lastResults.scn2BSD, absd: lastResults.scn2ABSD || 0, fees: lastResults.fixedCashCpfFees,
+      downpayment: lastResults.scn2Downpayment, bsd: lastResults.scn2BSD, absd: lastResults.scn2ABSD || 0, cashNeed: lastResults.scn2CashNeed, cpfUsed: lastResults.scn2CpfUsed, fees: lastResults.fixedCashCpfFees,
       totalNeeded: lastResults.scn2Downpayment + lastResults.scn2BSD + (lastResults.scn2ABSD || 0) + lastResults.fixedCashCpfFees,
       funds: lastResults.scn2FundsAvailable, gap: lastResults.scn2Gap,
       recommended: !lastResults.targetIsSurplus && lastResults.cashBinding,
@@ -1355,7 +1383,7 @@ function generatePdf(lead){
       scenarios.push({
         title: 'Your Target Price',
         price: lastResults.targetPrice, loan: lastResults.targetLoan, monthly: lastResults.targetMonthly,
-        downpayment: lastResults.targetDownpayment, bsd: lastResults.targetBSD, absd: lastResults.targetABSD || 0, fees: lastResults.fixedCashCpfFees,
+        downpayment: lastResults.targetDownpayment, bsd: lastResults.targetBSD, absd: lastResults.targetABSD || 0, cashNeed: lastResults.targetCashNeed, cpfUsed: lastResults.targetCpfUsed, fees: lastResults.fixedCashCpfFees,
         totalNeeded: lastResults.targetDownpayment + lastResults.targetBSD + (lastResults.targetABSD || 0) + lastResults.fixedCashCpfFees,
         funds: lastResults.targetFundsAvailable, gap: lastResults.targetGap,
         recommended: !!lastResults.targetIsSurplus,
@@ -1379,6 +1407,8 @@ function generatePdf(lead){
       { label: 'Legal & Resale Fees', get: s => fmt(s.fees) },
       { label: 'Total Cash/CPF Needed', get: s => fmt(s.totalNeeded), bold: true },
       { label: 'Your Cash + CPF Available', get: s => fmt(s.funds) },
+      { label: 'Cash needed', get: s => fmt(s.cashNeed || 0) },
+      { label: 'CPF OA used', get: s => fmt(s.cpfUsed || 0) },
       { label: 'Shortfall / Surplus', get: s => (s.gap > 0.5 ? '-' + fmt(s.gap) : fmt(Math.abs(s.gap))), bold: true, isGap: true }
     ];
 

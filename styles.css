@@ -910,3 +910,5 @@ a.home-mm-more{text-decoration:none;}
 
 .scenario-summary .tap-hint{display:block;font-style:normal;font-size:.72rem;color:var(--gold-dark,#8a6d1c);font-weight:600;}
 .absd-line strong{color:var(--navy);}
+.split-line span{color:var(--navy);font-weight:600;}
+.split-note{margin-top:6px;font-style:normal;}
