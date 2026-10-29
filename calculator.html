@@ -709,6 +709,7 @@ let lastResults = null; // stashed for PDF / lead payload
    (bank loan) plus anything CPF OA can't cover; "CPF OA used" = the rest of the
    downpayment, stamp duties and fees. Stamp duties are paid in cash within 14
    days and reimbursed from CPF later, so that temporary cash is called out. */
+const PDF_EXTRA = {}; // per-scenario peak cash + loan comparison, for the PDF
 function renderSplit(k, cashNeed, cashHave, cpfUsed, cpfHave, duty, isHdb, fees){
   const cEl = document.getElementById(k + 'CashSplitEl');
   const pEl = document.getElementById(k + 'CpfSplitEl');
@@ -719,6 +720,7 @@ function renderSplit(k, cashNeed, cashHave, cpfUsed, cpfHave, duty, isHdb, fees)
   // counted in cashNeed (because CPF couldn't cover it) isn't double-counted.
   const dutyBridged = Math.min(duty + (fees || 0), cpfUsed);
   const peak = cashNeed + dutyBridged;
+  PDF_EXTRA[k] = { peak, dutyBridged, cashNeed, cashHave, cpfUsed, cpfHave };
   const kEl = document.getElementById(k + 'PeakEl');
   kEl.textContent = fmt(peak) + ' / ' + fmt(cashHave);
   kEl.classList.toggle('gap-shortfall', peak > cashHave + 0.5);
@@ -1218,8 +1220,10 @@ document.getElementById('calcForm').addEventListener('submit', function(e){
       row('Peak cash needed', fmt(H.peakCash), fmt(B.peakCash), true, true, 'Cash downpayment + BSD/ABSD + legal fees, until CPF reimburses') + '</tbody>';
     document.getElementById('loanCompareNote').textContent = 'Bank loan figures use the 4% stress rate banks must apply when assessing your loan; your actual bank rate is usually lower, so the real instalment will be lower too. Both columns use 75% loan-to-value and default legal fees.';
     compareCard.style.display = 'block';
+    PDF_EXTRA.compare = { H, B, hdbOk, why, selectedHdb: usesHdbLoan };
   } else {
     compareCard.style.display = 'none';
+    PDF_EXTRA.compare = null;
   }
 
   lastResults = {
@@ -1298,8 +1302,8 @@ document.getElementById('unlockBtn').addEventListener('click', function(){
 /* Draws the 2- or 3-column scenario comparison as an actual bordered table
    (header row + striped body rows), rather than stacked label:value lines.
    Returns the y-coordinate immediately below the finished table. */
-function drawScenarioTable(doc, x0, y0, labelW, colW, scenarios, rowDefs){
-  const rowH = 8.5;
+function drawScenarioTable(doc, x0, y0, labelW, colW, scenarios, rowDefs, rowHeight){
+  const rowH = rowHeight || 8.5;
   const tableW = labelW + colW * scenarios.length;
   const navy = [11,42,74], gold = [201,162,39], stripe = [245,244,240],
         darkText = [24,36,48], danger = [192,57,43], goldDark = [169,132,26], white = [255,255,255];
@@ -1319,7 +1323,7 @@ function drawScenarioTable(doc, x0, y0, labelW, colW, scenarios, rowDefs){
     const c = s.recommended ? navy : white;
     doc.setTextColor(c[0], c[1], c[2]);
     const cx = x0 + labelW + i * colW + colW / 2;
-    const label = s.title + (s.recommended ? '  ★' : '') + (s.msrCapped ? '  †' : '');
+    const label = s.title + (s.badge ? '  ' + s.badge : '');
     doc.text(label, cx, y0 + rowH / 2 + 2.2, { align: 'center' });
   });
 
@@ -1338,6 +1342,8 @@ function drawScenarioTable(doc, x0, y0, labelW, colW, scenarios, rowDefs){
       if (row.isGap) {
         const c = s.gap > 0.5 ? danger : goldDark;
         doc.setTextColor(c[0], c[1], c[2]);
+      } else if (row.redIf && row.redIf(s)) {
+        doc.setTextColor(danger[0], danger[1], danger[2]);
       } else {
         doc.setTextColor(darkText[0], darkText[1], darkText[2]);
       }
@@ -1370,109 +1376,118 @@ function generatePdf(lead){
     const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
     const pageWidth = doc.internal.pageSize.getWidth();
     const marginLeft = 14, marginRight = 14;
+    const availableW = pageWidth - marginLeft - marginRight;
+    const R = lastResults;
+    // jsPDF's built-in font can't draw some symbols, so swap them for plain text.
+    const clean = t => String(t || '').replace(/·/g, '-').replace(/[★†]/g, '').replace(/[“”]/g, '"').replace(/[‘’]/g, "'").replace(/\s+/g, ' ').trim();
+    const txt = id => clean((document.getElementById(id) || {}).textContent);
+    const para = (t, size, style) => {
+      doc.setFontSize(size || 9); doc.setFont(undefined, style || 'normal');
+      const lines = doc.splitTextToSize(clean(t), availableW);
+      doc.text(lines, marginLeft, y); y += lines.length * (size ? size * 0.42 : 3.9) + 2;
+      doc.setFont(undefined, 'normal');
+    };
 
     doc.setFontSize(16);
     doc.text('Your Affordability Breakdown', marginLeft, 16);
     doc.setFontSize(10);
-    doc.text('Prepared via sereneleeproperty.com — Serene Lee, ERA Realty (CEA Reg. R027578Z)', marginLeft, 22);
+    doc.text('Prepared via sereneleeproperty.com - Serene Lee, ERA Realty (CEA Reg. R027578Z)', marginLeft, 22);
 
-    doc.setFontSize(11);
-    let y = 32;
-    const line = (label, val) => { doc.text(`${label}: ${val}`, marginLeft, y); y += 6; };
-    const ptypeLabel = lastResults.propertyType === 'hdb' ? 'Resale HDB Flat' : 'New Exec Condo';
-    line('Property type', ptypeLabel);
-    line('Loan type', lastResults.loanType);
+    let y = 30;
+    doc.setFontSize(9.5);
+    const info = [
+      `Property: ${R.propertyType === 'hdb' ? 'Resale HDB Flat' : 'New Exec Condo'}   |   Loan: ${R.loanType}   |   Interest rate ${R.loanRatePct}% p.a., ${R.tenureYears}-year tenure, ${R.ltvPct}% loan-to-value`,
+      `Buyers: ${R.buyerCitizenship === 'PR' ? 'Singapore PR' : 'Singapore Citizen'}${R.cobuyerCitizenship ? ' + ' + (R.cobuyerCitizenship === 'PR' ? 'Singapore PR' : 'Singapore Citizen') : ''}   |   ABSD ${R.absdRatePct}%${R.absdNote ? ' (' + R.absdNote + ')' : ''}`,
+      txt('incomeBasisNote').split(' Buyers: ')[0].replace(/\.+$/, '') + '.'
+    ];
+    info.forEach(t => { const l = doc.splitTextToSize(clean(t), availableW); doc.text(l, marginLeft, y); y += l.length * 4.4; });
     y += 2;
 
-    /* --- Build the scenario columns present: Scenario 1 and Scenario 2 always,
-       Your Target Price only if the buyer stated one. --- */
-    const scenarios = [
-      {
-        title: 'Our Guided Max Price',
-        price: lastResults.scn1Price, loan: lastResults.scn1Loan, monthly: lastResults.scn1Monthly,
-        downpayment: lastResults.scn1Downpayment, bsd: lastResults.scn1BSD, absd: lastResults.scn1ABSD || 0, cashNeed: lastResults.scn1CashNeed, cpfUsed: lastResults.scn1CpfUsed, fees: lastResults.fixedCashCpfFees,
-        totalNeeded: lastResults.scn1Downpayment + lastResults.scn1BSD + (lastResults.scn1ABSD || 0) + lastResults.fixedCashCpfFees,
-        funds: lastResults.scn1FundsAvailable, gap: lastResults.scn1Gap,
-        recommended: !lastResults.targetIsSurplus && !lastResults.cashBinding
-      }
-    ];
-    // Scenario 2 is always computed and shown on-screen now (CPF-only when no
-    // cash figure was entered), so it's always included here too.
-    if (false) scenarios.push({
-      title: 'Scenario 2 (Cash/CPF)',
-      price: lastResults.scn2Price, loan: lastResults.scn2Loan, monthly: lastResults.scn2Monthly,
-      downpayment: lastResults.scn2Downpayment, bsd: lastResults.scn2BSD, absd: lastResults.scn2ABSD || 0, cashNeed: lastResults.scn2CashNeed, cpfUsed: lastResults.scn2CpfUsed, fees: lastResults.fixedCashCpfFees,
-      totalNeeded: lastResults.scn2Downpayment + lastResults.scn2BSD + (lastResults.scn2ABSD || 0) + lastResults.fixedCashCpfFees,
-      funds: lastResults.scn2FundsAvailable, gap: lastResults.scn2Gap,
-      recommended: !lastResults.targetIsSurplus && lastResults.cashBinding,
-      msrCapped: lastResults.scn2MsrCapped
-    });
-    if (lastResults.targetPrice) {
-      scenarios.unshift({
-        title: 'Your Target Price',
-        price: lastResults.targetPrice, loan: lastResults.targetLoan, monthly: lastResults.targetMonthly,
-        downpayment: lastResults.targetDownpayment, bsd: lastResults.targetBSD, absd: lastResults.targetABSD || 0, cashNeed: lastResults.targetCashNeed, cpfUsed: lastResults.targetCpfUsed, fees: lastResults.fixedCashCpfFees,
-        totalNeeded: lastResults.targetDownpayment + lastResults.targetBSD + (lastResults.targetABSD || 0) + lastResults.fixedCashCpfFees,
-        funds: lastResults.targetFundsAvailable, gap: lastResults.targetGap,
-        recommended: !!lastResults.targetIsSurplus,
-        msrCapped: lastResults.targetMsrCapped
-      });
+    /* --- Columns: Your Target Price (if stated) first, then Our Guided Max Price --- */
+    const col = (k, title, o) => Object.assign({
+      title, cashNeed: R[k + 'CashNeed'] || 0, cpfUsed: R[k + 'CpfUsed'] || 0, fees: R.fixedCashCpfFees,
+      peak: (PDF_EXTRA[k] || {}).peak || 0, dutyBridged: (PDF_EXTRA[k] || {}).dutyBridged || 0,
+      cashHave: R.cashOnHand || 0, cpfHave: R.totalOA || 0
+    }, o);
+    const scenarios = [ col('scn1', 'Our Guided Max Price', {
+      price: R.scn1Price, loan: R.scn1Loan, monthly: R.scn1Monthly, downpayment: R.scn1Downpayment,
+      bsd: R.scn1BSD, absd: R.scn1ABSD || 0, funds: R.scn1FundsAvailable, gap: R.scn1Gap,
+      recommended: !R.targetIsSurplus, badge: R.targetIsSurplus ? '' : '(recommended)'
+    }) ];
+    if (R.targetPrice) {
+      scenarios.unshift(col('target', 'Your Target Price', {
+        price: R.targetPrice, loan: R.targetLoan, monthly: R.targetMonthly, downpayment: R.targetDownpayment,
+        bsd: R.targetBSD, absd: R.targetABSD || 0, funds: R.targetFundsAvailable, gap: R.targetGap,
+        recommended: !!R.targetIsSurplus, badge: R.targetIsSurplus ? '(recommended)' : ''
+      }));
     }
-    const anyMsrCapped = scenarios.some(s => s.msrCapped);
+    scenarios.forEach(c => { c.totalNeeded = c.downpayment + c.bsd + c.absd + c.fees; });
 
-    // Note: MSR caps the loan in every column at lastResults.maxLoanQuantum — for
-    // Scenario 1 that's exactly what defines its price, so "Downpayment" there is
-    // always the standard %; for Scenario 2 / Target Price the label is generic
-    // since the actual split can exceed the standard % once a column is MSR-capped
-    // (marked with † in its header) — the dollar figure is always correct either way.
     const rowDefs = [
-      { label: 'Purchase Price', get: s => fmt(s.price) },
-      { label: 'Loan Amount (MSR-capped)', get: s => fmt(s.loan) },
-      { label: 'Monthly Instalment', get: s => fmt(s.monthly) },
-      { label: 'Downpayment / Cash-CPF Gap', get: s => fmt(s.downpayment) },
-      { label: 'Buyer Stamp Duty (BSD)', get: s => fmt(s.bsd) },
-      { label: 'Additional Buyer\'s Stamp Duty (ABSD ' + lastResults.absdRatePct + '%)', get: s => fmt(s.absd || 0) },
-      { label: 'Legal & Resale Fees', get: s => fmt(s.fees) },
-      { label: 'Total Cash/CPF Needed', get: s => fmt(s.totalNeeded), bold: true },
-      { label: 'Your Cash + CPF Available', get: s => fmt(s.funds) },
-      { label: 'Cash needed', get: s => fmt(s.cashNeed || 0) },
-      { label: 'CPF OA used', get: s => fmt(s.cpfUsed || 0) },
-      { label: 'Shortfall / Surplus', get: s => (s.gap > 0.5 ? '-' + fmt(s.gap) : fmt(Math.abs(s.gap))), bold: true, isGap: true }
+      { label: 'Loan type', get: () => R.loanType },
+      { label: 'Purchase price', get: s => fmt(s.price), bold: true },
+      { label: 'Loan amount (capped by income)', get: s => fmt(s.loan) },
+      { label: 'Monthly instalment', get: s => fmt(s.monthly) },
+      { label: 'Downpayment', get: s => fmt(s.downpayment) + '  (' + Math.round(s.downpayment / s.price * 100) + '%)' },
+      { label: 'Buyer\'s Stamp Duty (BSD)', get: s => fmt(s.bsd) },
+      { label: 'Additional Buyer\'s Stamp Duty (ABSD ' + R.absdRatePct + '%)', get: s => fmt(s.absd) },
+      { label: 'Legal & resale fees', get: s => fmt(s.fees) },
+      { label: 'Total cash + CPF needed', get: s => fmt(s.totalNeeded), bold: true },
+      { label: 'Your cash + CPF available', get: s => fmt(s.funds) },
+      { label: 'Cash needed / you have', get: s => fmt(s.cashNeed) + ' / ' + fmt(s.cashHave), redIf: s => s.cashNeed > s.cashHave + 0.5 },
+      { label: 'CPF OA used / you have', get: s => fmt(s.cpfUsed) + ' / ' + fmt(s.cpfHave) },
+      { label: 'Shortfall (-) / surplus', get: s => (s.gap > 0.5 ? '-' + fmt(s.gap) : fmt(Math.max(0, s.funds - s.totalNeeded))), bold: true, isGap: true },
+      { label: 'Peak cash needed / you have', get: s => fmt(s.peak) + ' / ' + fmt(s.cashHave), bold: true, redIf: s => s.peak > s.cashHave + 0.5 },
+      { label: '   incl. stamp duty + fees (CPF reimburses)', get: s => fmt(s.dutyBridged) }
     ];
-
-    const labelW = 62;
-    const availableW = pageWidth - marginLeft - marginRight;
+    const labelW = 82;
     const colW = (availableW - labelW) / scenarios.length;
-    y = drawScenarioTable(doc, marginLeft, y, labelW, colW, scenarios, rowDefs) + (anyMsrCapped ? 5 : 8);
+    y = drawScenarioTable(doc, marginLeft, y, labelW, colW, scenarios, rowDefs, 7.6) + 6;
 
-    if (anyMsrCapped) {
-      doc.setFontSize(8);
-      doc.setFont(undefined, 'italic');
-      doc.text('† MSR caps the loan regardless of price — the balance above is financed entirely by cash/CPF, not by borrowing more.', marginLeft, y);
-      doc.setFont(undefined, 'normal');
-      y += 7;
+    doc.setFontSize(8.5);
+    doc.setFont(undefined, 'italic');
+    doc.text(clean('Peak cash = cash downpayment + stamp duty (BSD/ABSD) and legal/resale fees, which are usually paid in cash first and reimbursed from CPF OA at completion.'), marginLeft, y);
+    doc.setFont(undefined, 'normal');
+
+    /* --- Page 2: headline, cash-flow notes, HDB vs bank loan, disclaimers --- */
+    doc.addPage();
+    y = 16;
+    doc.setFontSize(13); doc.setFont(undefined, 'bold');
+    doc.text(clean(`${txt('resHeroPriceLabel')}: ${txt('resHeroPrice')}`), marginLeft, y); y += 6;
+    para(txt('recommendationLabel'), 10);
+    y += 1;
+    doc.setFontSize(11); doc.setFont(undefined, 'bold'); doc.text('Cash flow notes', marginLeft, y); y += 5;
+    const notes = [txt('scn1FloatNote')];
+    if (R.targetPrice && txt('targetMsrNote')) notes.push(txt('targetMsrNote'));
+    if (scenarios.some(c => c.cashNeed > c.cashHave + 0.5) && R.loanType === 'Bank Loan') notes.push('A bank loan needs at least 5% of the price in cash; CPF can\'t be used for that part.');
+    notes.push('Cash over valuation (COV), if any, is paid in cash and is not included above.');
+    notes.forEach(n => para('- ' + n, 9));
+
+    const cmp = PDF_EXTRA.compare;
+    if (cmp) {
+      y += 2;
+      doc.setFontSize(11); doc.setFont(undefined, 'bold'); doc.text('HDB Loan vs Bank Loan, at standard rates', marginLeft, y); doc.setFont(undefined, 'normal'); y += 3;
+      const cols = [];
+      if (cmp.hdbOk) cols.push(Object.assign({ title: 'HDB Loan', badge: cmp.selectedHdb ? '(selected)' : '', recommended: cmp.selectedHdb, rateTxt: '2.6% (fixed by HDB)', minCash: 'None (all CPF allowed)' }, cmp.H));
+      cols.push(Object.assign({ title: 'Bank Loan', badge: !cmp.selectedHdb ? '(selected)' : '', recommended: !cmp.selectedHdb, rateTxt: '4% (MAS stress rate)', minCash: '5% of price' }, cmp.B));
+      const cRows = [
+        { label: 'Interest rate (assessed)', get: c => c.rateTxt },
+        { label: 'Loan tenure', get: c => c.tenure + ' years' },
+        { label: 'Max loan (on income)', get: c => fmt(c.loanCap) },
+        { label: 'Max price (on income)', get: c => fmt(c.incomePrice), bold: true },
+        { label: 'Monthly instalment', get: c => fmt(c.monthly) },
+        { label: 'Minimum cash downpayment', get: c => c.minCash },
+        { label: 'Peak cash needed', get: c => fmt(c.peakCash), bold: true }
+      ];
+      const cLabelW = 82, cColW = Math.min(70, (availableW - cLabelW) / cols.length);
+      y = drawScenarioTable(doc, marginLeft, y, cLabelW, cColW, cols, cRows, 7.2) + 4;
+      if (!cmp.hdbOk) para(cmp.why.replace('Not available:', 'HDB Loan not available:') + '.', 8.5);
+      para('Bank loan figures use the 4% stress rate banks must apply when assessing your loan; your actual bank rate is usually lower, so the real instalment will be lower too.', 8.5, 'italic');
     }
 
-    doc.setFontSize(11);
-    doc.setFont(undefined, 'bold');
-    const recommendationText = lastResults.targetIsSurplus
-      ? `Recommended: Your Target Price of ${fmt(lastResults.heroPrice)} — you have sufficient cash/CPF to cover it after Buyer Stamp Duty & fees.`
-      : (lastResults.cashBinding
-          ? `Recommended: Scenario 2 — Cash/CPF is your binding constraint. Estimated maximum price ${fmt(lastResults.maxPrice)}.`
-          : `Based on your income: estimated maximum price ${fmt(lastResults.maxPrice)}.`);
-    doc.text(recommendationText, marginLeft, y);
-    doc.setFont(undefined, 'normal');
-    y += 8;
-
-    doc.setFontSize(10);
-    if (lastResults.cashOnHand !== null) line('Cash on hand stated', fmt(lastResults.cashOnHand));
-    line('Loan tenure used in this estimate', `${lastResults.tenureYears} years`);
     y += 2;
-
-    doc.setFontSize(9);
-    const disclaimer = 'This is an illustrative estimate based on public MAS/CPF formulas only. It is not a bank loan approval, mortgage advice, or financial advice. Buyer Stamp Duty, Additional Buyer\'s Stamp Duty (where applicable), HDB resale application fee, and legal/conveyancing fee are deducted from cash/CPF as shown; for an HDB resale flat, stamp duties are due within 14 days of HDB\'s approval letter, payable from CPF OA or cash first then reimbursed; for an EC, they are due within 14 days of the S&P, usually in cash first, then reimbursed from CPF. CPF withdrawal limits are not modeled. Actual eligibility is determined by your bank/HDB and CPF Board based on your full financial profile. Speak with Serene to get a proper affordability assessment.';
-    const split = doc.splitTextToSize(disclaimer, availableW);
-    doc.text(split, marginLeft, y);
+    para('This is an illustrative estimate based on public MAS/HDB/CPF/IRAS rules. It is not a bank loan approval, mortgage advice, or financial advice. CPF withdrawal limits are not modeled. Actual eligibility is determined by your bank/HDB and CPF Board based on your full financial profile. Speak with Serene to get a proper affordability assessment.', 8.5);
+    para('This document contains AI-assisted analysis provided for general informational purposes only. It does not constitute formal legal, financial, or certified property valuation advice. Recipients shall not rely on this information unless they have independently verified this information to their satisfaction.', 8.5, 'italic');
 
     // Grab a base64 copy before saving, so it can also ride along to Serene's
     // pre-alert email as an attachment — this doesn't affect the visitor's
