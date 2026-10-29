@@ -719,7 +719,7 @@ function renderSplit(k, cashNeed, cashHave, cpfUsed, cpfHave, duty, isHdb){
   // CPF OA by default (HDB). Private/EC: due within 14 days of exercising the
   // OTP or signing the S&P, usually cash first, reimbursed from CPF later (CPF Board).
   document.getElementById(k + 'FloatNote').textContent = isHdb
-    ? `Cash flow: up to S$5,000 option + exercise fee is paid in cash upfront (part of the downpayment). The ${fmt(duty)} stamp duty is due within 14 days of HDB's approval letter (IRAS). It can come from CPF OA; if CPF isn't ready in time, pay cash first and get it reimbursed from CPF at completion.`
+    ? `Cash flow: up to S$5,000 option + exercise fee is paid in cash upfront (part of the downpayment). The ${fmt(duty)} stamp duty is due within 14 days of HDB's approval letter (IRAS). Plan to pay it in cash first, since CPF processing usually takes longer, then get it reimbursed from CPF OA at completion.`
     : `Cash flow: the ${fmt(duty)} stamp duty is due within 14 days of signing the S&P, usually paid in cash first and reimbursed from CPF OA later.`;
 }
 
@@ -1111,7 +1111,7 @@ document.getElementById('calcForm').addEventListener('submit', function(e){
     + (!targetIsSurplus && cashBinding ? ` Your final estimate above is capped by your cash on hand rather than your income.` : '')
     + ` Purchase price and loan figures above are net of Buyer Stamp Duty${propertyType === 'hdb' ? ', the HDB resale application fee,' : ' and'} and your stated legal/conveyancing fee, all assumed payable from cash/CPF OA. `
     + (absd.rate > 0 || absd.nominal > 0
-        ? ` ABSD is included at ${(absd.rate*100).toFixed(0)}%${absd.note ? ' (' + absd.note + ')' : ''}${absd.rate === 0 && absd.nominal > 0 ? ' instead of ' + (absd.nominal*100).toFixed(0) + '%' : ''}.${propertyType === 'hdb' ? ' For an HDB resale flat, stamp duties are due within 14 days of HDB\'s in-principle approval letter (IRAS); CPF OA can be used, or cash first with CPF reimbursement at completion.' : ' Stamp duties are due within 14 days of signing the S&P, usually paid in cash first and reimbursed from CPF OA later, so keep that cash ready.'}`
+        ? ` ABSD is included at ${(absd.rate*100).toFixed(0)}%${absd.note ? ' (' + absd.note + ')' : ''}${absd.rate === 0 && absd.nominal > 0 ? ' instead of ' + (absd.nominal*100).toFixed(0) + '%' : ''}.${propertyType === 'hdb' ? ' For an HDB resale flat, stamp duties are due within 14 days of HDB\'s in-principle approval letter (IRAS); plan to pay in cash first, then get it reimbursed from CPF OA at completion.' : ' Stamp duties are due within 14 days of signing the S&P, usually paid in cash first and reimbursed from CPF OA later, so keep that cash ready.'}`
         : ` No ABSD applies (Singapore Citizen buying a first residential property).`)
     + ` CPF withdrawal (Valuation) limits are not modeled.`;
 
