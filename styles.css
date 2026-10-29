@@ -899,17 +899,21 @@ a.home-mm-more{text-decoration:none;}
 .launch-more:hover{text-decoration:underline}
 
 /* Calculator: HDB loan vs bank loan comparison */
-.loan-compare-wrap{overflow-x:auto;margin-top:6px;}
+.loan-compare-wrap{margin-top:6px;}
 .loan-compare{width:100%;border-collapse:collapse;font-size:.88rem;table-layout:fixed;}
-.loan-compare th,.loan-compare td{word-wrap:break-word;}
-.loan-compare th:first-child,.loan-compare td:first-child{width:42%;}
-@media(max-width:600px){.loan-compare{font-size:.78rem;}.loan-compare th,.loan-compare td{padding:7px 5px;}}
-.loan-compare th{background:var(--navy);color:#fff;text-align:right;padding:9px 10px;font-weight:700;}
-.loan-compare th:first-child{text-align:left;}
-.loan-compare td{padding:8px 10px;border-bottom:1px dashed var(--line);text-align:right;}
-.loan-compare td:first-child{text-align:left;color:var(--muted);}
+.loan-compare th{background:var(--navy);color:#fff;text-align:right;padding:9px 10px;font-weight:700;vertical-align:bottom;}
+.loan-compare th small{display:block;font-weight:500;font-size:.7rem;color:var(--gold);}
+.loan-compare td{padding:9px 10px;border-bottom:1px dashed var(--line);text-align:right;vertical-align:middle;}
+.loan-compare td.lc-label{text-align:left;color:var(--muted);}
+.loan-compare td small{display:block;font-size:.72rem;color:var(--muted);font-weight:400;line-height:1.25;margin-top:2px;}
+.loan-compare td.lc-num{white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:600;color:var(--navy);}
+.loan-compare td.lc-txt{font-weight:600;color:var(--navy);}
+.loan-compare.lc-3 th:first-child,.loan-compare.lc-3 td.lc-label{width:40%;}
+.loan-compare.lc-2 th:first-child,.loan-compare.lc-2 td.lc-label{width:58%;}
 .loan-compare tr.lc-bold td{font-weight:800;color:var(--navy);background:var(--cream-2);}
+.loan-compare tr.lc-bold td.lc-label small{font-weight:400;}
 .loan-compare td.lc-warn{text-align:left;color:#c0392b;font-weight:600;}
+@media(max-width:600px){.loan-compare{font-size:.8rem;}.loan-compare th,.loan-compare td{padding:8px 6px;}}
 
 .scenario-summary .tap-hint{display:block;font-style:normal;font-size:.72rem;color:var(--gold-dark,#8a6d1c);font-weight:600;}
 .absd-line strong{color:var(--navy);}
@@ -923,3 +927,4 @@ a.home-mm-more{text-decoration:none;}
 .scenario-card-title .card-sub{display:block;font-size:.74rem;font-weight:500;color:var(--muted);margin-top:3px;}
 .scenario-card-title .card-sub b{color:var(--gold-dark);font-weight:800;}
 #scn1Title,#targetTitle{display:block;}
+@media(max-width:600px){.loan-compare.lc-3 th:first-child,.loan-compare.lc-3 td.lc-label{width:34%;}.loan-compare.lc-3 td.lc-num{font-size:.76rem;padding-left:10px;}.loan-compare.lc-3 th{white-space:nowrap;}}

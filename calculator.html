@@ -1198,18 +1198,24 @@ document.getElementById('calcForm').addEventListener('submit', function(e){
     const H = opt(true), B = opt(false);
     const hdbOk = absd.anySC && fullMonthlyIncomeForCeilingEarly <= HDB_LOAN_INCOME_CEILING;
     const why = !absd.anySC ? 'Not available: needs a Singapore Citizen buyer' : 'Not available: income above ' + fmt(HDB_LOAN_INCOME_CEILING) + ' ceiling';
-    const row = (label, h, b, bold) => `<tr${bold ? ' class="lc-bold"' : ''}><td>${label}</td><td>${hdbOk ? h : '&ndash;'}</td><td>${b}</td></tr>`;
+    // Numbers never wrap; when the HDB loan isn't available its column is dropped,
+    // so the bank column gets the full width on a phone.
+    const cell = (v, isNum) => `<td class="${isNum ? 'lc-num' : 'lc-txt'}">${v}</td>`;
+    const row = (label, h, b, isNum, bold, sub) =>
+      `<tr${bold ? ' class="lc-bold"' : ''}><td class="lc-label">${label}${sub ? `<small>${sub}</small>` : ''}</td>` +
+      (hdbOk ? cell(h, isNum) : '') + cell(b, isNum) + '</tr>';
+    const cols = hdbOk ? 3 : 2;
+    document.getElementById('loanCompareTable').className = 'loan-compare ' + (hdbOk ? 'lc-3' : 'lc-2');
     document.getElementById('loanCompareTable').innerHTML =
-      `<thead><tr><th></th><th>HDB Loan${usesHdbLoan ? ' (selected)' : ''}</th><th>Bank Loan${!usesHdbLoan ? ' (selected)' : ''}</th></tr></thead><tbody>` +
-      (hdbOk ? '' : `<tr><td colspan="3" class="lc-warn">HDB Loan ${why.replace('Not available: ', 'not available: ')}.</td></tr>`) +
-      '' +
-      row('Interest rate (assessed)', '2.6% fixed by HDB', '4% MAS stress rate') +
-      row('Loan tenure', H.tenure + ' years', B.tenure + ' years') +
-      row('Max loan (on income)', fmt(H.loanCap), fmt(B.loanCap)) +
-      row('Max price (on income)', fmt(H.incomePrice), fmt(B.incomePrice)) +
-      row('Monthly instalment', fmt(H.monthly), fmt(B.monthly)) +
-      row('Minimum cash downpayment', 'None (all CPF allowed)', '5% of price') +
-      row('Peak cash needed (cash downpayment + BSD/ABSD + legal fees until CPF reimburses)', fmt(H.peakCash), fmt(B.peakCash), true) + '</tbody>';
+      `<thead><tr><th></th>${hdbOk ? `<th>HDB Loan${usesHdbLoan ? '<small>selected</small>' : ''}</th>` : ''}<th>Bank Loan${!usesHdbLoan ? '<small>selected</small>' : ''}</th></tr></thead><tbody>` +
+      (hdbOk ? '' : `<tr><td colspan="${cols}" class="lc-warn">HDB Loan ${why.replace('Not available: ', 'not available: ')}.</td></tr>`) +
+      row('Interest rate (assessed)', '2.6%<small>fixed by HDB</small>', '4%<small>MAS stress rate</small>', false) +
+      row('Loan tenure', H.tenure + ' yrs', B.tenure + ' yrs', true) +
+      row('Max loan (on income)', fmt(H.loanCap), fmt(B.loanCap), true) +
+      row('Max price (on income)', fmt(H.incomePrice), fmt(B.incomePrice), true) +
+      row('Monthly instalment', fmt(H.monthly), fmt(B.monthly), true) +
+      row('Minimum cash downpayment', 'None<small>all CPF allowed</small>', '5%<small>of price</small>', false) +
+      row('Peak cash needed', fmt(H.peakCash), fmt(B.peakCash), true, true, 'Cash downpayment + BSD/ABSD + legal fees, until CPF reimburses') + '</tbody>';
     document.getElementById('loanCompareNote').textContent = 'Bank loan figures use the 4% stress rate banks must apply when assessing your loan; your actual bank rate is usually lower, so the real instalment will be lower too. Both columns use 75% loan-to-value and default legal fees.';
     compareCard.style.display = 'block';
   } else {
