@@ -932,3 +932,14 @@ a.home-mm-more{text-decoration:none;}
 .ec-ceiling.ec-over{color:var(--danger);}
 .ec-ceiling.ec-mid{color:#9a6b00;}
 .ec-ceiling.ec-ok{color:#2e7d4f;}
+
+/* WhatsApp QR code: contact page card + desktop profile card */
+.wa-qr-card{display:flex;align-items:center;gap:16px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:14px 0;}
+.wa-qr-card img{width:148px;height:148px;flex-shrink:0;}
+.wa-qr-card strong{display:block;color:var(--navy-900);font-size:1rem;margin-bottom:4px;}
+.wa-qr-card span{font-size:.86rem;color:var(--muted);line-height:1.45;}
+.agent-card .ac-qr{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;}
+.agent-card .ac-qr img{width:96px;height:96px;display:block;}
+.agent-card .ac-qr span{font-size:.72rem;font-weight:600;color:var(--muted);}
+@media(max-width:900px){.agent-card .ac-qr{display:none;}}
+@media(max-width:480px){.wa-qr-card img{width:120px;height:120px;}}

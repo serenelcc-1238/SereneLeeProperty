@@ -82,6 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
           '<div class="ac-meta">ERA Realty &middot; CEA Reg. R027578Z<br>' +
           '<a class="ac-tel" href="tel:+6580868568">&#128222; +65 8086 8568</a></div>' +
         '</div>' +
+        '<div class="ac-qr"><img src="/assets/whatsapp-qr.svg" alt="WhatsApp QR code for Serene Lee" width="96" height="96" loading="lazy"><span>Scan to WhatsApp</span></div>' +
         '<div class="ac-acts">' +
           '<a class="btn btn-gold" data-cta="profile card" target="_blank" rel="noopener" href="https://wa.me/6580868568?text=Hi%20Serene%2C%20I%20found%20your%20website%20and%20would%20like%20to%20find%20out%20more.">WhatsApp Serene</a>' +
           '<a class="btn btn-navy" href="/about">About Serene</a>' +
