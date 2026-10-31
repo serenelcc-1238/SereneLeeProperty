@@ -804,7 +804,7 @@ function agentHeaders(h = {}) {
 function agentJson(obj, status = 200, extra = {}) {
   return new Response(JSON.stringify(obj), { status, headers: agentHeaders(Object.assign({ "content-type": "application/json" }, extra)) });
 }
-function agentLoginPage(msg) {
+function agentLoginPage(msg, next) {
   const setup = !msg && msg !== "" ? "" : msg;
   return new Response(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Agent login | Serene Lee</title>
 <style>body{margin:0;font:16px/1.5 system-ui,-apple-system,'Segoe UI',sans-serif;background:#f5f6f8;color:#0f2236;display:grid;place-items:center;min-height:100vh;padding:16px;box-sizing:border-box}
@@ -812,7 +812,7 @@ form{background:#fff;border:1px solid #dde2e8;border-radius:16px;padding:24px;wi
 h1{font:600 1.4rem Georgia,serif;color:#0b2a4a;margin:0 0 4px}p{margin:0 0 16px;color:#5d6b7a;font-size:.9rem}
 label{display:block;font-size:.8rem;font-weight:600;color:#5d6b7a;margin-bottom:4px}input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #dde2e8;border-radius:10px;font:inherit}
 button{margin-top:14px;width:100%;padding:12px;border:0;border-radius:10px;background:#c9a227;color:#1a1405;font:700 1rem inherit;cursor:pointer}.err{color:#b3261e;font-size:.85rem;margin-top:10px}</style></head>
-<body><form method="post" action="/agent/login"><h1>Agent login</h1><p>Serene Lee · ERA Realty</p>
+<body><form method="post" action="/agent/login${next ? "?next=" + encodeURIComponent(next) : ""}"><h1>Agent login</h1><p>Serene Lee · ERA Realty</p>
 <label for="pw">Password</label><input id="pw" name="password" type="password" autocomplete="current-password" required autofocus>
 <button type="submit">Sign in</button>${setup ? `<div class="err">${setup}</div>` : ""}</form></body></html>`,
     { status: setup ? 401 : 200, headers: agentHeaders({ "content-type": "text/html; charset=utf-8" }) });
@@ -839,8 +839,9 @@ async function handleAgent(request, env, url) {
     const a = b64u(await crypto.subtle.digest("SHA-256", enc.encode(pw)));
     const b = b64u(await crypto.subtle.digest("SHA-256", enc.encode(env.AGENT_PASSWORD)));
     if (!timingSafe(a, b)) return agentLoginPage("Wrong password.");
+    const nx = url.searchParams.get("next") || "";
     return new Response(null, { status: 303, headers: agentHeaders({
-      location: "/agent/",
+      location: /^\/agent\/[A-Za-z0-9/_-]*$/.test(nx) ? nx : "/agent/",
       "set-cookie": `${AGENT_COOKIE}=${await agentToken(env)}; Path=/agent; Max-Age=${AGENT_DAYS * 86400}; HttpOnly; Secure; SameSite=Strict` }) });
   }
   if (path === "/agent/logout") {
@@ -848,7 +849,7 @@ async function handleAgent(request, env, url) {
   }
   if (!(await agentAuthed(request, env))) {
     if (path.startsWith("/agent/api/")) return agentJson({ error: "signed_out" }, 401);
-    return agentLoginPage(env.AGENT_PASSWORD ? "" : "Login isn't set up yet: add the AGENT_PASSWORD secret in GitHub, then redeploy.");
+    return agentLoginPage(env.AGENT_PASSWORD ? "" : "Login isn't set up yet: add the AGENT_PASSWORD secret in GitHub, then redeploy.", path);
   }
   if (path.startsWith("/agent/api/")) return agentApi(request, env, path.slice("/agent/api/".length));
   if (path === "/agent") return Response.redirect(url.origin + "/agent/", 301);
@@ -872,16 +873,58 @@ async function agentImport(request, env, cors) {
     if (!c || typeof c !== "object" || !c.id || c.deleted) continue;
     const id = String(c.id).replace(/[^A-Za-z0-9_.:@+-]/g, "").slice(0, 200);
     if (!id) continue;
-    const data = { type: c.type || "sales", values: c.values || {}, people: c.people || [], viewings: c.viewings || [], createdAt: c.createdAt || now, updatedAt: c.updatedAt || now, rescuedAt: now };
-    stmts.push(env.DB.prepare("INSERT INTO records (coll,id,data,updated_at) VALUES ('clients',?1,?2,?3) ON CONFLICT(coll,id) DO UPDATE SET data=excluded.data, updated_at=excluded.updated_at WHERE json_extract(records.data,'$.updatedAt') IS NULL OR json_extract(records.data,'$.updatedAt') <= json_extract(excluded.data,'$.updatedAt')").bind(id, JSON.stringify(data), now));
+    const data = { type: c.type || "sales", values: c.values || {}, people: c.people || [], viewings: c.viewings || [], createdAt: c.createdAt || now, updatedAt: c.updatedAt || now, deleted: false, rescuedAt: now };
+    stmts.push(env.DB.prepare("INSERT INTO records (coll,id,data,updated_at) VALUES ('clients',?1,?2,?3) ON CONFLICT(coll,id) DO UPDATE SET data=excluded.data, updated_at=excluded.updated_at WHERE json_extract(records.data,'$.updatedAt') IS NULL OR json_extract(records.data,'$.updatedAt') <= json_extract(excluded.data,'$.updatedAt')").bind(id, JSON.stringify(data), new Date(Date.parse(now) + saved).toISOString()));
     saved++;
   }
   await env.DB.batch(stmts);
   return agentJson({ ok: true, saved }, 200, cors);
 }
 
+/* Clients (the original "My Contact for Customers" app, served at /agent/clients/).
+   Stored as records coll 'clients': {type, values, people, viewings, createdAt, updatedAt, deleted};
+   records.updated_at is the server "synced_at" the app uses as its sync cursor. */
+function clientRow(r) {
+  const d = JSON.parse(r.data);
+  return { id: r.id, type: d.type || "sales", data: { values: d.values || {}, people: d.people || [], viewings: d.viewings || [], createdAt: d.createdAt },
+    updated_at: d.updatedAt || r.updated_at, deleted: !!d.deleted, synced_at: r.updated_at };
+}
+async function clientsSync(request, env, url) {
+  if (request.method === "GET") {
+    const after = url.searchParams.get("after") || "";
+    const lim = Math.min(1000, Math.max(1, parseInt(url.searchParams.get("limit") || "1000", 10)));
+    const q = after
+      ? env.DB.prepare("SELECT id, data, updated_at FROM records WHERE coll='clients' AND updated_at > ?1 ORDER BY updated_at LIMIT ?2").bind(after, lim)
+      : env.DB.prepare("SELECT id, data, updated_at FROM records WHERE coll='clients' ORDER BY updated_at LIMIT ?1").bind(lim);
+    const { results } = await q.all();
+    return agentJson(results.map(clientRow));
+  }
+  if (request.method === "POST") {
+    const text = await request.text();
+    if (text.length > 5_000_000) return agentJson({ error: "too_large" }, 413);
+    let rows;
+    try { rows = JSON.parse(text); } catch { return agentJson({ error: "bad_json" }, 400); }
+    if (!Array.isArray(rows)) return agentJson({ error: "bad_json" }, 400);
+    const stmts = [];
+    let t = Date.now();
+    for (const r of rows) {
+      const id = String(r && r.id || "").replace(/[^A-Za-z0-9_.:@+-]/g, "").slice(0, 200);
+      if (!id) continue;
+      const d = r.data || {};
+      const data = { type: r.type || "sales", values: d.values || {}, people: d.people || [], viewings: d.viewings || [], createdAt: d.createdAt, updatedAt: r.updated_at, deleted: !!r.deleted };
+      const synced = new Date(t++).toISOString();
+      stmts.push(env.DB.prepare("INSERT INTO records (coll,id,data,updated_at) VALUES ('clients',?1,?2,?3) ON CONFLICT(coll,id) DO UPDATE SET data=excluded.data, updated_at=excluded.updated_at WHERE json_extract(records.data,'$.updatedAt') IS NULL OR json_extract(records.data,'$.updatedAt') <= json_extract(excluded.data,'$.updatedAt')")
+        .bind(id, JSON.stringify(data), synced));
+    }
+    if (stmts.length) await env.DB.batch(stmts);
+    return agentJson({ ok: true, saved: stmts.length });
+  }
+  return agentJson({ error: "method" }, 405);
+}
+
 async function agentApi(request, env, rest) {
   if (!env.DB) return agentJson({ error: "no_database" }, 500);
+  if (rest.split("?")[0] === "clients-sync") return clientsSync(request, env, new URL(request.url));
   const [coll, id] = rest.split("/").map(decodeURIComponent);
   if (coll === "all" && request.method === "GET") {
     const { results } = await env.DB.prepare("SELECT coll, id, data, updated_at FROM records").all();

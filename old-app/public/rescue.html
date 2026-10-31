@@ -44,7 +44,7 @@ button,a.btn{display:block;width:100%;box-sizing:border-box;text-align:center;pa
       if(r.status===401){msg.innerHTML='<p class="err">Sign in to your new Agent app first.</p><a class="btn secondary" href="https://sereneleeproperty.com/agent/" target="_blank" rel="noopener">Open Agent app to sign in</a><p class="muted">Then come back to this page and tap the gold button again.</p>';send.disabled=false;return;}
       const j=await r.json();
       if(!r.ok)throw new Error(j.error||r.status);
-      msg.innerHTML=`<p class="ok">✓ ${j.saved} clients copied into your Agent app.</p><p class="muted">Keep this phone's copy until you've checked them there.</p>`;
+      msg.innerHTML=`<p class="ok">✓ ${j.saved} clients copied into your Agent app.</p><p class="muted">See them at <b>sereneleeproperty.com/agent/clients</b>. Keep this phone's copy until you've checked them there.</p>`;
     }catch(e){msg.innerHTML='<p class="err">Couldn\'t copy right now ('+String(e.message||e).replace(/[<&]/g,'')+'). Tap "Download a backup file" and send the file to Claude instead.</p>';send.disabled=false;}
   };
 })();
