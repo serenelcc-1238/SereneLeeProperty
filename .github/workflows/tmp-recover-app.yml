@@ -43,9 +43,11 @@ jobs:
           openssl enc -aes-256-cbc -pbkdf2 -salt -in bundle.tgz -out bundle.enc -pass file:k.bin
           openssl pkeyutl -encrypt -pubin -inkey pub.pem -in k.bin -out k.enc
           rm k.bin bundle.tgz
+          git init -q -b tmp-recover rec && mv bundle.enc k.enc rec/ && cd rec
           git config user.name "recover-bot"; git config user.email "actions@users.noreply.github.com"
-          git checkout --orphan tmp-recover
-          git rm -rfq --cached . >/dev/null
-          git add -f bundle.enc k.enc
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git add bundle.enc k.enc
           git commit -qm "temp encrypted bundle"
           git push -f origin tmp-recover
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
