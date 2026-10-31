@@ -1,9 +1,9 @@
 name: Update HDB block info
 
-# 1st of each month, 6:23am Singapore time. Also runs on demand ("Run workflow").
+# 2nd of each month, 6:23am Singapore time (1st, 22:23 UTC). Also runs on demand ("Run workflow").
 on:
   schedule:
-    - cron: "23 22 28-31 * *"
+    - cron: "23 22 1 * *"
   workflow_dispatch:
 
 permissions:
