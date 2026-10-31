@@ -1,0 +1,25 @@
+name: Deploy old contacts app (app.sereneleeproperty.com)
+on:
+  push:
+    branches: [main]
+    paths: ["old-app/**"]
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - run: npm install
+      - name: Deploy
+        working-directory: old-app
+        run: |
+          set -o pipefail
+          if ! npx wrangler deploy 2>&1 | tee ../deploy-out.txt; then
+            echo "::error title=Old app deploy failed::$(grep -v '^\s*$' ../deploy-out.txt | tail -n 15 | tr '\n' ' ' | cut -c1-1500)"; exit 1
+          fi
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

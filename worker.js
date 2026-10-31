@@ -768,7 +768,8 @@ class GtagInjector {
    Records live in Cloudflare D1 (binding DB, table `records`). Nothing under
    /agent is served without a valid session, and every response is no-store
    and noindex. */
-const AGENT_COLLS = new Set(["blocks", "doors", "appointments", "contacts"]);
+const AGENT_COLLS = new Set(["blocks", "doors", "appointments", "contacts", "clients"]);
+const RESCUE_ORIGIN = "https://app.sereneleeproperty.com";
 const AGENT_COOKIE = "sl_agent";
 const AGENT_DAYS = 30;
 const enc = new TextEncoder();
@@ -819,6 +820,14 @@ button{margin-top:14px;width:100%;padding:12px;border:0;border-radius:10px;backg
 
 async function handleAgent(request, env, url) {
   const path = url.pathname;
+  // Rescue import from the old app (app.sereneleeproperty.com): CORS for that one origin only.
+  if (path === "/agent/api/import") {
+    const cors = { "access-control-allow-origin": RESCUE_ORIGIN, "access-control-allow-credentials": "true", "access-control-allow-methods": "POST", "access-control-allow-headers": "content-type", "vary": "origin" };
+    if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: agentHeaders(cors) });
+    if (request.method !== "POST") return agentJson({ error: "method" }, 405, cors);
+    if (!(await agentAuthed(request, env))) return agentJson({ error: "signed_out" }, 401, cors);
+    return agentImport(request, env, cors);
+  }
   if (path === "/agent/login" && request.method === "POST") {
     if (!env.AGENT_PASSWORD) return agentLoginPage("Login isn't set up yet: add the AGENT_PASSWORD secret in GitHub, then redeploy.");
     if (env.LOGIN_LIMITER) {
@@ -849,12 +858,34 @@ async function handleAgent(request, env, url) {
   return out;
 }
 
+async function agentImport(request, env, cors) {
+  const text = await request.text();
+  if (text.length > 5_000_000) return agentJson({ error: "too_large" }, 413, cors);
+  let body;
+  try { body = JSON.parse(text); } catch { return agentJson({ error: "bad_json" }, 400, cors); }
+  const list = Array.isArray(body && body.clients) ? body.clients : [];
+  const now = new Date().toISOString();
+  // Keep the raw rescue copy as well, untouched, in case anything needs re-checking.
+  const stmts = [env.DB.prepare("INSERT INTO records (coll,id,data,updated_at) VALUES ('rescue',?1,?2,?3)").bind("rescue-" + now, JSON.stringify(body).slice(0, 4_900_000), now)];
+  let saved = 0;
+  for (const c of list) {
+    if (!c || typeof c !== "object" || !c.id || c.deleted) continue;
+    const id = String(c.id).replace(/[^A-Za-z0-9_.:@+-]/g, "").slice(0, 200);
+    if (!id) continue;
+    const data = { type: c.type || "sales", values: c.values || {}, people: c.people || [], viewings: c.viewings || [], createdAt: c.createdAt || now, updatedAt: c.updatedAt || now, rescuedAt: now };
+    stmts.push(env.DB.prepare("INSERT INTO records (coll,id,data,updated_at) VALUES ('clients',?1,?2,?3) ON CONFLICT(coll,id) DO UPDATE SET data=excluded.data, updated_at=excluded.updated_at WHERE json_extract(records.data,'$.updatedAt') IS NULL OR json_extract(records.data,'$.updatedAt') <= json_extract(excluded.data,'$.updatedAt')").bind(id, JSON.stringify(data), now));
+    saved++;
+  }
+  await env.DB.batch(stmts);
+  return agentJson({ ok: true, saved }, 200, cors);
+}
+
 async function agentApi(request, env, rest) {
   if (!env.DB) return agentJson({ error: "no_database" }, 500);
   const [coll, id] = rest.split("/").map(decodeURIComponent);
   if (coll === "all" && request.method === "GET") {
     const { results } = await env.DB.prepare("SELECT coll, id, data, updated_at FROM records").all();
-    const out = { blocks: [], doors: [], appointments: [], contacts: [] };
+    const out = { blocks: [], doors: [], appointments: [], contacts: [], clients: [] };
     for (const r of results) if (out[r.coll]) out[r.coll].push(Object.assign(JSON.parse(r.data), { id: r.id, _updated: r.updated_at }));
     return agentJson(out);
   }

@@ -1,0 +1,9 @@
+{
+  // The original "My Contact for Customers" app at app.sereneleeproperty.com
+  // (recovered 31 Oct 2026 after its Supabase database was deleted), plus
+  // /rescue.html, which saves the copy of clients kept in a device's browser.
+  "name": "my-contacts",
+  "compatibility_date": "2026-09-01",
+  "assets": { "directory": "./public", "not_found_handling": "single-page-application" },
+  "routes": [ { "pattern": "app.sereneleeproperty.com", "custom_domain": true } ]
+}
