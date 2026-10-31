@@ -761,9 +761,130 @@ class GtagInjector {
   }
 }
 
+/* ===================== Agent app (private) =====================
+   sereneleeproperty.com/agent: Serene's own tools (door-knock log, contacts,
+   appointments). Password login (Worker secret AGENT_PASSWORD, set from the
+   GitHub secret of the same name at deploy). Session = signed cookie, 30 days.
+   Records live in Cloudflare D1 (binding DB, table `records`). Nothing under
+   /agent is served without a valid session, and every response is no-store
+   and noindex. */
+const AGENT_COLLS = new Set(["blocks", "doors", "appointments", "contacts"]);
+const AGENT_COOKIE = "sl_agent";
+const AGENT_DAYS = 30;
+const enc = new TextEncoder();
+
+async function agentKey(env) {
+  return crypto.subtle.importKey("raw", await crypto.subtle.digest("SHA-256", enc.encode("session:" + env.AGENT_PASSWORD)),
+    { name: "HMAC", hash: "SHA-256" }, false, ["sign", "verify"]);
+}
+const b64u = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+async function agentToken(env) {
+  const exp = String(Date.now() + AGENT_DAYS * 864e5);
+  return exp + "." + b64u(await crypto.subtle.sign("HMAC", await agentKey(env), enc.encode(exp)));
+}
+async function agentAuthed(request, env) {
+  if (!env.AGENT_PASSWORD) return false;
+  const m = (request.headers.get("cookie") || "").match(/(?:^|;\s*)sl_agent=([^;]+)/);
+  if (!m) return false;
+  const [exp, sig] = m[1].split(".");
+  if (!exp || !sig || +exp < Date.now()) return false;
+  const want = b64u(await crypto.subtle.sign("HMAC", await agentKey(env), enc.encode(exp)));
+  return timingSafe(want, sig);
+}
+function timingSafe(a, b) {
+  if (a.length !== b.length) return false;
+  let r = 0;
+  for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return r === 0;
+}
+function agentHeaders(h = {}) {
+  return Object.assign({ "cache-control": "no-store", "x-robots-tag": "noindex, nofollow", "x-frame-options": "DENY", "referrer-policy": "same-origin" }, h);
+}
+function agentJson(obj, status = 200, extra = {}) {
+  return new Response(JSON.stringify(obj), { status, headers: agentHeaders(Object.assign({ "content-type": "application/json" }, extra)) });
+}
+function agentLoginPage(msg) {
+  const setup = !msg && msg !== "" ? "" : msg;
+  return new Response(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Agent login | Serene Lee</title>
+<style>body{margin:0;font:16px/1.5 system-ui,-apple-system,'Segoe UI',sans-serif;background:#f5f6f8;color:#0f2236;display:grid;place-items:center;min-height:100vh;padding:16px;box-sizing:border-box}
+form{background:#fff;border:1px solid #dde2e8;border-radius:16px;padding:24px;width:100%;max-width:360px;box-shadow:0 10px 30px rgba(11,42,74,.08)}
+h1{font:600 1.4rem Georgia,serif;color:#0b2a4a;margin:0 0 4px}p{margin:0 0 16px;color:#5d6b7a;font-size:.9rem}
+label{display:block;font-size:.8rem;font-weight:600;color:#5d6b7a;margin-bottom:4px}input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #dde2e8;border-radius:10px;font:inherit}
+button{margin-top:14px;width:100%;padding:12px;border:0;border-radius:10px;background:#c9a227;color:#1a1405;font:700 1rem inherit;cursor:pointer}.err{color:#b3261e;font-size:.85rem;margin-top:10px}</style></head>
+<body><form method="post" action="/agent/login"><h1>Agent login</h1><p>Serene Lee · ERA Realty</p>
+<label for="pw">Password</label><input id="pw" name="password" type="password" autocomplete="current-password" required autofocus>
+<button type="submit">Sign in</button>${setup ? `<div class="err">${setup}</div>` : ""}</form></body></html>`,
+    { status: setup ? 401 : 200, headers: agentHeaders({ "content-type": "text/html; charset=utf-8" }) });
+}
+
+async function handleAgent(request, env, url) {
+  const path = url.pathname;
+  if (path === "/agent/login" && request.method === "POST") {
+    if (!env.AGENT_PASSWORD) return agentLoginPage("Login isn't set up yet: add the AGENT_PASSWORD secret in GitHub, then redeploy.");
+    if (env.LOGIN_LIMITER) {
+      const { success } = await env.LOGIN_LIMITER.limit({ key: request.headers.get("cf-connecting-ip") || "x" });
+      if (!success) return agentLoginPage("Too many attempts. Wait a minute and try again.");
+    }
+    const form = await request.formData().catch(() => null);
+    const pw = form ? String(form.get("password") || "") : "";
+    const a = b64u(await crypto.subtle.digest("SHA-256", enc.encode(pw)));
+    const b = b64u(await crypto.subtle.digest("SHA-256", enc.encode(env.AGENT_PASSWORD)));
+    if (!timingSafe(a, b)) return agentLoginPage("Wrong password.");
+    return new Response(null, { status: 303, headers: agentHeaders({
+      location: "/agent/",
+      "set-cookie": `${AGENT_COOKIE}=${await agentToken(env)}; Path=/agent; Max-Age=${AGENT_DAYS * 86400}; HttpOnly; Secure; SameSite=Strict` }) });
+  }
+  if (path === "/agent/logout") {
+    return new Response(null, { status: 303, headers: agentHeaders({ location: "/agent/", "set-cookie": `${AGENT_COOKIE}=; Path=/agent; Max-Age=0; HttpOnly; Secure; SameSite=Strict` }) });
+  }
+  if (!(await agentAuthed(request, env))) {
+    if (path.startsWith("/agent/api/")) return agentJson({ error: "signed_out" }, 401);
+    return agentLoginPage(env.AGENT_PASSWORD ? "" : "Login isn't set up yet: add the AGENT_PASSWORD secret in GitHub, then redeploy.");
+  }
+  if (path.startsWith("/agent/api/")) return agentApi(request, env, path.slice("/agent/api/".length));
+  if (path === "/agent") return Response.redirect(url.origin + "/agent/", 301);
+  const res = await env.ASSETS.fetch(new Request(url.origin + (path === "/agent/" ? "/agent/" : path), request));
+  const out = new Response(res.body, res);
+  for (const [k, v] of Object.entries(agentHeaders())) out.headers.set(k, v);
+  return out;
+}
+
+async function agentApi(request, env, rest) {
+  if (!env.DB) return agentJson({ error: "no_database" }, 500);
+  const [coll, id] = rest.split("/").map(decodeURIComponent);
+  if (coll === "all" && request.method === "GET") {
+    const { results } = await env.DB.prepare("SELECT coll, id, data, updated_at FROM records").all();
+    const out = { blocks: [], doors: [], appointments: [], contacts: [] };
+    for (const r of results) if (out[r.coll]) out[r.coll].push(Object.assign(JSON.parse(r.data), { id: r.id, _updated: r.updated_at }));
+    return agentJson(out);
+  }
+  if (!AGENT_COLLS.has(coll) || !id || id.length > 200 || !/^[A-Za-z0-9_.:@+-]+$/.test(id)) return agentJson({ error: "bad_path" }, 400);
+  if (request.method === "PUT") {
+    const text = await request.text();
+    if (text.length > 200000) return agentJson({ error: "too_large" }, 413);
+    let body;
+    try { body = JSON.parse(text); } catch { return agentJson({ error: "bad_json" }, 400); }
+    if (!body || typeof body !== "object" || Array.isArray(body)) return agentJson({ error: "bad_json" }, 400);
+    delete body.id; delete body._updated;
+    const now = new Date().toISOString();
+    await env.DB.prepare("INSERT INTO records (coll,id,data,updated_at) VALUES (?1,?2,?3,?4) ON CONFLICT(coll,id) DO UPDATE SET data=excluded.data, updated_at=excluded.updated_at")
+      .bind(coll, id, JSON.stringify(body), now).run();
+    return agentJson({ ok: true, updated: now });
+  }
+  if (request.method === "DELETE") {
+    await env.DB.prepare("DELETE FROM records WHERE coll=?1 AND id=?2").bind(coll, id).run();
+    return agentJson({ ok: true });
+  }
+  return agentJson({ error: "method" }, 405);
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+
+    if (url.pathname === "/agent" || url.pathname.startsWith("/agent/")) {
+      return handleAgent(request, env, url);
+    }
 
     if (url.pathname === "/api/chat-lead" && request.method === "POST") {
       return handleChatLead(request, env);

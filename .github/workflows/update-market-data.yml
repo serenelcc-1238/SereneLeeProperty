@@ -42,7 +42,7 @@ jobs:
         run: python scripts/update_rents.py || echo "Rents not refreshed this week; last quarter's figures kept."
 
       - name: Rebuild town pages
-        run: python3 scripts/build_town_pages.py && python3 scripts/add_schema.py
+        run: python3 scripts/build_town_pages.py && python3 scripts/add_schema.py && python3 scripts/build_block_resale.py
 
       - name: Save data to the repo
         id: commit

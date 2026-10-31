@@ -10,7 +10,7 @@ jobs:
         with:
           fetch-depth: 0  # full history: sitemap lastmod dates come from git
       - name: Rebuild town pages from the latest data
-        run: python3 scripts/build_town_pages.py && python3 scripts/add_schema.py
+        run: python3 scripts/build_town_pages.py && python3 scripts/add_schema.py && python3 scripts/build_block_resale.py
       - name: Rebuild sitemap (picks up new pages automatically)
         run: python3 scripts/build_sitemap.py
       - uses: actions/setup-node@v6
@@ -28,3 +28,14 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Set the agent login password (from the AGENT_PASSWORD secret)
+        run: |
+          if [ -n "$AGENT_PASSWORD" ]; then
+            printf '%s' "$AGENT_PASSWORD" | npx wrangler secret put AGENT_PASSWORD >/dev/null && echo "Agent password set"
+          else
+            echo "::warning title=Agent login not set up::Add a repository secret named AGENT_PASSWORD, then re-run this deploy."
+          fi
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          AGENT_PASSWORD: ${{ secrets.AGENT_PASSWORD }}

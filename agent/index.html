@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow">
+<title>Agent App | Serene Lee</title>
+<link rel="icon" href="/favicon.ico">
+<meta name="theme-color" content="#0b2a4a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Public+Sans:wght@400;500;600;700&display=swap">
+<style>
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0}
+/* Layout: a phone-first field log. Sticky tab bar, block "lift lobby" grid (floors x units), bottom sheet for each door. */
+:root{
+  --bg:#f5f6f8; --surface:#ffffff; --ink:#0f2236; --muted:#5d6b7a; --line:#dde2e8;
+  --navy:#0b2a4a; --gold:#c9a227; --gold-ink:#7a5d0a; --focus:#2f6fb0;
+  --st-none:#eef1f4; --st-none-ink:#8a96a3;
+  --st-notin:#d9dee4; --st-notin-ink:#3d4a57;
+  --st-selling:#cfeedd; --st-selling-ink:#11603a;
+  --st-consider:#fbe7b5; --st-consider-ink:#7a5200;
+  --st-notselling:#e3e6f2; --st-notselling-ink:#38407a;
+  --st-agent:#ead9f5; --st-agent-ink:#5a2a7a;
+  --st-appt:#0b2a4a; --st-appt-ink:#f6d77a;
+  --st-noknock:#f8d4d0; --st-noknock-ink:#8f1d12;
+  --danger:#b3261e;
+  --display:'Fraunces',Georgia,serif; --body:'Public Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1620; --surface:#16212d; --ink:#e8eef4; --muted:#9aa8b6; --line:#2a3846;
+  --navy:#9cc3ea; --gold:#e3c15a; --gold-ink:#f0d37c; --focus:#7fb4ea;
+  --st-none:#1c2935; --st-none-ink:#71818f; --st-notin:#2c3946; --st-notin-ink:#c3ccd5;
+  --st-selling:#123e2a; --st-selling-ink:#8fe0b5; --st-consider:#4a3a0f; --st-consider-ink:#f6d27a;
+  --st-notselling:#252b4d; --st-notselling-ink:#b8bff0; --st-agent:#3a2350; --st-agent-ink:#dcb8f5;
+  --st-appt:#e3c15a; --st-appt-ink:#1a1405; --st-noknock:#4d1a16; --st-noknock-ink:#f5aea6; --danger:#f08a80;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1620; --surface:#16212d; --ink:#e8eef4; --muted:#9aa8b6; --line:#2a3846;
+  --navy:#9cc3ea; --gold:#e3c15a; --gold-ink:#f0d37c; --focus:#7fb4ea;
+  --st-none:#1c2935; --st-none-ink:#71818f; --st-notin:#2c3946; --st-notin-ink:#c3ccd5;
+  --st-selling:#123e2a; --st-selling-ink:#8fe0b5; --st-consider:#4a3a0f; --st-consider-ink:#f6d27a;
+  --st-notselling:#252b4d; --st-notselling-ink:#b8bff0; --st-agent:#3a2350; --st-agent-ink:#dcb8f5;
+  --st-appt:#e3c15a; --st-appt-ink:#1a1405; --st-noknock:#4d1a16; --st-noknock-ink:#f5aea6; --danger:#f08a80;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 var(--body);}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 96px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+header.top .in{max-width:760px;margin:0 auto;padding:10px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+h1{font:600 1.3rem/1.2 var(--display);margin:0;color:var(--navy)}
+.sub{font-size:.8rem;color:var(--muted)}
+.tabs{display:flex;gap:4px;margin-top:8px}
+.tabs button{flex:1;border:0;background:none;padding:10px 4px;font:600 .92rem var(--body);color:var(--muted);border-bottom:3px solid transparent;cursor:pointer}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--gold)}
+.tabs .count{display:inline-block;min-width:20px;padding:0 6px;margin-left:4px;border-radius:10px;background:var(--st-appt);color:var(--st-appt-ink);font-size:.72rem;line-height:18px}
+button,input,select,textarea{font:inherit;color:inherit}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+textarea{min-height:72px;resize:vertical}
+label{display:block;font-size:.78rem;font-weight:600;color:var(--muted);margin-bottom:4px;letter-spacing:.02em}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.btn{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;background:var(--navy);color:var(--surface)}
+.btn.gold{background:var(--gold);color:#1a1405}
+.btn.ghost{background:none;border:1px solid var(--line);color:var(--ink)}
+.btn.small{padding:7px 10px;font-size:.82rem}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.grow{flex:1;min-width:0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+.stack{display:flex;flex-direction:column;gap:12px}
+.note{font-size:.8rem;color:var(--muted)}
+.warn{color:var(--danger);font-size:.85rem}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.75rem;font-weight:700;white-space:nowrap}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+.kpi b{display:block;font-size:1.25rem;font-variant-numeric:tabular-nums}
+.kpi span{font-size:.72rem;color:var(--muted)}
+/* lift-lobby grid */
+.gridwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+table.grid{border-collapse:separate;border-spacing:4px;margin:4px}
+table.grid th{font-size:.72rem;color:var(--muted);font-weight:600;padding:2px 4px;font-variant-numeric:tabular-nums;white-space:nowrap}
+table.grid th.lob{background:var(--st-none);color:var(--ink);border-radius:6px;font-size:.7rem}
+table.grid th.fl{position:sticky;left:0;background:var(--surface);text-align:right}
+.cell{width:58px;height:44px;border:0;border-radius:8px;cursor:pointer;font-size:.72rem;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums;padding:2px}
+.cell small{display:block;font-weight:600;font-size:.6rem;opacity:.85;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.legend{display:flex;flex-wrap:wrap;gap:6px}
+/* lists */
+.list{display:flex;flex-direction:column;gap:8px}
+.item{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;text-align:left;width:100%}
+.item .main{flex:1;min-width:0}
+.item .t{font-weight:700}
+.item .m{font-size:.8rem;color:var(--muted);overflow-wrap:anywhere}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 11px;font-size:.8rem;font-weight:600;white-space:nowrap;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--navy);color:var(--surface);border-color:var(--navy)}
+.when{min-width:62px;text-align:center;border-radius:10px;background:var(--st-appt);color:var(--st-appt-ink);padding:6px 4px;font-weight:700;font-size:.78rem;line-height:1.2;font-variant-numeric:tabular-nums}
+.when b{display:block;font-size:1.05rem}
+.when.past{background:var(--st-none);color:var(--st-none-ink)}
+/* sheet */
+.scrim{position:fixed;inset:0;background:rgba(5,12,20,.45);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--bg);width:100%;max-width:760px;max-height:92vh;overflow-y:auto;border-radius:18px 18px 0 0;padding:14px max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.sheet h2{font:600 1.2rem var(--display);margin:0;color:var(--navy)}
+.stgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.stbtn{border:2px solid transparent;border-radius:10px;padding:10px 8px;font-weight:700;font-size:.85rem;cursor:pointer;text-align:left}
+.stbtn[aria-pressed="true"]{border-color:var(--ink)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hist{font-size:.8rem;color:var(--muted);margin:0;padding-left:18px}
+.toast .undo{background:none;border:0;color:var(--gold);font-weight:800;margin-left:8px;cursor:pointer;padding:0}
+.mode{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;font-weight:600;font-size:.85rem;z-index:30}
+.facts summary{cursor:pointer;font-weight:700;list-style:none;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.facts summary::-webkit-details-marker{display:none}
+.facts summary::after{content:'Show';margin-left:auto;font-size:.75rem;color:var(--muted);font-weight:600}
+.facts[open] summary::after{content:'Hide'}
+.facts dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:10px 0 0;font-size:.85rem}
+.facts dt{color:var(--muted)} .facts dd{margin:0;font-weight:600;font-variant-numeric:tabular-nums}
+table.px{width:100%;border-collapse:collapse;font-size:.84rem;margin-top:10px;font-variant-numeric:tabular-nums}
+table.px th{text-align:right;font-size:.72rem;color:var(--muted);font-weight:600;padding:4px 6px;border-bottom:1px solid var(--line)}
+table.px th:first-child,table.px td:first-child{text-align:left}
+table.px td{text-align:right;padding:6px;border-bottom:1px dashed var(--line)}
+table.px td small{display:block;color:var(--muted);font-weight:400;font-size:.7rem}
+.empty{text-align:center;padding:28px 12px;color:var(--muted)}
+.empty h3{font:600 1.1rem var(--display);color:var(--ink);margin:0 0 6px}
+footer.fine{font-size:.74rem;color:var(--muted);margin-top:22px;line-height:1.5}
+@media (max-width:420px){.kpis{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:no-preference){.sheet{animation:up .18s ease-out}@keyframes up{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}}}
+</style>
+</head><body>
+
+<header class="top"><div class="in">
+  <div class="row"><div class="grow"><h1>Agent App</h1><div class="sub" id="todayLbl"></div></div>
+    <button class="btn ghost small" id="exportBtn" hidden>Export CSV</button><a class="btn ghost small" href="/agent/logout" style="text-decoration:none">Sign out</a></div>
+  <nav class="tabs" role="tablist">
+    <button role="tab" id="tab-walk" aria-selected="true">Walk</button>
+    <button role="tab" id="tab-doors" aria-selected="false">Doors</button>
+    <button role="tab" id="tab-appts" aria-selected="false">Appts<span class="count" id="apptCount" hidden></span></button>
+    <button role="tab" id="tab-contacts" aria-selected="false">Contacts</button>
+  </nav>
+</div></header>
+
+<main class="wrap">
+  <div id="status" class="note" style="margin-bottom:8px">Loading your log…</div>
+
+  <!-- WALK -->
+  <section id="view-walk" class="stack">
+    <div class="row">
+      <div class="grow"><label for="blockSel">Block</label><select id="blockSel"></select></div>
+      <button class="btn gold" id="addBlockBtn" style="align-self:flex-end">+ Block</button>
+    </div>
+    <div id="blockInfo"></div>
+    <div class="kpis" id="kpis"></div>
+    <div id="gridArea"></div>
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <!-- DOORS -->
+  <section id="view-doors" class="stack" hidden>
+    <input id="search" type="search" placeholder="Search owner, block, unit or notes">
+    <div class="chips" id="doorChips"></div>
+    <div class="list" id="doorList"></div>
+  </section>
+
+  <!-- APPOINTMENTS -->
+  <section id="view-appts" class="stack" hidden>
+    <div class="row"><div class="grow note">Appointments set at a door appear here automatically. You can also add one directly.</div>
+      <button class="btn gold" id="addApptBtn">+ Appointment</button></div>
+    <div class="chips" id="apptChips"></div>
+    <div class="list" id="apptList"></div>
+  </section>
+
+  <!-- CONTACTS -->
+  <section id="view-contacts" class="stack" hidden>
+    <div class="row"><input id="cSearch" class="grow" type="search" placeholder="Search name, phone, email or notes"><button class="btn gold" id="addContactBtn">+ Contact</button></div>
+    <div class="chips" id="contactChips"></div>
+    <div class="list" id="contactList"></div>
+  </section>
+
+  <footer class="fine">
+    Record only what the owner agreed to share. Don't store NRIC or bank details. Check the DNC Registry before calling or messaging, and don't approach owners who already have an exclusive agent. Only you can sign in. Records are kept in your own Cloudflare account.
+  </footer>
+</main>
+
+<div id="sheetHost"></div>
+<div id="toastHost"></div>
+
+<script>
+(function(){
+const STATUSES=[
+  {k:'notin',  t:'Not in',          bg:'--st-notin',      fg:'--st-notin-ink'},
+  {k:'selling',t:'Selling',         bg:'--st-selling',    fg:'--st-selling-ink'},
+  {k:'consider',t:'Considering',    bg:'--st-consider',   fg:'--st-consider-ink'},
+  {k:'notselling',t:'Not selling',  bg:'--st-notselling', fg:'--st-notselling-ink'},
+  {k:'agent',  t:'Has an agent',    bg:'--st-agent',      fg:'--st-agent-ink'},
+  {k:'appt',   t:'Appointment set', bg:'--st-appt',       fg:'--st-appt-ink'},
+  {k:'noknock',t:'Do not knock',    bg:'--st-noknock',    fg:'--st-noknock-ink'}
+];
+const ST=Object.fromEntries(STATUSES.map(s=>[s.k,s]));
+const FLAT=['','2-room','3-room','4-room','5-room','Executive','Jumbo / Multi-gen'];
+const PURPOSES=['Home valuation chat','Selling consultation','Upgrading plan','Listing presentation','Viewing','Other'];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const todayISO=()=>{const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());};
+const fmtDate=s=>{if(!s)return '';const d=new Date(s+(s.length===10?'T00:00':''));return d.toLocaleDateString('en-SG',{day:'numeric',month:'short'});};
+const slug=s=>String(s).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,80)||'x';
+const pillStyle=k=>{const s=ST[k];return s?`background:var(${s.bg});color:var(${s.fg})`:'background:var(--st-none);color:var(--st-none-ink)';};
+const pill=k=>`<span class="pill" style="${pillStyle(k)}">${esc(ST[k]?ST[k].t:'Not knocked')}</span>`;
+$('todayLbl').textContent=new Date().toLocaleDateString('en-SG',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+let db=null, downloads=null, canWrite=true;
+let blocks=[], doors=[], appts=[], contacts=[];
+let curBlock=null; try{curBlock=localStorage.getItem('dk.block');}catch(e){}
+let quickMode='notselling'; try{quickMode=localStorage.getItem('dk.mode')||'notselling';}catch(e){}
+let doorFilter='all', apptFilter='upcoming', tab='walk';
+
+function toast(msg,undo){const t=document.createElement('div');t.className='toast';t.textContent=msg;
+  if(undo){const b=document.createElement('button');b.className='undo';b.textContent='Undo';b.onclick=()=>{t.remove();undo();};t.append(' ',b);}
+  $('toastHost').replaceChildren(t);setTimeout(()=>t.remove(),undo?5000:2200);}
+function setStatus(msg){$('status').textContent=msg||'';$('status').hidden=!msg;}
+
+/* ---------- tabs ---------- */
+function showTab(n){tab=n;['walk','doors','appts','contacts'].forEach(x=>{$('view-'+x).hidden=x!==n;$('tab-'+x).setAttribute('aria-selected',x===n);});render();}
+['walk','doors','appts','contacts'].forEach(x=>$('tab-'+x).addEventListener('click',()=>showTab(x)));
+
+/* ---------- render ---------- */
+function render(){renderWalk();renderDoors();renderAppts();renderContacts();
+  const up=appts.filter(a=>a.status==='scheduled'&&a.date>=todayISO()).length;
+  $('apptCount').textContent=up;$('apptCount').hidden=!up;}
+
+function blockLabel(b){return b?(b.block+(b.street?' '+b.street:'')):'';}
+function renderWalk(){
+  const sel=$('blockSel');
+  if(!blocks.length){
+    sel.innerHTML='<option>No blocks yet</option>';sel.disabled=true;$('kpis').innerHTML='';$('legend').innerHTML='';$('blockInfo').innerHTML='';
+    $('gridArea').innerHTML=`<div class="panel empty"><h3>Set up your first block</h3><p>Add the block number, street, floors and unit numbers. You'll get a grid of every door to tap through as you walk.</p><button class="btn gold" id="emptyAdd">+ Add a block</button></div>`;
+    $('emptyAdd').onclick=()=>openBlockSheet();return;}
+  sel.disabled=false;
+  if(!blocks.find(b=>b.id===curBlock))curBlock=blocks[0].id;
+  sel.innerHTML=blocks.map(b=>`<option value="${esc(b.id)}"${b.id===curBlock?' selected':''}>Blk ${esc(blockLabel(b))}</option>`).join('');
+  const b=blocks.find(x=>x.id===curBlock);
+  renderFacts(b);
+  const bd=doors.filter(d=>d.blockId===b.id);const byUnit=Object.fromEntries(bd.map(d=>[d.unitLabel,d]));
+  const total=(b.floorTo-b.floorFrom+1)*(b.units||[]).length;
+  const knocked=bd.filter(d=>d.status).length;
+  const cnt=k=>bd.filter(d=>d.status===k).length;
+  $('kpis').innerHTML=[[knocked+' / '+total,'Doors covered'],[cnt('selling')+cnt('consider'),'Selling or considering'],[cnt('appt'),'Appointments'],[cnt('notin'),'Not in (try again)']]
+    .map(([v,l])=>`<div class="kpi"><b>${v}</b><span>${l}</span></div>`).join('');
+  const modes=[['notselling','Not selling'],['notin','Not in'],['details','Open details']];
+  let h=`<div class="panel stack" style="padding:10px 12px;margin-bottom:8px"><div class="mode"><span class="note" style="font-weight:600">One tap marks:</span>${modes.map(([k,t])=>`<button class="chip" data-mode="${k}" aria-pressed="${quickMode===k}">${t}</button>`).join('')}</div>
+  <div class="note">Most doors: one tap to mark and move on. For owners who are selling or open to a chat, tap again (or use Open details) to add their name and notes.</div></div>
+  <div class="row" style="justify-content:space-between;margin-bottom:6px"><span class="note">Top floor first.</span><div class="row"><button class="btn gold small" id="addUnits">+ Units (next lift lobby)</button><button class="btn ghost small" id="editBlock">Edit block</button></div></div>`;
+  const lob=b.lobbies||{};const groups=[];(b.units||[]).forEach(u=>{const g=lob[u]||'';if(groups.length&&groups[groups.length-1].g===g)groups[groups.length-1].n++;else groups.push({g,n:1});});
+  const showLob=groups.some(x=>x.g);
+  h+=`<div class="gridwrap"><table class="grid"><thead>${showLob?`<tr><th class="fl"></th>${groups.map(x=>`<th colspan="${x.n}" class="lob">${esc(x.g||'—')}</th>`).join('')}</tr>`:''}<tr><th class="fl">Floor</th>${(b.units||[]).map(u=>`<th>${esc(u)}${(b.unitTypes||{})[u]?'<br>'+esc(TYPE_SHORT[b.unitTypes[u]]||b.unitTypes[u]):''}</th>`).join('')}</tr></thead><tbody>`;
+  for(let f=b.floorTo;f>=b.floorFrom;f--){
+    h+=`<tr><th class="fl">#${pad(f)}</th>`;
+    for(const u of (b.units||[])){const lbl='#'+pad(f)+'-'+u;const d=byUnit[lbl];
+      const ty=(b.unitTypes||{})[u]||'';
+      h+=`<td><button class="cell" data-unit="${esc(lbl)}" data-u="${esc(u)}" style="${pillStyle(d&&d.status)}" aria-label="${esc(lbl)} ${esc(ty)} ${esc(d&&ST[d.status]?ST[d.status].t:'not knocked')}">${pad(f)}-${esc(u)}<small>${esc(d&&d.owner?d.owner:(TYPE_SHORT[ty]||'')+(d&&ST[d.status]?' '+ST[d.status].t:''))}</small></button></td>`;}
+    h+='</tr>';}
+  h+='</tbody></table></div>';
+  if(!(b.units||[]).length)h=h.slice(0,h.indexOf('<div class="gridwrap">'))+`<div class="panel empty"><h3>No units yet</h3><p>Go to the first lift lobby and add its unit numbers. Add the other lobbies as you reach them.</p></div>`;
+  $('gridArea').innerHTML=h;
+  $('editBlock').onclick=()=>openBlockSheet(b);
+  $('addUnits').onclick=()=>openUnitsSheet(b);
+  $('gridArea').querySelectorAll('[data-mode]').forEach(c=>c.onclick=()=>{quickMode=c.dataset.mode;try{localStorage.setItem('dk.mode',quickMode);}catch(_){}renderWalk();});
+  $('gridArea').querySelectorAll('.cell').forEach(c=>c.onclick=()=>{const lbl=c.dataset.unit;const d=byUnit[lbl]||{blockId:b.id,block:b.block,street:b.street,unitLabel:lbl,floor:+lbl.slice(1,3),flatType:(b.unitTypes||{})[c.dataset.u]||''};
+    if(quickMode==='details'||d.status===quickMode||(d.status&&d.status!=='notin'&&d.status!=='notselling'))return openDoorSheet(d);
+    quickMark(d,quickMode);});
+  $('legend').innerHTML=STATUSES.map(s=>pill(s.k)).join('')+pill('');
+}
+$('blockSel').addEventListener('change',e=>{curBlock=e.target.value;try{localStorage.setItem('dk.block',curBlock);}catch(_){}render();});
+$('addBlockBtn').onclick=()=>openBlockSheet();
+
+function renderDoors(){
+  const chips=[['all','All'],...STATUSES.map(s=>[s.k,s.t]),['follow','Follow-up due']];
+  $('doorChips').innerHTML=chips.map(([k,t])=>`<button class="chip" data-k="${k}" aria-pressed="${doorFilter===k}">${esc(t)} ${k==='all'?doors.length:k==='follow'?doors.filter(d=>d.followUp&&d.followUp<=todayISO()).length:doors.filter(d=>d.status===k).length}</button>`).join('');
+  $('doorChips').querySelectorAll('.chip').forEach(c=>c.onclick=()=>{doorFilter=c.dataset.k;renderDoors();});
+  const q=$('search').value.trim().toLowerCase();
+  let list=doors.filter(d=>doorFilter==='all'||(doorFilter==='follow'?(d.followUp&&d.followUp<=todayISO()):d.status===doorFilter));
+  if(q)list=list.filter(d=>[d.owner,d.block,d.street,d.unitLabel,d.notes].join(' ').toLowerCase().includes(q));
+  list.sort((a,b)=>String(b.lastVisit||'').localeCompare(String(a.lastVisit||'')));
+  $('doorList').innerHTML=list.length?list.map(d=>`<button class="item" data-id="${esc(d.id)}"><div class="main"><div class="t">Blk ${esc(d.block)} ${esc(d.unitLabel)} ${d.owner?'· '+esc(d.owner):''}</div><div class="m">${esc(d.street||'')}${d.flatType?' · '+esc(d.flatType):''}${d.lastVisit?' · last knocked '+fmtDate(d.lastVisit.slice(0,10)):''}${d.followUp?' · follow up '+fmtDate(d.followUp):''}${d.notes?'<br>'+esc(d.notes):''}</div></div>${pill(d.status)}</button>`).join('')
+    :`<div class="panel empty"><h3>No doors here yet</h3><p>Doors you log while walking a block show up in this list, with search and follow-up reminders.</p></div>`;
+  $('doorList').querySelectorAll('.item').forEach(i=>i.onclick=()=>openDoorSheet(doors.find(d=>d.id===i.dataset.id)));
+}
+$('search').addEventListener('input',renderDoors);
+
+function renderAppts(){
+  const t=todayISO();
+  const groups={upcoming:a=>a.status==='scheduled'&&a.date>=t,overdue:a=>a.status==='scheduled'&&a.date<t,done:a=>a.status==='done',cancelled:a=>a.status==='cancelled'};
+  const names={upcoming:'Upcoming',overdue:'Past, not closed',done:'Done',cancelled:'Cancelled'};
+  $('apptChips').innerHTML=Object.keys(groups).map(k=>`<button class="chip" data-k="${k}" aria-pressed="${apptFilter===k}">${names[k]} ${appts.filter(groups[k]).length}</button>`).join('');
+  $('apptChips').querySelectorAll('.chip').forEach(c=>c.onclick=()=>{apptFilter=c.dataset.k;renderAppts();});
+  const list=appts.filter(groups[apptFilter]).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)*(apptFilter==='upcoming'?1:-1));
+  $('apptList').innerHTML=list.length?list.map(a=>{const d=new Date(a.date+'T00:00');return `<button class="item" data-id="${esc(a.id)}"><div class="when${a.date<t||a.status!=='scheduled'?' past':''}"><b>${d.getDate()}</b>${d.toLocaleDateString('en-SG',{month:'short'})}<br>${esc(a.time||'')}</div><div class="main"><div class="t">${esc(a.owner||'Owner')}${a.unitLabel?' · Blk '+esc(a.block)+' '+esc(a.unitLabel):''}</div><div class="m">${esc(a.purpose||'')}${a.where?' · '+esc(a.where):''}${a.notes?'<br>'+esc(a.notes):''}</div></div><span class="pill" style="${a.status==='done'?pillStyle('selling'):a.status==='cancelled'?pillStyle('noknock'):pillStyle('appt')}">${esc(a.status==='scheduled'?'Scheduled':a.status==='done'?'Done':'Cancelled')}</span></button>`;}).join('')
+    :`<div class="panel empty"><h3>No ${names[apptFilter].toLowerCase()} appointments</h3><p>Set a door to "Appointment set" and pick a date, or add one with + Appointment.</p></div>`;
+  $('apptList').querySelectorAll('.item').forEach(i=>i.onclick=()=>openApptSheet(appts.find(a=>a.id===i.dataset.id)));
+}
+$('addApptBtn').onclick=()=>openApptSheet(null);
+
+/* ---------- sheets ---------- */
+function closeSheet(){$('sheetHost').innerHTML='';}
+function sheet(html){$('sheetHost').innerHTML=`<div class="scrim" id="scrim"><div class="sheet stack" role="dialog" aria-modal="true">${html}</div></div>`;
+  $('scrim').addEventListener('click',e=>{if(e.target.id==='scrim')closeSheet();});}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet();});
+
+/* ---------- HDB block facts (HDB Property Information, data.gov.sg) ---------- */
+const TOWNS={AMK:'Ang Mo Kio',BB:'Bukit Batok',BD:'Bedok',BH:'Bishan',BM:'Bukit Merah',BP:'Bukit Panjang',BT:'Bukit Timah',CCK:'Choa Chu Kang',CL:'Clementi',CT:'Central Area',GL:'Geylang',HG:'Hougang',JE:'Jurong East',JW:'Jurong West',KWN:'Kallang/Whampoa',MP:'Marine Parade',PG:'Punggol',PRC:'Pasir Ris',QT:'Queenstown',SB:'Sembawang',SGN:'Serangoon',SK:'Sengkang',TAP:'Tampines',TG:'Tengah',TP:'Toa Payoh',WL:'Woodlands',YS:'Yishun'};
+const TYPE_NAME={'1':'1-room','2':'2-room','3':'3-room','4':'4-room','5':'5-room','E':'Executive','M':'Jumbo / Multi-gen','S':'2-room'};
+const TYPE_SHORT={'2-room':'2R','3-room':'3R','4-room':'4R','5-room':'5R','Executive':'EA','Jumbo / Multi-gen':'MG'};
+let HDB=null;
+function hdb(){return HDB||{blocks:{}};}
+const titleSt=s=>String(s).toLowerCase().replace(/(^|[\s/(])(\w)/g,(m,a,c)=>a+c.toUpperCase());
+function findBlocks(blk,town){const out=[];if(!blk)return out;for(const [st,m] of Object.entries(hdb().blocks)){const r=m[blk];if(r&&(!town||r[2]===town))out.push({street:st,blk,maxFloor:r[0],year:r[1],town:r[2],mix:r[3]||{}});}return out.sort((a,b)=>a.street.localeCompare(b.street));}
+function lookup(blk,street){const m=hdb().blocks[String(street||'').toUpperCase()];const r=m&&m[String(blk||'').toUpperCase()];return r?{street:String(street).toUpperCase(),blk,maxFloor:r[0],year:r[1],town:r[2],mix:r[3]||{}}:null;}
+let RES=null;
+function resale(){return RES||{months:[],blk:{},st:{},lease:{}};}
+const money=n=>'$'+Math.round(n).toLocaleString('en-SG');
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function monthsLabel(ms){if(!ms.length)return '';const a=ms[0],z=ms[ms.length-1];return MON[+a.slice(5)-1]+(a.slice(0,4)!==z.slice(0,4)?' '+a.slice(0,4):'')+'–'+MON[+z.slice(5)-1]+' '+z.slice(0,4);}
+function renderFacts(b){
+  const host=$('blockInfo');const info=lookup(b.block,b.street);const R=resale();
+  const key=String(b.street||'').toUpperCase()+'|'+String(b.block).toUpperCase();
+  const yr=new Date().getFullYear();const ls=R.lease[key];
+  const bp=R.blk[key]||{},sp=R.st[String(b.street||'').toUpperCase()]||{};
+  const types=[...new Set([...Object.keys(info?info.mix:{}),...Object.keys(bp)])].filter(t=>TYPE_NAME[t]).sort();
+  let open=true;try{open=localStorage.getItem('dk.facts')!=='0';}catch(_){}
+  const tot=info?Object.values(info.mix).reduce((a,c)=>a+c,0):0;
+  const age=info&&info.year?yr-info.year:null;
+  const sumBits=[age!==null?age+' yrs old':'',ls?(99-(yr-ls))+' yrs lease left':''].filter(Boolean).join(' · ');
+  host.innerHTML=`<details class="panel facts" id="factsBox"${open?' open':''}><summary>Blk ${esc(b.block)} facts <span class="note" style="font-weight:500">${esc(sumBits)}</span></summary>
+  ${info?`<dl>
+    <dt>Storeys</dt><dd>${info.maxFloor}</dd>
+    <dt>Completed</dt><dd>${info.year||'–'}${age!==null?` (${age} years old)`:''}</dd>
+    ${ls?`<dt>Lease from</dt><dd>${ls} · about ${99-(yr-ls)} of 99 years left</dd>`:''}
+    <dt>Flats</dt><dd>${tot}: ${esc(mixText(info.mix))}</dd>
+    <dt>Per floor</dt><dd>about ${Math.round(tot/Math.max(1,info.maxFloor-1))}</dd>
+  </dl>`:`<p class="note" style="margin:8px 0 0">HDB block facts not found for this street name. Edit the block and pick it from the matches to link them.</p>`}
+  ${types.length?`<table class="px"><thead><tr><th>Average resale price, ${esc(monthsLabel(R.months))}</th><th>This block</th><th>${esc(titleSt(b.street||'Street'))}</th></tr></thead><tbody>
+    ${types.map(t=>{const x=bp[t],y=sp[t];return `<tr><td>${TYPE_NAME[t]}</td><td>${x?money(x[1])+`<small>${x[0]} sale${x[0]>1?'s':''} · $${x[2]} psf</small>`:'<small>no sales</small>'}</td><td>${y?money(y[1])+`<small>${y[0]} sale${y[0]>1?'s':''} · $${y[2]} psf</small>`:'<small>no sales</small>'}</td></tr>`;}).join('')}
+  </tbody></table>`:''}
+  <p class="note" style="margin:8px 0 0">Sources: HDB Property Information and HDB resale flat prices (data.gov.sg), data to ${esc(R.asOf||'')}. The latest month is still filling in, as HDB records resales after completion.</p></details>`;
+  $('factsBox').addEventListener('toggle',e=>{try{localStorage.setItem('dk.facts',e.target.open?'1':'0');}catch(_){}});
+}
+function mixText(mix){return Object.entries(mix).sort().map(([k,n])=>`${TYPE_NAME[k]||k} ${n}`).join(', ');}
+
+function openBlockSheet(b){
+  let picked=b?lookup(b.block,b.street):null;
+  const townOpts=Object.entries(TOWNS).sort((x,y)=>x[1].localeCompare(y[1])).map(([k,t])=>`<option value="${k}"${(picked&&picked.town===k)||(!picked&&k==='WL')?' selected':''}>${t}</option>`).join('');
+  sheet(`<div class="row"><h2 class="grow">${b?'Edit block':'Add a block'}</h2><button class="btn ghost small" id="bCancel">Cancel</button></div>
+  <div class="two"><div><label for="bBlk">Block no.</label><input id="bBlk" placeholder="e.g. 898B" autocomplete="off" value="${esc(b?b.block:'')}"></div>
+  <div><label for="bTown">Estate</label><select id="bTown"><option value="">Any estate</option>${townOpts}</select></div></div>
+  <div id="bMatches" class="list"></div>
+  <div id="bInfo"></div>
+  <div class="two"><div><label for="bFrom">Lowest floor with homes</label><input id="bFrom" type="number" inputmode="numeric" min="1" max="60" value="${b?b.floorFrom:2}"></div>
+  <div><label for="bTo">Top floor</label><input id="bTo" type="number" inputmode="numeric" min="1" max="60" value="${b?b.floorTo:''}"></div></div>
+  <div><label for="bUnits">Unit numbers on each floor</label><input id="bUnits" placeholder="e.g. 312, 314, 316, 318" value="${esc(b?(b.units||[]).filter(u=>!/^U\d+$/.test(u)).join(', '):'')}">
+  <div class="note">HDB doesn't publish unit numbers, so copy them from the lift lobby or letterboxes (#05-312 means floor 05, unit 312). Not there yet? Enter just the lobby you're at now and add the others with <b>+ Units (next lift lobby)</b> as you go. Or leave this blank and set units per floor as placeholders.</div></div>
+  <div id="bCountWrap"><label for="bCount">Units per floor (if no unit numbers yet)</label><input id="bCount" type="number" inputmode="numeric" min="1" max="40" value="${b&&(b.units||[]).every(u=>/^U\d+$/.test(u))?(b.units||[]).length:''}"></div>
+  <div id="bTypes"></div>
+  <input type="hidden" id="bSt" value="${esc(b?b.street:'')}">
+  <div class="warn" id="bErr"></div>
+  <div class="row"><button class="btn gold" id="bSave">${b?'Save block':'Add block'}</button>
+  ${b?'<span class="grow"></span><button class="btn ghost small" id="bDel">Delete block</button>':''}</div>`);
+  let types=Object.assign({},b&&b.unitTypes||{});
+  const unitList=()=>{const u=[...new Set($('bUnits').value.split(/[\s,;]+/).map(x=>x.trim().toUpperCase()).filter(Boolean))];if(u.length)return u;const n=parseInt($('bCount').value,10);return n>0&&n<=40?Array.from({length:n},(_,i)=>'U'+(i+1)):[];};
+  function showInfo(){
+    if(!picked){$('bInfo').innerHTML=$('bSt').value?`<div class="note">Street: ${esc($('bSt').value)}</div>`:'';return;}
+    const tot=Object.values(picked.mix).reduce((a,c)=>a+c,0);const fl=Math.max(1,picked.maxFloor-1);
+    $('bInfo').innerHTML=`<div class="panel stack" style="padding:10px 12px"><div><b>Blk ${esc(picked.blk)} ${esc(titleSt(picked.street))}</b> · ${esc(TOWNS[picked.town]||picked.town)}</div>
+      <div class="note">${picked.maxFloor} storeys${picked.year?' · completed '+picked.year:''} · ${tot} flats: ${esc(mixText(picked.mix))} · about ${Math.round(tot/fl)} per floor</div>
+      <div class="note">Source: HDB Property Information, data.gov.sg</div></div>`;}
+  function showTypes(){
+    const u=unitList();
+    if(!u.length){$('bTypes').innerHTML='';return;}
+    const opts=['',...new Set([...(picked?Object.keys(picked.mix).map(k=>TYPE_NAME[k]):[]),'3-room','4-room','5-room','Executive'])];
+    $('bTypes').innerHTML=`<label>Flat type for each unit stack</label><div class="note" style="margin-bottom:6px">Flats in the same stack (same unit number) are the same type. Set them once${picked?' using the mix above as a guide':''}; every door then shows its type.</div>
+      <div class="stgrid">${u.map(x=>`<div><label for="ty-${esc(x)}" style="margin:0 0 2px">Unit ${esc(x)}</label><select id="ty-${esc(x)}" data-u="${esc(x)}">${opts.map(o=>`<option${(types[x]||'')===o?' selected':''}>${o}</option>`).join('')}</select></div>`).join('')}</div>`;
+    $('bTypes').querySelectorAll('select').forEach(sel=>sel.onchange=()=>{types[sel.dataset.u]=sel.value;});}
+  function pick(m){picked=m;$('bSt').value=titleSt(m.street);$('bTo').value=m.maxFloor||'';if(!$('bFrom').value)$('bFrom').value=2;
+    const tot=Object.values(m.mix).reduce((a,c)=>a+c,0);if(!$('bUnits').value&&!$('bCount').value)$('bCount').value=Math.round(tot/Math.max(1,m.maxFloor-1));
+    $('bMatches').innerHTML='';showInfo();showTypes();}
+  function search(){
+    const blk=$('bBlk').value.trim().toUpperCase();
+    if(picked&&picked.blk===blk)return;
+    picked=null;$('bSt').value='';showInfo();
+    const ms=findBlocks(blk,$('bTown').value);
+    if(!blk){$('bMatches').innerHTML='';return;}
+    if(ms.length===1)return pick(ms[0]);
+    $('bMatches').innerHTML=ms.length?`<div class="note">${ms.length} blocks match. Pick one:</div>`+ms.slice(0,12).map((m,i)=>`<button class="item" data-i="${i}"><div class="main"><div class="t">Blk ${esc(m.blk)} ${esc(titleSt(m.street))}</div><div class="m">${esc(TOWNS[m.town]||m.town)} · ${m.maxFloor} storeys · ${esc(mixText(m.mix))}</div></div></button>`).join('')
+      :`<div class="note">No HDB block ${esc(blk)} found${$('bTown').value?' in '+esc(TOWNS[$('bTown').value]):''}. Check the number, try "Any estate", or fill in the floors and units yourself.</div>`;
+    $('bMatches').querySelectorAll('.item').forEach(btn=>btn.onclick=()=>pick(ms[+btn.dataset.i]));}
+  $('bBlk').addEventListener('input',search);$('bTown').addEventListener('change',()=>{picked=null;search();});
+  $('bUnits').addEventListener('input',showTypes);$('bCount').addEventListener('input',showTypes);
+  showInfo();showTypes();
+  $('bCancel').onclick=closeSheet;
+  $('bSave').onclick=async()=>{
+    const blk=$('bBlk').value.trim().toUpperCase(),st=$('bSt').value.trim(),from=parseInt($('bFrom').value,10),to=parseInt($('bTo').value,10);
+    const units=unitList();
+    if(!blk)return $('bErr').textContent='Enter the block number.';
+    if(!st)return $('bErr').textContent='Pick the block from the matches above so the street is filled in.';
+    if(!(from>=1&&to>=from&&to<=60))return $('bErr').textContent='Floors must run from low to high, up to 60.';
+
+    const ut={};units.forEach(u=>{if(types[u])ut[u]=types[u];});
+    const id=b?b.id:slug(blk+' '+st);
+    $('bSave').disabled=true;
+    if(await write(db.doc('blocks/'+id),{block:blk,street:st,town:picked?picked.town:(b&&b.town)||'',floorFrom:from,floorTo:to,units,unitTypes:ut,lobbies:Object.fromEntries(Object.entries(b&&b.lobbies||{}).filter(([u])=>units.includes(u))),updatedAt:new Date().toISOString(),createdAt:b?b.createdAt:new Date().toISOString()},'Block saved')){
+      curBlock=id;try{localStorage.setItem('dk.block',id);}catch(_){}closeSheet();showTab('walk');}else $('bSave').disabled=false;};
+  if(b)$('bDel').onclick=()=>{$('bDel').outerHTML=`<span class="warn">Doors logged here stay in All doors.</span> <button class="btn small" style="background:var(--danger)" id="bDel2">Confirm delete</button>`;
+    $('bDel2').onclick=async()=>{await write(db.doc('blocks/'+b.id),null,'Block deleted');closeSheet();};};
+}
+
+/* Add a lift lobby's units to a block as you reach it */
+function openUnitsSheet(b){
+  const lobs=[...new Set(Object.values(b.lobbies||{}).filter(Boolean))];
+  const nextName='Lobby '+String.fromCharCode(65+lobs.length);
+  const placeholders=(b.units||[]).filter(u=>/^U\d+$/.test(u));
+  const phUsed=placeholders.some(u=>doors.some(d=>d.blockId===b.id&&d.unitLabel.endsWith('-'+u)));
+  const info=lookup(b.block,b.street);
+  const opts=['',...new Set([...(info?Object.keys(info.mix).map(k=>TYPE_NAME[k]):[]),'3-room','4-room','5-room','Executive'])];
+  sheet(`<div class="row"><h2 class="grow">Add units · Blk ${esc(b.block)}</h2><button class="btn ghost small" id="uCancel">Cancel</button></div>
+  <div class="note">Already in the grid: ${(b.units||[]).length?esc((b.units||[]).join(', ')):'none'}.</div>
+  <div class="two"><div><label for="uLobby">Lift lobby name</label><input id="uLobby" value="${esc(nextName)}" placeholder="e.g. Lobby B"></div>
+  <div><label for="uUnits">Unit numbers in this lobby</label><input id="uUnits" placeholder="e.g. 320, 322, 324" autocomplete="off"></div></div>
+  ${placeholders.length&&!phUsed?`<label style="display:flex;gap:8px;align-items:center;font-weight:500;color:var(--ink)"><input type="checkbox" id="uDropPh" checked style="width:auto"> Remove the placeholder units (${esc(placeholders[0])}–${esc(placeholders[placeholders.length-1])})</label>`:''}
+  <div id="uTypes"></div>
+  <div class="warn" id="uErr"></div>
+  <button class="btn gold" id="uSave">Add to grid</button>`);
+  const types={};
+  const list=()=>[...new Set($('uUnits').value.split(/[\s,;]+/).map(x=>x.trim().toUpperCase()).filter(Boolean))].filter(u=>!(b.units||[]).includes(u));
+  const showTypes=()=>{const u=list();$('uTypes').innerHTML=u.length?`<label>Flat type for each new stack</label><div class="stgrid">${u.map(x=>`<div><label for="ut-${esc(x)}" style="margin:0 0 2px">Unit ${esc(x)}</label><select id="ut-${esc(x)}" data-u="${esc(x)}">${opts.map(o=>`<option${(types[x]||'')===o?' selected':''}>${o}</option>`).join('')}</select></div>`).join('')}</div>`:'';
+    $('uTypes').querySelectorAll('select').forEach(sel=>sel.onchange=()=>{types[sel.dataset.u]=sel.value;});};
+  $('uUnits').addEventListener('input',showTypes);
+  $('uCancel').onclick=closeSheet;
+  $('uSave').onclick=async()=>{
+    const add=list();if(!add.length)return $('uErr').textContent='Enter at least one new unit number.';
+    const drop=$('uDropPh')&&$('uDropPh').checked;
+    const units=[...(b.units||[]).filter(u=>!(drop&&/^U\d+$/.test(u))),...add];
+    if(units.length>60)return $('uErr').textContent='A block can have up to 60 unit stacks.';
+    const lobby=$('uLobby').value.trim();
+    const lobbies=Object.assign({},b.lobbies||{});add.forEach(u=>{if(lobby)lobbies[u]=lobby;});
+    const unitTypes=Object.assign({},b.unitTypes||{});add.forEach(u=>{if(types[u])unitTypes[u]=types[u];});
+    if(drop)placeholders.forEach(u=>{delete unitTypes[u];delete lobbies[u];});
+    const body=Object.assign({},b,{units,lobbies,unitTypes,updatedAt:new Date().toISOString()});delete body.id;
+    $('uSave').disabled=true;
+    if(await write(db.doc('blocks/'+b.id),body,add.length+' unit'+(add.length>1?'s':'')+' added'))closeSheet();else $('uSave').disabled=false;};
+}
+
+function openDoorSheet(d){
+  const isNew=!d.id; let st=d.status||'';
+  const appt=d.apptId?appts.find(a=>a.id===d.apptId):null;
+  const hist=(d.visits||[]).slice().reverse();
+  sheet(`<div class="row"><div class="grow"><h2>${esc(d.unitLabel)} · Blk ${esc(d.block)}</h2><div class="sub">${esc(d.street||'')}${d.lastVisit?' · last knocked '+fmtDate(d.lastVisit.slice(0,10)):''}</div></div><button class="btn ghost small" id="dClose">Close</button></div>
+  <div><label>What happened at this door?</label><div class="stgrid" id="stGrid">${STATUSES.map(s=>`<button class="stbtn" data-k="${s.k}" aria-pressed="${st===s.k}" style="${pillStyle(s.k)}">${s.t}</button>`).join('')}</div></div>
+  <div class="two"><div><label for="dOwner">Owner name</label><input id="dOwner" autocomplete="off" value="${esc(d.owner||'')}" placeholder="e.g. Mdm Tan"></div>
+  <div><label for="dFlat">Flat type</label><select id="dFlat">${FLAT.map(f=>`<option${f===(d.flatType||'')?' selected':''}>${f}</option>`).join('')}</select></div></div>
+  <div id="apptFields" ${st==='appt'?'':'hidden'} class="panel stack"><div class="two"><div><label for="aDate">Appointment date</label><input id="aDate" type="date" value="${esc(appt?appt.date:'')}"></div><div><label for="aTime">Time</label><input id="aTime" type="time" value="${esc(appt?appt.time:'')}"></div></div>
+  <div><label for="aPurpose">Purpose</label><select id="aPurpose">${PURPOSES.map(p=>`<option${appt&&appt.purpose===p?' selected':''}>${p}</option>`).join('')}</select></div>
+  <div class="note">Saves to Appointments automatically.</div></div>
+  <div><label for="dNotes">Notes</label><textarea id="dNotes" placeholder="e.g. Kids moved out, thinking of right-sizing next year">${esc(d.notes||'')}</textarea></div>
+  <div><label for="dFollow">Follow up on</label><input id="dFollow" type="date" value="${esc(d.followUp||'')}"></div>
+  <div class="warn" id="dErr"></div>
+  <div class="row"><button class="btn gold grow" id="dSave">Save visit</button>${isNew?'':'<button class="btn ghost" id="dContact">Save as contact</button><button class="btn ghost" id="dDel">Delete</button>'}</div>
+  ${hist.length?`<div><label>Visit history</label><ul class="hist">${hist.map(v=>`<li>${fmtDate(v.at.slice(0,10))} ${v.at.slice(11,16)} · ${esc(ST[v.status]?ST[v.status].t:'Updated')}</li>`).join('')}</ul></div>`:''}`);
+  $('dClose').onclick=closeSheet;
+  $('stGrid').querySelectorAll('.stbtn').forEach(btn=>btn.onclick=()=>{st=btn.dataset.k;$('stGrid').querySelectorAll('.stbtn').forEach(x=>x.setAttribute('aria-pressed',x===btn));$('apptFields').hidden=st!=='appt';});
+  $('dSave').onclick=async()=>{
+    if(!st)return $('dErr').textContent='Pick what happened at this door.';
+    const now=new Date().toISOString();
+    const id=d.id||slug(d.blockId+'-'+d.unitLabel);
+    const body={blockId:d.blockId,block:d.block,street:d.street||'',unitLabel:d.unitLabel,floor:d.floor||null,status:st,owner:$('dOwner').value.trim(),flatType:$('dFlat').value,notes:$('dNotes').value.trim(),followUp:$('dFollow').value||'',lastVisit:now,visits:[...(d.visits||[]),{at:now,status:st}].slice(-30),apptId:d.apptId||'',createdAt:d.createdAt||now};
+    if(st==='appt'){
+      const date=$('aDate').value,time=$('aTime').value;
+      if(!date)return $('dErr').textContent='Pick the appointment date.';
+      const aid=d.apptId||('door-'+id);
+      body.apptId=aid;
+      $('dSave').disabled=true;
+      const ok=await write(db.doc('appointments/'+aid),{doorId:id,block:d.block,street:d.street||'',unitLabel:d.unitLabel,owner:body.owner,date,time,purpose:$('aPurpose').value,where:'',status:(appt&&appt.status!=='cancelled')?appt.status:'scheduled',notes:appt?appt.notes||'':'',createdAt:appt?appt.createdAt:now,updatedAt:now});
+      if(!ok){$('dSave').disabled=false;return;}
+    }
+    $('dSave').disabled=true;
+    if(await write(db.doc('doors/'+id),body,st==='appt'?'Saved, appointment added':'Visit saved'))closeSheet();else $('dSave').disabled=false;
+  };
+  if(!isNew)$('dContact').onclick=()=>{const ex=contacts.find(c=>c.doorId===d.id);if(ex)return openContactSheet(ex);
+    openContactSheet(null,{name:d.owner||'',address:'Blk '+d.block+' '+(d.street||'')+' '+d.unitLabel,doorId:d.id,type:d.status==='selling'||d.status==='consider'?'Seller':'Other',notes:d.notes||'',followUp:d.followUp||'',status:d.status==='appt'?'appt':'new'});};
+  if(!isNew)$('dDel').onclick=()=>{$('dDel').outerHTML='<button class="btn" style="background:var(--danger)" id="dDel2">Confirm delete</button>';$('dDel2').onclick=async()=>{if(await write(db.doc('doors/'+d.id),null,'Door deleted'))closeSheet();};};
+}
+
+function openApptSheet(a,prefill){
+  const isNew=!a; a=a||Object.assign({status:'scheduled',date:todayISO(),time:'',purpose:PURPOSES[0]},prefill||{});
+  let status=a.status;
+  sheet(`<div class="row"><div class="grow"><h2>${isNew?'New appointment':'Appointment'}</h2>${a.unitLabel?`<div class="sub">From door ${esc(a.unitLabel)} · Blk ${esc(a.block)} ${esc(a.street||'')}</div>`:''}</div><button class="btn ghost small" id="aClose">Close</button></div>
+  <div><label for="xOwner">Name</label><input id="xOwner" value="${esc(a.owner||'')}" placeholder="e.g. Mr Lim"></div>
+  <div class="two"><div><label for="xDate">Date</label><input id="xDate" type="date" value="${esc(a.date||'')}"></div><div><label for="xTime">Time</label><input id="xTime" type="time" value="${esc(a.time||'')}"></div></div>
+  <div class="two"><div><label for="xPurpose">Purpose</label><select id="xPurpose">${PURPOSES.map(p=>`<option${a.purpose===p?' selected':''}>${p}</option>`).join('')}</select></div>
+  <div><label for="xWhere">Where</label><input id="xWhere" value="${esc(a.where||'')}" placeholder="${a.unitLabel?'At their flat':'e.g. Causeway Point'}"></div></div>
+  <div><label>Status</label><div class="chips" id="xSt">${[['scheduled','Scheduled'],['done','Done'],['cancelled','Cancelled']].map(([k,t])=>`<button class="chip" data-k="${k}" aria-pressed="${status===k}">${t}</button>`).join('')}</div></div>
+  <div><label for="xNotes">Notes</label><textarea id="xNotes">${esc(a.notes||'')}</textarea></div>
+  <div class="warn" id="xErr"></div>
+  <div class="row"><button class="btn gold grow" id="xSave">Save</button>${isNew?'':'<button class="btn ghost" id="xDel">Delete</button>'}</div>`);
+  $('aClose').onclick=closeSheet;
+  $('xSt').querySelectorAll('.chip').forEach(c=>c.onclick=()=>{status=c.dataset.k;$('xSt').querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===c));});
+  $('xSave').onclick=async()=>{
+    const date=$('xDate').value;if(!date)return $('xErr').textContent='Pick a date.';
+    const now=new Date().toISOString();const id=a.id||('appt-'+Date.now().toString(36));
+    const body={doorId:a.doorId||'',contactId:a.contactId||'',block:a.block||'',street:a.street||'',unitLabel:a.unitLabel||'',owner:$('xOwner').value.trim(),date,time:$('xTime').value,purpose:$('xPurpose').value,where:$('xWhere').value.trim(),status,notes:$('xNotes').value.trim(),createdAt:a.createdAt||now,updatedAt:now};
+    $('xSave').disabled=true;
+    if(await write(db.doc('appointments/'+id),body,'Appointment saved')){
+      // keep the linked door in step: owner name, and status when the appointment is cancelled
+      const door=a.doorId&&doors.find(x=>x.id===a.doorId);
+      if(door&&(door.owner!==body.owner)) await write(db.doc('doors/'+door.id),Object.assign({},door,{id:undefined,owner:body.owner}),null);
+      closeSheet();
+    } else $('xSave').disabled=false;
+  };
+  if(!isNew)$('xDel').onclick=()=>{$('xDel').outerHTML='<button class="btn" style="background:var(--danger)" id="xDel2">Confirm delete</button>';$('xDel2').onclick=async()=>{if(await write(db.doc('appointments/'+a.id),null,'Appointment deleted'))closeSheet();};};
+}
+
+/* one-tap marking for the many doors that aren't selling */
+async function quickMark(d,status){
+  const now=new Date().toISOString();const id=d.id||slug(d.blockId+'-'+d.unitLabel);
+  const prev=d.id?JSON.parse(JSON.stringify(d)):null;
+  const body={blockId:d.blockId,block:d.block,street:d.street||'',unitLabel:d.unitLabel,floor:d.floor||null,status,owner:d.owner||'',flatType:d.flatType||'',notes:d.notes||'',followUp:d.followUp||'',lastVisit:now,visits:[...(d.visits||[]),{at:now,status}].slice(-30),apptId:d.apptId||'',createdAt:d.createdAt||now};
+  if(await write(db.doc('doors/'+id),body,null)){
+    toast(d.unitLabel+' marked '+ST[status].t.toLowerCase(),async()=>{
+      if(prev){delete prev.id;await write(db.doc('doors/'+id),prev,'Undone');}else await write(db.doc('doors/'+id),null,'Undone');});
+  }
+}
+
+/* ---------- writes ---------- */
+async function write(ref,body,msg){
+  if(!db){toast('Not connected, so nothing was saved.');return false;}
+  if(!canWrite){toast('This copy is view-only.');return false;}
+  try{
+    if(body===null)await ref.delete();
+    else{const clean=JSON.parse(JSON.stringify(body));await ref.set(clean);}
+    if(msg)toast(msg);return true;
+  }catch(e){
+    if(e&&e.code==='unavailable'){await new Promise(r=>setTimeout(r,600+Math.random()*600));try{body===null?await ref.delete():await ref.set(JSON.parse(JSON.stringify(body)));if(msg)toast(msg);return true;}catch(_){}}
+    toast(e&&e.code==='quota_exceeded'?'Storage is full. Export and delete old doors.':e&&e.code==='invalid_argument'?'You can view this log but not change it.':'Not saved. Check your connection and try again.');
+    return false;}
+}
+
+/* ---------- CSV export ---------- */
+function csv(rows){return rows.map(r=>r.map(v=>{v=String(v??'');return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}).join(',')).join('\n');}
+$('exportBtn').onclick=async()=>{
+  if(!downloads)return toast('Export is not available here.');
+  const d=csv([['Block','Street','Unit','Owner','Flat type','Status','Last knocked','Visits','Follow up','Notes'],...doors.map(x=>[x.block,x.street,x.unitLabel,x.owner,x.flatType,ST[x.status]?ST[x.status].t:'',(x.lastVisit||'').slice(0,10),(x.visits||[]).length,x.followUp,x.notes])])
+   +'\n\n'+csv([['Appointment date','Time','Name','Block','Unit','Purpose','Where','Status','Notes'],...appts.map(a=>[a.date,a.time,a.owner,a.block,a.unitLabel,a.purpose,a.where,a.status,a.notes])]);
+  try{await downloads.save({filename:'door-knock-log-'+todayISO()+'.csv',data:d});}catch(e){toast('Export cancelled.');}
+};
+
+/* ---------- contacts ---------- */
+const C_STATUS=[['new','New'],['contacted','Contacted'],['nurture','Nurturing'],['appt','Appointment'],['client','Client'],['closed','Closed deal'],['nope','Not interested']];
+const C_TYPES=['Seller','Buyer','Upgrader','Right-sizer','Landlord','Tenant','Investor','Other'];
+const C_SOURCES=['Door knock','Website','WhatsApp','Referral','Roadshow / event','Social media','Past client','Other'];
+let cFilter='all';
+function cPill(k){const m={new:'consider',contacted:'notin',nurture:'notselling',appt:'appt',client:'selling',closed:'selling',nope:'noknock'};const t=(C_STATUS.find(x=>x[0]===k)||[,'New'])[1];return `<span class="pill" style="${pillStyle(m[k]||'consider')}">${esc(t)}</span>`;}
+function renderContacts(){
+  if(!$('contactChips'))return;
+  const due=c=>c.followUp&&c.followUp<=todayISO();
+  const chips=[['all','All'],...C_STATUS,['due','Follow-up due']];
+  $('contactChips').innerHTML=chips.map(([k,t])=>`<button class="chip" data-k="${k}" aria-pressed="${cFilter===k}">${esc(t)} ${k==='all'?contacts.length:k==='due'?contacts.filter(due).length:contacts.filter(c=>(c.status||'new')===k).length}</button>`).join('');
+  $('contactChips').querySelectorAll('.chip').forEach(c=>c.onclick=()=>{cFilter=c.dataset.k;renderContacts();});
+  const q=$('cSearch').value.trim().toLowerCase();
+  let list=contacts.filter(c=>cFilter==='all'||(cFilter==='due'?due(c):(c.status||'new')===cFilter));
+  if(q)list=list.filter(c=>[c.name,c.phone,c.email,c.notes,c.address].join(' ').toLowerCase().includes(q));
+  list.sort((a,b)=>String(a.followUp||'9999').localeCompare(String(b.followUp||'9999'))||String(a.name||'').localeCompare(String(b.name||'')));
+  $('contactList').innerHTML=list.length?list.map(c=>`<button class="item" data-id="${esc(c.id)}"><div class="main"><div class="t">${esc(c.name||'No name')}${c.type?' · '+esc(c.type):''}</div><div class="m">${esc(c.phone||'')}${c.email?' · '+esc(c.email):''}${c.address?' · '+esc(c.address):''}${c.followUp?' · follow up '+fmtDate(c.followUp):''}${c.notes?'<br>'+esc(c.notes):''}</div></div>${cPill(c.status||'new')}</button>`).join('')
+    :`<div class="panel empty"><h3>No contacts here yet</h3><p>Add people you meet, or save a door's owner as a contact from the door's details.</p></div>`;
+  $('contactList').querySelectorAll('.item').forEach(i=>i.onclick=()=>openContactSheet(contacts.find(c=>c.id===i.dataset.id)));
+}
+$('cSearch').addEventListener('input',renderContacts);
+$('addContactBtn').onclick=()=>openContactSheet(null);
+function openContactSheet(c,prefill){
+  const isNew=!c; c=c||Object.assign({status:'new',source:'Door knock',type:'Seller'},prefill||{});
+  const opt=(arr,v)=>arr.map(o=>`<option${o===v?' selected':''}>${esc(o)}</option>`).join('');
+  sheet(`<div class="row"><h2 class="grow">${isNew?'New contact':esc(c.name||'Contact')}</h2><button class="btn ghost small" id="kClose">Close</button></div>
+  <div class="two"><div><label for="kName">Name</label><input id="kName" value="${esc(c.name||'')}" autocomplete="off"></div>
+  <div><label for="kPhone">Mobile</label><input id="kPhone" type="tel" inputmode="tel" value="${esc(c.phone||'')}" autocomplete="off" placeholder="e.g. 9123 4567"></div></div>
+  <div class="two"><div><label for="kEmail">Email</label><input id="kEmail" type="email" value="${esc(c.email||'')}" autocomplete="off"></div>
+  <div><label for="kAddr">Address / unit</label><input id="kAddr" value="${esc(c.address||'')}" autocomplete="off" placeholder="e.g. Blk 898B #06-312"></div></div>
+  <div class="two"><div><label for="kType">Type</label><select id="kType">${opt(C_TYPES,c.type)}</select></div>
+  <div><label for="kSource">Source</label><select id="kSource">${opt(C_SOURCES,c.source)}</select></div></div>
+  <div><label>Status</label><div class="chips" id="kSt">${C_STATUS.map(([k,t])=>`<button class="chip" data-k="${k}" aria-pressed="${(c.status||'new')===k}">${t}</button>`).join('')}</div></div>
+  <div class="two"><div><label for="kFollow">Follow up on</label><input id="kFollow" type="date" value="${esc(c.followUp||'')}"></div>
+  <div><label for="kConsent">Consent to contact</label><select id="kConsent">${opt(['','Yes, verbally','Yes, in writing','No'],c.consent||'')}</select></div></div>
+  <div><label for="kNotes">Notes</label><textarea id="kNotes">${esc(c.notes||'')}</textarea></div>
+  <div class="note">Don't record NRIC or bank details. Check the DNC Registry before marketing calls or messages.</div>
+  <div class="warn" id="kErr"></div>
+  <div class="row"><button class="btn gold grow" id="kSave">Save contact</button>${isNew?'':'<button class="btn ghost" id="kAppt">+ Appointment</button><button class="btn ghost" id="kDel">Delete</button>'}</div>`);
+  let status=c.status||'new';
+  $('kSt').querySelectorAll('.chip').forEach(x=>x.onclick=()=>{status=x.dataset.k;$('kSt').querySelectorAll('.chip').forEach(y=>y.setAttribute('aria-pressed',y===x));});
+  $('kClose').onclick=closeSheet;
+  $('kSave').onclick=async()=>{
+    const name=$('kName').value.trim();if(!name&&!$('kPhone').value.trim())return $('kErr').textContent='Enter a name or a mobile number.';
+    const now=new Date().toISOString();const id=c.id||('c-'+Date.now().toString(36));
+    const body={name,phone:$('kPhone').value.trim(),email:$('kEmail').value.trim(),address:$('kAddr').value.trim(),type:$('kType').value,source:$('kSource').value,status,followUp:$('kFollow').value,consent:$('kConsent').value,notes:$('kNotes').value.trim(),doorId:c.doorId||'',createdAt:c.createdAt||now,updatedAt:now};
+    $('kSave').disabled=true;
+    if(await write(db.doc('contacts/'+id),body,'Contact saved'))closeSheet();else $('kSave').disabled=false;};
+  if(!isNew){
+    $('kAppt').onclick=()=>openApptSheet(null,{owner:c.name,where:c.address,contactId:c.id});
+    $('kDel').onclick=()=>{$('kDel').outerHTML='<button class="btn" style="background:var(--danger)" id="kDel2">Confirm delete</button>';$('kDel2').onclick=async()=>{if(await write(db.doc('contacts/'+c.id),null,'Contact deleted'))closeSheet();};};}
+}
+
+/* ---------- data: your own Cloudflare database via /agent/api ---------- */
+const store={blocks:{},doors:{},appointments:{},contacts:{}};const listeners={};
+function emit(coll){const docs=Object.entries(store[coll]).map(([id,v])=>({id,data:()=>v}));(listeners[coll]||[]).forEach(fn=>fn({docs,metadata:{fromCache:false}}));}
+function signedOut(){location.href='/agent/';}
+async function api(method,path,body){
+  const r=await fetch('/agent/api/'+path,{method,headers:body?{'content-type':'application/json'}:{},body:body?JSON.stringify(body):undefined,credentials:'same-origin'});
+  if(r.status===401){signedOut();throw {code:'revoked'};}
+  if(!r.ok)throw {code:r.status===413?'quota_exceeded':'unavailable'};
+  return r.json();
+}
+db={
+  doc(path){const [coll,id]=path.split('/');return {
+    async set(v){await api('PUT',coll+'/'+encodeURIComponent(id),v);store[coll][id]=v;emit(coll);},
+    async delete(){await api('DELETE',coll+'/'+encodeURIComponent(id));delete store[coll][id];emit(coll);}};},
+  collection(coll){return {onSnapshot(fn){(listeners[coll]=listeners[coll]||[]).push(fn);return()=>{};}};}
+};
+downloads={async save({filename,data}){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'text/csv'}));a.download=filename;document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);}};
+$('exportBtn').hidden=false;
+async function loadAll(){
+  try{const all=await api('GET','all');
+    for(const k of Object.keys(store)){store[k]={};(all[k]||[]).forEach(r=>{const id=r.id;const v=Object.assign({},r);delete v.id;delete v._updated;store[k][id]=v;});emit(k);}
+    setStatus('');
+  }catch(e){if(e.code!=='revoked')setStatus("Can't reach your records. Check your connection, then pull down to refresh.");}
+}
+render();
+const subA=(path,assign)=>db.collection(path).onSnapshot(s=>{assign(s.docs.map(x=>Object.assign({id:x.id},x.data())));render();});
+subA('blocks',v=>{blocks=v.sort((a,b)=>(a.block+a.street).localeCompare(b.block+b.street,undefined,{numeric:true}));});
+subA('doors',v=>{doors=v;});
+subA('appointments',v=>{appts=v;});
+subA('contacts',v=>{contacts=v;});
+loadAll();
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')loadAll();});
+Promise.all([fetch('/data/hdb-blocks.json').then(r=>r.json()).catch(()=>null),fetch('/data/hdb-block-resale.json').then(r=>r.json()).catch(()=>null)])
+  .then(([h,r])=>{if(h)HDB=h;if(r)RES=r;renderWalk();});
+})();
+</script>
+</body></html>
