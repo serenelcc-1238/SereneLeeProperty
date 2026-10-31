@@ -1,0 +1,30 @@
+name: Temp - recover old agent app
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  grab:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download the my-contacts worker and the live app files
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACC: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          mkdir -p out/site
+          curl -s -H "Authorization: Bearer $CF_TOKEN" "https://api.cloudflare.com/client/v4/accounts/$CF_ACC/workers/scripts/my-contacts/content/v2" -o out/worker-content.bin -w "worker content: %{http_code}\n" || true
+          curl -s -H "Authorization: Bearer $CF_TOKEN" "https://api.cloudflare.com/client/v4/accounts/$CF_ACC/workers/scripts/my-contacts/settings" -o out/worker-settings.json -w "settings: %{http_code}\n" || true
+          curl -s -H "Authorization: Bearer $CF_TOKEN" "https://api.cloudflare.com/client/v4/accounts/$CF_ACC/workers/scripts/my-contacts/content" -o out/worker-content-v1.bin -w "worker content v1: %{http_code}\n" || true
+          curl -s -H "Authorization: Bearer $CF_TOKEN" "https://api.cloudflare.com/client/v4/accounts/$CF_ACC/workers/domains" -o out/domains.json -w "domains: %{http_code}\n" || true
+          cd out/site
+          curl -sL -A "Mozilla/5.0" https://app.sereneleeproperty.com/ -o index.html -w "app index: %{http_code} %{size_download}\n" || true
+          for u in $(grep -oE '(src|href)="[^"#]+\.(js|css|json|webmanifest)[^"]*"' index.html | sed -E 's/^(src|href)="//; s/"$//' | sort -u); do
+            case "$u" in http*) url="$u";; /*) url="https://app.sereneleeproperty.com$u";; *) url="https://app.sereneleeproperty.com/$u";; esac
+            f=$(echo "$u" | sed 's#[^A-Za-z0-9._-]#_#g'); curl -sL -A "Mozilla/5.0" "$url" -o "$f" -w "$u: %{http_code} %{size_download}\n" || true
+          done
+          ls -la
+      - uses: actions/upload-artifact@v4
+        with:
+          name: old-app
+          path: out
+          retention-days: 1
