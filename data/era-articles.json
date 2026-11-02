@@ -1,6 +1,34 @@
 {
- "retrieved": "2026-10-26T09:06+08:00",
+ "retrieved": "2026-11-02T10:24+08:00",
  "articles": [
+  {
+   "category": "PressRelease",
+   "title": "Commentary on the launch of Thomson Reserve",
+   "slug": "commentary-on-the-launch-of-thomson-reserve",
+   "published": "2026-11-01T04:11:18Z",
+   "url": "https://www.era.com.sg/press-release/commentary-on-the-launch-of-thomson-reserve"
+  },
+  {
+   "category": "Blog",
+   "title": "Woodlands South’s Next Chapter: New Homes, Better Connectivity and Everyday Amenities",
+   "slug": "woodlands-souths-next-chapter-new-homes-better-connectivity-and-everyday-amenities",
+   "published": "2026-10-30T09:21:56Z",
+   "url": "https://www.era.com.sg/blogs/woodlands-souths-next-chapter-new-homes-better-connectivity-and-everyday-amenities"
+  },
+  {
+   "category": "Research",
+   "title": "Orchard Boulevard – Government Land Sale (GLS) Site Analysis",
+   "slug": "orchard-boulevard-government-land-sale-gls-site-analysis",
+   "published": "2026-10-30T01:45:30Z",
+   "url": "https://www.era.com.sg/research-articles/orchard-boulevard-government-land-sale-gls-site-analysis"
+  },
+  {
+   "category": "PressRelease",
+   "title": "Commentary on Orchard Boulevard GLS Closing",
+   "slug": "commentary-on-orchard-boulevard-gls-closing",
+   "published": "2026-10-29T10:22:25Z",
+   "url": "https://www.era.com.sg/press-release/commentary-on-orchard-boulevard-gls-closing"
+  },
   {
    "category": "PressRelease",
    "title": "3Q 2026 URA Real Estate Statistics: Prices Continue to Climb Despite Lower Transactions in Quarter; Fuelled by Landed and OCR (Non-Landed) Market Segments",
@@ -52,6 +80,13 @@
   },
   {
    "category": "Research",
+   "title": "ERA PROJECT E-BOOK OCT 2026 (PASSWORD = iloveERA)",
+   "slug": "era-project-e-book-oct-2026-password-iloveera",
+   "published": "2026-10-12T07:48:48Z",
+   "url": "https://www.era.com.sg/research-articles/era-project-e-book-oct-2026-password-iloveera"
+  },
+  {
+   "category": "Research",
    "title": "1H 2026 Luxury Homes Report: New High in Luxury Home Transactions Underscores Singapore’s Safe Haven Appeal",
    "slug": "1h-2026-luxury-homes",
    "published": "2026-10-09T10:00:18Z",
@@ -65,39 +100,11 @@
    "url": "https://www.era.com.sg/blogs/land-scarce-singapore"
   },
   {
-   "category": "PressRelease",
-   "title": "Commentary on the launch of Lucerne Grand",
-   "slug": "commentary-on-the-launch-of-lucerne-grand",
-   "published": "2026-10-03T10:17:27Z",
-   "url": "https://www.era.com.sg/press-release/commentary-on-the-launch-of-lucerne-grand"
-  },
-  {
    "category": "Research",
    "title": "Canberra Drive (EC) – Government Land Sale (GLS) Site Analysis",
    "slug": "canberra-drive-ec-gls-site-analysis",
    "published": "2026-10-02T09:30:07Z",
    "url": "https://www.era.com.sg/research-articles/canberra-drive-ec-gls-site-analysis"
-  },
-  {
-   "category": "Research",
-   "title": "3Q 2026 URA Private Residential Report: Prices Continue Growing Despite Quieter Quarter for New Home Sales",
-   "slug": "3q-2026-ura-private-residential-report",
-   "published": "2026-10-02T07:54:50Z",
-   "url": "https://www.era.com.sg/research-articles/3q-2026-ura-private-residential-report"
-  },
-  {
-   "category": "Research",
-   "title": "3Q 2026 HDB Quarterly Report: HDB Resale Prices Continue Falling Even as Transactions Balloon After Lifting of 15-Month Wait Out Rule",
-   "slug": "3q-2026-hdb-quarterly-report-hdb",
-   "published": "2026-10-02T07:07:31Z",
-   "url": "https://www.era.com.sg/research-articles/3q-2026-hdb-quarterly-report-hdb"
-  },
-  {
-   "category": "PressRelease",
-   "title": "Commentary on Canberra Drive (EC) GLS Closing",
-   "slug": "commentary-on-canberra-drive-ec-gls-closing",
-   "published": "2026-10-01T11:41:12Z",
-   "url": "https://www.era.com.sg/press-release/commentary-on-canberra-drive-ec-gls-closing"
   },
   {
    "category": "Blog",
@@ -119,13 +126,6 @@
    "slug": "cbd-liveable",
    "published": "2026-09-10T02:57:04Z",
    "url": "https://www.era.com.sg/blogs/cbd-liveable"
-  },
-  {
-   "category": "Blog",
-   "title": "With New Freehold Launches Becoming Rarer in 2026, Will Buyers Have Enough Choices?",
-   "slug": "freehold-rarer-2026",
-   "published": "2026-09-07T03:53:21Z",
-   "url": "https://www.era.com.sg/blogs/freehold-rarer-2026"
   }
  ]
 }
