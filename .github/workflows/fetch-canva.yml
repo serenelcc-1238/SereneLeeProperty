@@ -1,0 +1,14 @@
+name: Fetch Canva images (one-off)
+on: workflow_dispatch
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          mkdir out
+          curl -fsSL -o out/q3-resales-nov-2026.jpg 'https://export-download.canva.com/J2sRU/DAHZueJ2sRU/-1/0/0001-3727249560101641583.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQYCGKMUH4R7NKVBA%2F20261101%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261101T050109Z&X-Amz-Expires=83640&X-Amz-Signature=acbf8e6b77a10b6d2aa8fa03cd25ffabfeb290a75e08d533cb38911caedc62fc&X-Amz-SignedHeaders=host%3Bx-amz-expected-bucket-owner&response-expires=Mon%2C%2002%20Nov%202026%2004%3A15%3A09%20GMT'
+          curl -fsSL -o out/lease-decay-nov-2026.jpg 'https://export-download.canva.com/ZXzhA/DAHZowZXzhA/-1/0/0001-8662068853917401840.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQYCGKMUH4R7NKVBA%2F20261101%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261101T061610Z&X-Amz-Expires=80422&X-Amz-Signature=b29b888e0ccd625000ea34c96121c089cc26378e0487744bc6c35e88c76d6e0c&X-Amz-SignedHeaders=host%3Bx-amz-expected-bucket-owner&response-expires=Mon%2C%2002%20Nov%202026%2004%3A36%3A32%20GMT'
+          curl -fsSL -o out/story-lease-decay-nov-2026.jpg 'https://export-download.canva.com/38Xss/DAHZo138Xss/-1/0/0001-3074227616510444578.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQYCGKMUH4R7NKVBA%2F20261101%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261101T230755Z&X-Amz-Expires=17764&X-Amz-Signature=35dd23eff25429dd391a8cb6c440958eaa8d8649310138a106f1eab2376b524b&X-Amz-SignedHeaders=host%3Bx-amz-expected-bucket-owner&response-expires=Mon%2C%2002%20Nov%202026%2004%3A03%3A59%20GMT'
+          ls -la out
+      - uses: actions/upload-artifact@v4
+        with: { name: canva-images, path: out }
