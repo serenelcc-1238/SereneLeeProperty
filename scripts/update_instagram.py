@@ -30,6 +30,7 @@ QUERY = """query P($org: OrganizationId!, $after: String) {
     pageInfo { hasNextPage endCursor } } }""" % CHANNEL
 OUT = os.path.join(ROOT, "data/instagram.json")
 IMG_DIR = os.path.join(ROOT, "assets/ig/feed")
+LISTINGS = os.path.join(ROOT, "data/listings.json")
 
 
 def gql(key, variables):
@@ -100,6 +101,15 @@ def download(url, path):
     return False
 
 
+def listing_post_ids():
+    """Buffer post ids of Serene's listing posts: they go on /listings, not the homepage feed."""
+    try:
+        d = json.load(open(LISTINGS))
+    except (OSError, ValueError):
+        return set()
+    return {i for l in d.get("listings", []) for i in l.get("igPostIds", [])}
+
+
 def main():
     os.makedirs(IMG_DIR, exist_ok=True)
     key = os.environ.get("BUFFER_API_KEY", "").strip()
@@ -116,6 +126,8 @@ def main():
     else:
         print("BUFFER_API_KEY not set: only downloading missing images for the existing list.")
         items = old.get("posts", [])
+    skip = listing_post_ids()
+    items = [it for it in items if it.get("id") not in skip]
     for it in items:
         path = os.path.join(IMG_DIR, it["id"] + ".jpg")
         it["img"] = "assets/ig/feed/" + it["id"] + ".jpg" if download(it["src"], path) else it.get("img", "")

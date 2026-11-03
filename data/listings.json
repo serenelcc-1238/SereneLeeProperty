@@ -1,0 +1,26 @@
+{
+ "_note": "Serene's own listings & transactions, shown on /listings. Add a new object to 'listings' for each new home. status: 'active' (on the market), 'sold' or 'rented' (completed). igPostIds: Buffer post ids of the Instagram posts for this listing; they are kept OUT of the homepage 'On Instagram' feed so listings don't mix with the educational posts.",
+ "listings": [
+  {
+   "id": "parc-rosewood-penthouse",
+   "status": "active",
+   "project": "Parc Rosewood",
+   "title": "5-Bedroom Penthouse",
+   "facts": ["2,314 sq ft", "5 bedrooms", "2 levels"],
+   "highlights": [
+    "Private roof terrace with covered dining & a second kitchen",
+    "Master suite upstairs with walk-in wardrobe & bathtub",
+    "2 balconies",
+    "Resort-style pools & poolside BBQ pavilion",
+    "Minimart, hair salon & 24/7 hot-meal vending downstairs"
+   ],
+   "video": "assets/listings/parc-rosewood-penthouse.mp4",
+   "poster": "assets/listings/parc-rosewood-penthouse-poster.jpg",
+   "instagram": "https://www.instagram.com/reel/DfRk9WCiCNf/",
+   "whatsapp": "Hi Serene, I'm interested in the Parc Rosewood penthouse. Can I arrange a viewing?",
+   "disclosure": "Some images in the video are AI-enhanced / virtually staged for illustration purposes only. Voiceover is AI-generated.",
+   "listedOn": "2026-11-03",
+   "igPostIds": ["6ae9ab3be49b3ffb0350d191"]
+  }
+ ]
+}

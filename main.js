@@ -57,6 +57,16 @@ document.addEventListener('DOMContentLoaded', function () {
       document.body.classList.toggle('nav-open', isOpen);
     });
   }
+  /* "My Listings" menu link on every page (added here so the ~400 static pages
+     don't each need editing). Sits right after "New Launches". */
+  if (links && !links.querySelector('a[href="/listings"]')) {
+    var lst = document.createElement('a');
+    lst.href = '/listings';
+    lst.textContent = 'My Listings';
+    if (location.pathname.replace(/\.html$/, '').replace(/\/$/, '') === '/listings') lst.className = 'active';
+    var nl = links.querySelector('a[href="/new-launches"]');
+    if (nl && nl.nextSibling) links.insertBefore(lst, nl.nextSibling); else links.appendChild(lst);
+  }
   var yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
