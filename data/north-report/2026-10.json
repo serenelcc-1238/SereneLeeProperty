@@ -1,0 +1,193 @@
+{
+ "month": "2026-10",
+ "label": "October 2026",
+ "compare": "2025-10",
+ "data_to": "2026-10",
+ "complete": false,
+ "national": {
+  "sold": 2176,
+  "sold_ly": 1338,
+  "ft": {
+   "3": {
+    "n": 469,
+    "median": 430000,
+    "n_ly": 343,
+    "median_ly": 445000
+   },
+   "4": {
+    "n": 878,
+    "median": 628844.0,
+    "n_ly": 584,
+    "median_ly": 625000.0
+   },
+   "5": {
+    "n": 601,
+    "median": 760000,
+    "n_ly": 304,
+    "median_ly": 740000.0
+   },
+   "E": {
+    "n": 165,
+    "median": 913888,
+    "n_ly": 60,
+    "median_ly": 870000.0
+   }
+  },
+  "million": 238,
+  "million_ly": 86
+ },
+ "top_sale": {
+  "desc": "a 5-room flat at Blk 96 Dawson Rd, Queenstown (floor 40-42, 111 sqm) for $1,818,000",
+  "price": 1818000
+ },
+ "top5": [
+  {
+   "slug": "tampines",
+   "town": "Tampines",
+   "sold": 193,
+   "median4": 675000,
+   "n4": 77
+  },
+  {
+   "slug": "punggol",
+   "town": "Punggol",
+   "sold": 146,
+   "median4": 671944.0,
+   "n4": 68
+  },
+  {
+   "slug": "woodlands",
+   "town": "Woodlands",
+   "sold": 144,
+   "median4": 526944.0,
+   "n4": 64
+  },
+  {
+   "slug": "sengkang",
+   "town": "Sengkang",
+   "sold": 140,
+   "median4": 639444.0,
+   "n4": 58
+  },
+  {
+   "slug": "bedok",
+   "town": "Bedok",
+   "sold": 129,
+   "median4": 599000,
+   "n4": 53
+  }
+ ],
+ "focus": {
+  "slug": "sembawang",
+  "town": "Sembawang",
+  "sold": 72,
+  "sold_ly": 55,
+  "ft": {
+   "3": {
+    "n": 4,
+    "median": 533000.0,
+    "n_ly": 7,
+    "median_ly": 510000
+   },
+   "4": {
+    "n": 30,
+    "median": 566500.0,
+    "n_ly": 23,
+    "median_ly": 600000
+   },
+   "5": {
+    "n": 23,
+    "median": 650000,
+    "n_ly": 19,
+    "median_ly": 676000
+   },
+   "E": {
+    "n": 6,
+    "median": 724000.0,
+    "n_ly": 2,
+    "median_ly": 765000.0
+   }
+  }
+ },
+ "highlights": [
+  "2,176 HDB flats were resold across Singapore in October 2026, up 63% on October 2025. The busiest towns were Tampines (193), Punggol (146) and Woodlands (144).",
+  "238 flats sold for $1 million or more (vs 86 a year earlier). Top sale: a 5-room flat at Blk 96 Dawson Rd, Queenstown (floor 40-42, 111 sqm) for $1,818,000.",
+  "Town in focus, Sembawang: 72 resales; 4-room median $566k, down 5.6% on a year ago (30 deals vs 23). Medians mix flats of different ages, so check your own block."
+ ],
+ "private": {
+  "month": "2026-09",
+  "label": "September 2026",
+  "new_units": 323,
+  "resales": 1164,
+  "psf": 1712.363823796483,
+  "top_new": {
+   "project": "Terra Hill",
+   "units": 31
+  },
+  "ly": {
+   "new_units": 262,
+   "resales": 1295,
+   "psf": 1731.3765118928677,
+   "top_new": {
+    "project": "Canberra Crescent Residences",
+    "units": 30
+   }
+  }
+ },
+ "private_highlights": [
+  "1,164 condo and EC resales in September 2026 (down 10% on a year ago); median $1,712 psf, down 1.1%.",
+  "Developers sold 323 new private homes in September 2026; the most at Terra Hill (31 units)."
+ ],
+ "launches": {
+  "launched": [
+   {
+    "name": "Lucerne Grand",
+    "district": "D22",
+    "date": "2026-10-03",
+    "status": "selling",
+    "url": "/new-launch/lucerne-grand"
+   },
+   {
+    "name": "The Serra Residences",
+    "district": "",
+    "date": "2026-10-16",
+    "status": null,
+    "url": "/blog-post-serra-residences-preview"
+   },
+   {
+    "name": "Thomson Reserve",
+    "district": "",
+    "date": "2026-10-31",
+    "status": null,
+    "url": "/blog-post-thomson-reserve-preview"
+   }
+  ],
+  "coming": [
+   {
+    "name": "Wynwood Grand",
+    "district": "D25",
+    "date": "2027-01-31",
+    "status": "upcoming",
+    "url": "/new-launch/wynwood-grand"
+   },
+   {
+    "name": "One Chuan Grove",
+    "district": "D19",
+    "date": "2027-02-27",
+    "status": "upcoming",
+    "url": "/new-launch/one-chuan-grove"
+   },
+   {
+    "name": "The River Opus",
+    "district": "D10",
+    "date": "2027-02-28",
+    "status": "upcoming",
+    "url": "/new-launch/the-river-opus"
+   }
+  ]
+ },
+ "image": "https://sereneleeproperty.com/assets/email/north-report-2026-10.jpg",
+ "utm": "utm_source=email&utm_medium=newsletter&utm_campaign=hdb-2026-10",
+ "subject": "Singapore Property Updates, October 2026: 2,176 HDB resales, 238 at $1M+",
+ "preview_text": "HDB resale, private homes and new launches, plus a closer look at Sembawang."
+}
