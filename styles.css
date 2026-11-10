@@ -945,8 +945,10 @@ a.home-mm-more{text-decoration:none;}
 @media(max-width:480px){.wa-qr-card img{width:120px;height:120px;}}
 
 /* Promo strip under the header on the landing page */
-.promo-strip{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;background:var(--gold);color:var(--navy-900);text-decoration:none;padding:11px 16px;font-size:.92rem;line-height:1.35;text-align:center;transition:background .2s;}
-.promo-strip:hover{background:var(--gold-dark);color:#fff;}
-.promo-tag{background:var(--navy-900);color:var(--gold);font-weight:800;font-size:.7rem;letter-spacing:.1em;border-radius:999px;padding:3px 9px;}
-.promo-cta{font-weight:700;text-decoration:underline;text-underline-offset:3px;white-space:nowrap;}
+.promo-strip{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;background:var(--navy);color:#fff;text-decoration:none;padding:11px 16px;font-size:.92rem;line-height:1.35;text-align:center;border-bottom:3px solid var(--gold);transition:background .2s;}
+.promo-strip:hover{background:var(--navy-800);color:#fff;}
+.promo-strip strong{color:#fff;}
+.promo-sub{color:rgba(255,255,255,.82);}
+.promo-tag{background:var(--gold);color:var(--navy-900);font-weight:800;font-size:.7rem;letter-spacing:.1em;border-radius:999px;padding:3px 9px;}
+.promo-cta{font-weight:700;color:var(--gold);text-decoration:underline;text-underline-offset:3px;white-space:nowrap;}
 @media (max-width:640px){.promo-strip{font-size:.84rem;gap:8px;padding:10px 14px;}.promo-sub{display:none;}}
