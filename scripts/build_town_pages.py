@@ -658,6 +658,8 @@ def main():
     build_rightsizing(market, head, header, footer)
     import build_useful_numbers  # same shell, so menu/footer changes reach it too
     build_useful_numbers.main()
+    import build_property_rates  # same shell, so menu/footer changes reach it too
+    build_property_rates.main()
     print(f"built {len(stats)} town pages + town-guide.html (index={INDEX})")
 
 
