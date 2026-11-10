@@ -85,3 +85,58 @@
     total: (e) => { const b = num(e.bsd) || num(window.__sd.bsd(e)), a = num(e.absd) || num(window.__sd.absd(e)); return b || a ? String(b + a) : ""; }
   };
 })();
+
+/* AML/CFT document tracking for Sales clients (CEA Practice Guidelines on
+   Prevention of Money Laundering and Countering the Financing of Terrorism).
+   Forms are tracked from the point Serene is appointed by the seller. */
+(function () {
+  const STEPS = ["Not started", "In progress", "Completed", "Not applicable"];
+  const APPOINTED = ["Listed", "Offer received", "OTP issued", "Completed"];
+  const appointed = (e) => e.ceaStatus === "Signed" || APPOINTED.includes(e.status);
+  const unrep = (e) => e.amlCounterparty === "Unrepresented";
+  const done = (v) => v === "Completed" || v === "Not applicable";
+  function form(key, label, hint, showIf, newRow) {
+    return [
+      { key: key + "Status", label, kind: "select", options: STEPS, hint, showIf, newRow: !!newRow },
+      { key: key + "Date", label: label.split(" – ")[0] + " – date completed", kind: "date",
+        showIf: (e) => (!showIf || showIf(e)) && e[key + "Status"] === "Completed" }
+    ];
+  }
+  const section = {
+    title: "AML / CFT documents",
+    fields: [
+      { key: "amlCounterparty", label: "Buyer (counterparty)", kind: "select", newRow: true,
+        options: ["Not yet known", "Represented by an agent", "Unrepresented"],
+        hint: "If the buyer has no agent, you must also do due diligence on them (Forms U1 and U5, plus U6 if higher risk)." },
+      ...form("amlU1", "CEA Form U1 – Customer Particulars Form (Unrepresented Counterparty – Individual)",
+        "Collect and verify the unrepresented buyer's particulars against their original NRIC or passport.", unrep),
+      ...form("amlU5", "CEA Form U5 – Due Diligence Checklist (Unrepresented Counterparty)",
+        "Assess the unrepresented buyer's risk. If anything is flagged as higher risk, complete Form U6 as well.", unrep),
+      ...form("amlU6", "CEA Form U6 – Enhanced Due Diligence (Unrepresented Counterparty)",
+        "Only needed if Form U5 flags higher risk, e.g. a politically exposed person, a high-risk country, or unusual payment arrangements. Otherwise set Not applicable.", unrep),
+      ...form("amlA1", "CEA Form A1 – Customer Particulars Form (Individual)",
+        "Due diligence on your own client when appointed. Verify particulars against the original NRIC or passport.", undefined, true),
+      { key: "amlSalesPlus", label: "AML/CFT check on Sales+", kind: "select", newRow: true,
+        options: ["Not done", "Cleared – no match", "Possible match – escalated", "Not applicable"],
+        hint: "Screen the client (and an unrepresented buyer) on Sales+. On a possible match, escalate to ERA compliance and do not alert the client." },
+      { key: "amlSalesPlusDate", label: "Sales+ check – date done", kind: "date",
+        showIf: (e) => !!e.amlSalesPlus && e.amlSalesPlus !== "Not done" && e.amlSalesPlus !== "Not applicable" }
+    ]
+  };
+  function alerts(e) {
+    const out = [];
+    if (["Withdrawn"].includes(e.status)) return out;
+    if (appointed(e)) {
+      if (!done(e.amlA1Status)) out.push("AML: CEA Form A1 not completed");
+      if (!e.amlSalesPlus || e.amlSalesPlus === "Not done") out.push("AML: Sales+ check not done");
+    }
+    if (e.amlSalesPlus === "Possible match – escalated") out.push("AML: Sales+ possible match – awaiting ERA compliance");
+    if (unrep(e)) {
+      const missing = [["amlU1Status", "U1"], ["amlU5Status", "U5"]].filter(([k]) => !done(e[k])).map(([, n]) => n);
+      if (missing.length) out.push("AML: unrepresented buyer – Form " + missing.join(" & ") + " pending");
+      if (e.amlU6Status === "In progress") out.push("AML: Form U6 enhanced due diligence in progress");
+    }
+    return out;
+  }
+  window.__aml = { section, alerts };
+})();
