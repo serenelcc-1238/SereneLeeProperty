@@ -1,9 +1,11 @@
 name: Update Instagram feed
 
-# Runs whenever data/instagram.json changes (the "Website IG Sync" Claude task adds
-# newly sent Buffer posts to it), and on demand from the Actions tab.
-# Saves each post's image into assets/ig/feed/ and redeploys the site.
+# Runs daily at 10pm SGT (after the 8:30pm IG slots): pulls Buffer-sent feed posts/reels
+# with the BUFFER_API_KEY secret. Also runs when data/instagram.json changes, and on demand.
+# Saves each post's image into assets/ig/feed/ and redeploys the site only if something changed.
 on:
+  schedule:
+    - cron: "0 14 * * *"
   push:
     branches: [main]
     paths: ["data/instagram.json"]
